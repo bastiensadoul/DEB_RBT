@@ -60,9 +60,22 @@ data.tW = [... % time (d), wet weight (g)
 units.tW = {'d', 'g'};  label.tW = {'time', 'wet weight'};  bibkey.tW = {'YaniHisa2002'};
  temp.tW = C2K(8.5); units.temp.tW = 'K'; label.temp.tW = 'temperature';
  
-%% you can add the next data sets here: 
- 
- 
+% T-ah data from From1991
+% given as the 50% value
+data.Tah = [... % Temperature (K), age at hatch (d) --> fertilization to hatching 
+278	61
+283 31.3
+];
+units.Tah = {'T', 'd'};  label.Tah = {'Temperature', 'age at hatch'};  bibkey.Tah = {'From1991'};
+
+% T-ab data from From1991
+% given as the 50% value
+data.Tab = [... % Temperature (K), age at birth (d) --> fertilization to yolk absorption 
+278	113
+283 53.3
+];
+units.Tab = {'T', 'd'};  label.Tab = {'Temperature', 'age at birth'};  bibkey.Tab = {'From1991'}; 
+
 %% set weights for all real data
 weights = setweights(data, []);
 
