@@ -60,6 +60,9 @@ data.tW = [... % time (d), wet weight (g)
 units.tW = {'d', 'g'};  label.tW = {'time', 'wet weight'};  bibkey.tW = {'YaniHisa2002'};
  temp.tW = C2K(8.5); units.temp.tW = 'K'; label.temp.tW = 'temperature';
  
+%% you can add the next data sets here: 
+ 
+ 
 %% set weights for all real data
 weights = setweights(data, []);
 
