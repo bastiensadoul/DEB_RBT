@@ -25,13 +25,13 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   U_E0 = initial_scaled_reserve(f, pars_UE0); % d.cm^2, initial scaled reserve
 
   % hatch
-  [U_H aUL] = ode45(@dget_aul, [0; U_Hh; U_Hb], [0 U_E0 1e-10], [], kap, v, k_J, g, L_m);
+  [U_H, aUL] = ode45(@dget_aul, [0; U_Hh; U_Hb], [0 U_E0 1e-10], [], kap, v, k_J, g, L_m);
   aT_h = aUL(2,1)/ TC_ah;              % d, age at hatch at f and T
 
   % birth
   L_b = L_m * l_b;                  % cm, structural length at birth of foetus  at f = 1
   Lw_b = L_b/ del_M;                % cm, total length at birth
-  aT_b = t_b/ k_M/ TC_ab;           % d, age at birth of foetus at f and T
+  aT_b = t_b/ k_M/ TC_ab;           % d, age at birth at f and T
 
   % puberty 
   L_p = L_m * l_p;                  % cm, structural length at puberty at f
@@ -83,6 +83,18 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   end
   EWw = L.^3 * (1 + f_tW * w);
   
+  % T-ah and T_ab from From1991:
+  
+  TC_Tah = tempcorr(Tah(:,1), T_ref, T_A);
+  TC_Tab = tempcorr(Tab(:,1), T_ref, T_A);
+  
+  [U_H, aUL] = ode45(@dget_aul, [0; U_Hh; U_Hb], [0 U_E0 1e-10], [], kap, v, k_J, g, L_m);
+  EaT_h =  aUL(2,1)./ TC_Tah;              % d, age at hatch at f and T
+  EaT_b =  aUL(3,1)./ TC_Tab;              % d, age at hatch at f and T
+  
+  
   % pack to output
   prdData.tW = EWw;
+  prdData.Tah = EaT_h ;
+  prdData.Tab = EaT_b ;
      
