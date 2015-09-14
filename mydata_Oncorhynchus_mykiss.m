@@ -66,7 +66,7 @@ data.Tah = [... % Temperature (K), age at hatch (d) --> fertilization to hatchin
 278	61
 283 31.3
 ];
-units.Tah = {'K', 'd'};  label.Tah = {'Temperature', 'age at hatch'};  bibkey.Tah = {'From1991'};
+units.Tah = {'T', 'd'};  label.Tah = {'Temperature', 'age at hatch'};  bibkey.Tah = {'From1991'};
 
 % T-ab data from From1991
 % given as the 50% value
@@ -74,7 +74,7 @@ data.Tab = [... % Temperature (K), age at birth (d) --> fertilization to yolk ab
 278	113
 283 53.3
 ];
-units.Tab = {'K', 'd'};  label.Tab = {'Temperature', 'age at birth'};  bibkey.Tab = {'From1991'}; 
+units.Tab = {'T', 'd'};  label.Tab = {'Temperature', 'age at birth'};  bibkey.Tab = {'From1991'}; 
 
 %% set weights for all real data
 weights = setweights(data, []);
@@ -88,12 +88,6 @@ txtData.units = units;
 txtData.label = label;
 txtData.bibkey = bibkey;
 txtData.comment = comment;
-
-%% Grouped plots
-set1 = {'Tah','Tab'};
-comment1 = {'Age at hatch, at birth'};
-metaData.grp.sets = {set1};
-metaData.grp.comment = {comment1};
 
 %% Facts
 F1 = 'Many subspecies exist, e.g. O. m. irideus  (coastal rainbow trout), O. m. gairdneri (Columbia River redband trout)';
@@ -135,4 +129,3 @@ bibkey = 'Kooy2014'; type = 'Misc'; bib = ...
 'note = {taken from from Salmo trutta}';  
 metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
   
-% we need the reference for From1991

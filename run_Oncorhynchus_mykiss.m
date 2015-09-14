@@ -20,7 +20,7 @@ estim_options('max_fun_evals',5e3);    % set options for parameter estimation
 % 'method':           'nm' - use Nelder-Mead method (default); 'no' - do not estimate;
 
 estim_options('pars_init_method', 1);
-estim_options('results_output', 0);
+estim_options('results_output', 1);
 estim_options('method', 'no');
 
 estim_pars;          % run estimation
