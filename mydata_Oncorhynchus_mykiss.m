@@ -20,12 +20,12 @@ metaData.address  = {'VU University Amsterdam'};
 
 %% set data
 % zero-variate data
-data.ah = 33;      units.ah = 'd';    label.ah = 'age at hatch';           bibkey.ah = 'YaniHisa2002'; % 4-5 month 
-  temp.ah = C2K(8.5);  units.temp.ah = 'K'; label.temp.ah = 'temperature';
-  comment.ah = '30-36 d';
-data.ab = data.ah + 8.5; units.ab = 'd'; label.ab = 'age at birth';        bibkey.ab = 'YaniHisa2002'; 
-  temp.ab = C2K(7); units.temp.ab = 'K'; label.temp.ab = 'temperature';
-  comment.ab = 'ah + 19-21 d';
+data.ah_8_5 = 33;      units.ah_8_5 = 'd';    label.ah_8_5 = 'age at hatch';           bibkey.ah_8_5 = 'YaniHisa2002'; % 4-5 month 
+  temp.ah_8_5 = C2K(8.5);  units.temp.ah_8_5 = 'K'; label.temp.ah_8_5 = 'temperature';
+  comment.ah_8_5 = '30-36 d';
+data.ab_8_5 = data.ah_8_5 + 8.5; units.ab_8_5 = 'd'; label.ab_8_5 = 'age at birth';        bibkey.ab_8_5 = 'YaniHisa2002'; 
+  temp.ab_8_5 = C2K(7); units.temp.ab_8_5 = 'K'; label.temp.ab_8_5 = 'temperature';
+  comment.ab_8_5 = 'ah + 19-21 d';
 data.ap = 2.5*365; units.ap = 'd';    label.ap = 'age at puberty';         bibkey.ap = 'fishbase';
   temp.ap = C2K(5); units.temp.ap = 'K'; label.temp.ap = 'temperature';
 data.am = 11*365;  units.am = 'd';    label.am = 'life span';              bibkey.am = {'fishbase'};   
@@ -63,18 +63,22 @@ units.tW = {'d', 'g'};  label.tW = {'time', 'wet weight'};  bibkey.tW = {'YaniHi
 % T-ah data from From1991
 % given as the 50% value
 data.Tah = [... % Temperature (K), age at hatch (d) --> fertilization to hatching 
-278	61
-283 31.3
+5	61
+10 31.3
 ];
 units.Tah = {'K', 'd'};  label.Tah = {'Temperature', 'age at hatch'};  bibkey.Tah = {'From1991'};
+comment.Tah = 'age is given as the 50% value';
+data.Tah(:,1) = C2K(data.Tah(:,1)); % convert C to K
 
 % T-ab data from From1991
 % given as the 50% value
 data.Tab = [... % Temperature (K), age at birth (d) --> fertilization to yolk absorption 
-278	113
-283 53.3
+5	113
+10 53.3
 ];
 units.Tab = {'K', 'd'};  label.Tab = {'Temperature', 'age at birth'};  bibkey.Tab = {'From1991'}; 
+comment.Tab = 'age is given as the 50% value';
+data.Tab(:,1) = C2K(data.Tab(:,1)); % convert C to K
 
 %% set weights for all real data
 weights = setweights(data, []);
@@ -125,6 +129,15 @@ bibkey = 'YaniHisa2002'; type = 'Article'; bib = [ ...
 'journal = {The Israeli Journal of Aquaculture – Bamidgeh}, ' ...
 'volume = {54(2)}, '...
 'pages = {73}'];
+metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
+%
+bibkey = 'From1991'; type = 'Article'; bib = [ ...  
+'author = {J. From, G. Rasmussen}, ' ...
+'year = {1991}, ' ...
+'title = {Growth of rainbow trout, Oncorhynchus mykiss (Walbaum, 1792) related to egg size and temperature}, ' ... 
+'journal = {Dana}, ' ...
+'volume = {9}, '...
+'pages = {31-38}'];
 metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
 %
 bibkey = 'fishbase'; type = 'Misc'; bib = ...
