@@ -29,11 +29,12 @@ par.T_A = 8000;     free.T_A   = 0; units.T_A = 'K';        label.T_A = 'Arrheni
 par.del_M = 0.1353; free.del_M = 1; units.del_M = '-';      label.del_M = 'shape coefficient';
 
 %% Environmental parameters (temperatures are in data)
-par.f    = 1.0;     free.f     = 0; units.f    = '-';       label.f = 'scaled functional response for 0-var data';
-par.f_tW = 3.667;   free.f_tW  = 1; units.f_tW = '-';       label.f_tW = 'scaled functional response for tW data';
+par.f    = 1;     free.f     = 1; units.f    = '-';       label.f = 'scaled functional response for 0-var data';
+par.f_tW = 1;   free.f_tW  = 1; units.f_tW = '-';       label.f_tW = 'scaled functional response for tW data';
+par.f_tWL_Davidson2014 = 1;   free.f_tWL_Davidson2014  = 1; units.f_tWL_Davidson2014 = '-';       label.f_tWL_Davidson2014 = 'scaled functional response for tW data';
 par.W_0 = 1.850;    free.W_0   = 1; units.W_0 = 'g';        label.W_0 = 'wet weight at t = 0';
-par.f_Tah = 1.0;         free.f_Tah  = 1;        units.f_Tah = '-';        label.f_Tah = 'scaled functional response for Tah data';
-par.f_Tab = 1.0;         free.f_Tab  = 1;        units.f_Tab = '-';        label.f_Tab = 'scaled functional response for Tab data';
+% par.f_Tah = 1.0;         free.f_Tah  = 0;        units.f_Tah = '-';        label.f_Tah = 'scaled functional response for Tah data';
+% par.f_Tab = 1.0;         free.f_Tab  = 0;        units.f_Tab = '-';        label.f_Tab = 'scaled functional response for Tab data';
 
 %% set chemical parameters from Kooy2010 
 [par, units, label, free] = addchem(par, units, label, free, metaData.phylum, metaData.class);
