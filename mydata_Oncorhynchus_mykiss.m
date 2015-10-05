@@ -115,9 +115,13 @@ tLW = [...
 762	62.32757629	5012	13.6
 793	61.98695269	5097	13.4];
 
-data.tL_Davidson2014 = tLW(:,[1 2]) ; data.tW_Davidson2014 = tLW(:,[1 3]) ; auxData.tT_Davidson2014 = tLW(:,[1 4]); auxData.tT_Davidson2014(:,2) = C2K(auxData.tT_Davidson2014(:,2));
-units.tL_Davidson2014 = {'d', 'cm'}; units.tW_Davidson2014 = {'d', 'g'} ;
-label.tL_Davidson2014 = {'time', 'length'}; label.tW_Davidson2014 = {'time', 'wet weight'} ;
+data.tL_Davidson2014 = tLW(6:end,[1 2]) ;  % I think we would run into problems if we compare predictions with NaN values
+data.tW_Davidson2014 = tLW(:,[1 3]) ; 
+temp.tT_Davidson2014 = tLW(:,[1 4]);  % foru the auxData we need to put temp.dataLabel or it was other info we could use another name than temp
+temp.tT_Davidson2014(:,2) = C2K(temp.tT_Davidson2014(:,2));
+units.tL_Davidson2014 = {'d', 'cm'}; units.tW_Davidson2014 = {'d', 'g'} ; 
+units.temp.tW_Davidson2014 = {'d', 'K'} ;  % we need units and label for temp info ...
+label.tL_Davidson2014 = {'days post hatch', 'length'}; label.tW_Davidson2014 = {'days post hatch', 'wet weight'} ; label.temp.tW_Davidson2014 = {'days post hatch', 'K'} ;
 bibkey.tL_Davidson2014 = {'Davidson2014'}; bibkey.tW_Davidson2014 = {'Davidson2014'} ;
 comment.tL_Davidson2014 = 'fish reared in water recirculating system'; comment.tW_Davidson2014 = 'fish reared in water recirculating system' ;
 
