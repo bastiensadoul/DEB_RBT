@@ -23,7 +23,7 @@ metaData.address  = {'VU University Amsterdam'};
 data.ah_8_5 = 33;      units.ah_8_5 = 'd';    label.ah_8_5 = 'age at hatch';           bibkey.ah_8_5 = 'YaniHisa2002'; % 4-5 month 
   temp.ah_8_5 = C2K(8.5);  units.temp.ah_8_5 = 'K'; label.temp.ah_8_5 = 'temperature';
   comment.ah_8_5 = '30-36 d';
-data.ab_8_5 = data.ah_8_5 + 8.5; units.ab_8_5 = 'd'; label.ab_8_5 = 'age at birth';        bibkey.ab_8_5 = 'YaniHisa2002'; 
+data.ab_8_5 = data.ah_8_5 + 20; units.ab_8_5 = 'd'; label.ab_8_5 = 'age at birth';        bibkey.ab_8_5 = 'YaniHisa2002'; 
   temp.ab_8_5 = C2K(7); units.temp.ab_8_5 = 'K'; label.temp.ab_8_5 = 'temperature';
   comment.ab_8_5 = 'ah + 19-21 d';
 data.ap = 2.5*365; units.ap = 'd';    label.ap = 'age at puberty';         bibkey.ap = 'fishbase';
@@ -79,6 +79,51 @@ data.Tab = [... % Temperature (K), age at birth (d) --> fertilization to yolk ab
 units.Tab = {'K', 'd'};  label.Tab = {'Temperature', 'age at birth'};  bibkey.Tab = {'From1991'}; 
 comment.Tab = 'age is given as the 50% value';
 data.Tab(:,1) = C2K(data.Tab(:,1)); % convert C to K
+
+% Davidson2014
+% Colums of tLW:
+%  1  t days post hatch
+%  2  L cm, fork length 
+%  3 W g, wet weight
+%  4 T degC, not constant
+
+tLW = [...
+30	NaN 1	12
+61	NaN	2	13.9
+91	NaN	12	14
+122	NaN	37	13.5
+152	NaN	68	13.4
+183	20.14568672	130	13.3
+213	21.5443469	182	12.5
+244	25.04752863	297	12.7
+274	30.37304642	566	13.5
+305	32.15692038	685	13.6
+335	35.37616057	943	14.8
+366	38.472504	1230	15.2
+396	41.5666287	1501	13
+427	43.30037284	1713	13
+457	45.39591421	2002	13.1
+488	47.81766661	2307	13
+518	49.18429576	2570	12.7
+549	51.38700584	2836	12.6
+579	53.4819702	3136	12.5
+610	55.32407387	3556	12.5
+640	57.17912711	4038	12.5
+671	59.42611275	4533	12.7
+701	60.72011595	4858	12.9
+732	61.56382501	4970	13.4
+762	62.32757629	5012	13.6
+793	61.98695269	5097	13.4];
+
+data.tL_Davidson2014 = tLW(6:end,[1 2]) ;  % I think we would run into problems if we compare predictions with NaN values
+data.tW_Davidson2014 = tLW(:,[1 3]) ; 
+temp.tT_Davidson2014 = tLW(:,[1 4]);  % foru the auxData we need to put temp.dataLabel or it was other info we could use another name than temp
+temp.tT_Davidson2014(:,2) = C2K(temp.tT_Davidson2014(:,2));
+units.tL_Davidson2014 = {'d', 'cm'}; units.tW_Davidson2014 = {'d', 'g'} ; 
+units.temp.tW_Davidson2014 = {'d', 'K'} ;  % we need units and label for temp info ...
+label.tL_Davidson2014 = {'days post hatch', 'length'}; label.tW_Davidson2014 = {'days post hatch', 'wet weight'} ; label.temp.tW_Davidson2014 = {'days post hatch', 'K'} ;
+bibkey.tL_Davidson2014 = {'Davidson2014'}; bibkey.tW_Davidson2014 = {'Davidson2014'} ;
+comment.tL_Davidson2014 = 'fish reared in water recirculating system'; comment.tW_Davidson2014 = 'fish reared in water recirculating system' ;
 
 %% set weights for all real data
 weights = setweights(data, []);
@@ -138,6 +183,15 @@ bibkey = 'From1991'; type = 'Article'; bib = [ ...
 'journal = {Dana}, ' ...
 'volume = {9}, '...
 'pages = {31-38}'];
+metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
+%
+bibkey = 'Davidson2014'; type = 'Article'; bib = [ ...  
+'author = {J. W. Davidson, P. B. Kenney, M. Manor, C. M. Good, G. M. Weber, A. Aussanasuwannakul, P. J. Turk, C. Welsh, S. T. Summerfelt}, ' ...
+'year = {2014}, ' ...
+'title = {Growth performance, fillet quality, and reproductive maturity of Rainbow Trout (Oncorhynchus mykiss) cultured to 5 kilograms within freshwater recirculating systems}, ' ... 
+'journal = {Journal of Aquaculture Research and Development}, ' ...
+'volume = {5(4)}, '...
+'pages = {}'];
 metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
 %
 bibkey = 'fishbase'; type = 'Misc'; bib = ...

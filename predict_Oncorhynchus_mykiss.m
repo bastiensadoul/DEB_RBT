@@ -17,6 +17,7 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   TC_am = tempcorr(temp.am, T_ref, T_A);
   TC_Ri = tempcorr(temp.Ri, T_ref, T_A);
   TC_tW = tempcorr(temp.tW, T_ref, T_A);
+  TC_tT_Davidson2014 = tempcorr(mean(temp.tT_Davidson2014(:,2)), T_ref, T_A);
 
   % life cycle
   pars_tj = [g k l_T v_Hb v_Hj v_Hp];
@@ -86,9 +87,9 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   end
   EWw = L.^3 * (1 + f_tW * w);
   
-  % T-ah and T_ab from From1991:
   
-  U_E0 = initial_scaled_reserve(f_Tah, pars_UE0); % d.cm^2, initial scaled reserve
+  % T-ah and T_ab from From1991:
+  U_E0 = initial_scaled_reserve(f, pars_UE0); % d.cm^2, initial scaled reserve
   [U_H, aUL] = ode45(@dget_aul, [0; U_Hh; U_Hb], [0 U_E0 1e-10], [], kap, v, k_J, g, L_m);
   a_h = aUL(2,1);                 % d, age at hatch at f and T_ref
   a_b = aUL(3,1);                 % d, age at hatch at f and T_ref
@@ -96,8 +97,52 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   EaT_b =  a_b ./ TC_Tab;              % d, age at birth at f and T
   
   
+  % tL_Davidson2014
+  [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f_tWL_Davidson2014);
+  rT_B = TC_tT_Davidson2014 .* rho_B * k_M; rT_j = TC_tT_Davidson2014 .* rho_j * k_M; % 1/d, von Bert, exponential growth rate
+%    rT_B = TC_tW .* rho_B * k_M; rT_j =  TC_tW .* rho_j * k_M; % 1/d, von Bert, exponential growth rate
+  
+%   aT_b = t_b/ k_M/ TC_tW; aT_j = t_j/ k_M/ TC_tW;
+  L_b = l_b * L_m; L_j = l_j * L_m; L_i = l_i * L_m;
+  L_0 = (W_0/ (1 + f_tWL_Davidson2014 * w))^(1/3); % cm, structural length at t = 0 
+  if L_0 < L_j
+    tj = log(L_j/ L_0) * 3 ./ rT_j;
+    t_bj = tL_Davidson2014(tL_Davidson2014(:,1) < tj,1); % select times between birth & metamorphosis
+    L_bj = L_0 * exp(t_bj .* rT_j ./ 3); % exponential growth as V1-morph
+    t_ji = tL_Davidson2014(tL_Davidson2014(:,1) >= tj,1); % selects times after metamorphosis
+    L_ji = L_i - (L_i - L_j) .* exp( - rT_B .* (t_ji - tj)); % cm, expected length at time
+    L = [L_bj; L_ji]; % catenate lengths
+  else 
+    L = L_i - (L_i - L_0) .* exp( - rT_B .* tL_Davidson2014(:,1)); % cm, expected length at time
+  end
+  EL_Davidson2014 = L/ del_M;
+  
+  
+   % tW_Davidson2014
+  [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f_tWL_Davidson2014);
+  rT_B = TC_tT_Davidson2014 .* rho_B * k_M; rT_j = TC_tT_Davidson2014 .* rho_j * k_M; % 1/d, von Bert, exponential growth rate
+%    rT_B = TC_tW .* rho_B * k_M; rT_j =  TC_tW .* rho_j * k_M; % 1/d, von Bert, exponential growth rate
+  
+%   aT_b = t_b/ k_M/ TC_tW; aT_j = t_j/ k_M/ TC_tW;
+  L_b = l_b * L_m; L_j = l_j * L_m; L_i = l_i * L_m;
+  L_0 = (W_0/ (1 + f_tWL_Davidson2014 * w))^(1/3); % cm, structural length at t = 0 
+  if L_0 < L_j
+    tj = log(L_j/ L_0) * 3 ./ rT_j;
+    t_bj = tW_Davidson2014(tW_Davidson2014(:,1) < tj,1); % select times between birth & metamorphosis
+    L_bj = L_0 * exp(t_bj .* rT_j ./ 3); % exponential growth as V1-morph
+    t_ji = tW_Davidson2014(tW_Davidson2014(:,1) >= tj,1); % selects times after metamorphosis
+    L_ji = L_i - (L_i - L_j) .* exp( - rT_B .* (t_ji - tj)); % cm, expected length at time
+    L = [L_bj; L_ji]; % catenate lengths
+  else 
+    L = L_i - (L_i - L_0) .* exp( - rT_B .* tW_Davidson2014(:,1)); % cm, expected length at time
+  end
+  EW_Davidson2014 = L.^3 * (1 + f_tWL_Davidson2014 * w);
+  
+  
   % pack to output
   prdData.tW = EWw;
   prdData.Tah = EaT_h ;
   prdData.Tab = EaT_b ;
+  prdData.tL_Davidson2014 = EL_Davidson2014;
+  prdData.tW_Davidson2014 = EW_Davidson2014 ;
      
