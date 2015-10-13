@@ -69,7 +69,7 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
 
   %% uni-variate data
   
-  % t-Ww-data
+  % t-Ww-data from YaniHisa2002
   [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f_tW);
   rT_B = TC_tW * rho_B * k_M; rT_j = TC_tW * rho_j * k_M; % 1/d, von Bert, exponential growth rate
   aT_b = t_b/ k_M/ TC_tW; aT_j = t_j/ k_M/ TC_tW;
@@ -117,7 +117,6 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   end
   EL_Davidson2014 = L/ del_M;
   
-  
    % tW_Davidson2014
   [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f_tWL_Davidson2014);
   rT_B = TC_tT_Davidson2014 .* rho_B * k_M; rT_j = TC_tT_Davidson2014 .* rho_j * k_M; % 1/d, von Bert, exponential growth rate
@@ -125,7 +124,7 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   
 %   aT_b = t_b/ k_M/ TC_tW; aT_j = t_j/ k_M/ TC_tW;
   L_b = l_b * L_m; L_j = l_j * L_m; L_i = l_i * L_m;
-  L_0 = (W_0/ (1 + f_tWL_Davidson2014 * w))^(1/3); % cm, structural length at t = 0 
+  L_0 = (WDavidson2014_0/ (1 + f_tWL_Davidson2014 * w))^(1/3); % cm, structural length at t = 0 
   if L_0 < L_j
     tj = log(L_j/ L_0) * 3 ./ rT_j;
     t_bj = tW_Davidson2014(tW_Davidson2014(:,1) < tj,1); % select times between birth & metamorphosis
@@ -138,6 +137,41 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   end
   EW_Davidson2014 = L.^3 * (1 + f_tWL_Davidson2014 * w);
   
+    % tW_gw150meancontrol-data
+  [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f_tW_gw150meancontrol);
+  rT_B = TC_tW * rho_B * k_M; rT_j = TC_tW * rho_j * k_M; % 1/d, von Bert, exponential growth rate
+  aT_b = t_b/ k_M/ TC_tW; aT_j = t_j/ k_M/ TC_tW;
+  L_b = l_b * L_m; L_j = l_j * L_m; L_i = l_i * L_m;
+  L_0 = (W150meancontrol_0/ (1 + f_tW * w))^(1/3); % cm, structural length at t = 0 
+  if L_0 < L_j
+    tj = log(L_j/ L_0) * 3/ rT_j;
+    t_bj = tW_gw150meancontrol(tW_gw150meancontrol(:,1) < tj,1); % select times between birth & metamorphosis
+    L_bj = L_0 * exp(t_bj * rT_j/3); % exponential growth as V1-morph
+    t_ji = tW_gw150meancontrol(tW_gw150meancontrol(:,1) >= tj,1); % selects times after metamorphosis
+    L_ji = L_i - (L_i - L_j) * exp( - rT_B * (t_ji - tj)); % cm, expected length at time
+    L = [L_bj; L_ji]; % catenate lengths
+  else 
+    L = L_i - (L_i - L_0) * exp( - rT_B * tW_gw150meancontrol(:,1)); % cm, expected length at time
+  end
+  EW_gw150meancontrol = L.^3 * (1 + f_tW * w);
+  
+      % tW_gw124bvarmeancontrol-data
+  [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f_tW_gw124bvarmeancontrol);
+  rT_B = TC_tW * rho_B * k_M; rT_j = TC_tW * rho_j * k_M; % 1/d, von Bert, exponential growth rate
+  aT_b = t_b/ k_M/ TC_tW; aT_j = t_j/ k_M/ TC_tW;
+  L_b = l_b * L_m; L_j = l_j * L_m; L_i = l_i * L_m;
+  L_0 = (W124bvarmeancontrol_0/ (1 + f_tW * w))^(1/3); % cm, structural length at t = 0 
+  if L_0 < L_j
+    tj = log(L_j/ L_0) * 3/ rT_j;
+    t_bj = tW_gw124bvarmeancontrol(tW_gw124bvarmeancontrol(:,1) < tj,1); % select times between birth & metamorphosis
+    L_bj = L_0 * exp(t_bj * rT_j/3); % exponential growth as V1-morph
+    t_ji = tW_gw124bvarmeancontrol(tW_gw124bvarmeancontrol(:,1) >= tj,1); % selects times after metamorphosis
+    L_ji = L_i - (L_i - L_j) * exp( - rT_B * (t_ji - tj)); % cm, expected length at time
+    L = [L_bj; L_ji]; % catenate lengths
+  else 
+    L = L_i - (L_i - L_0) * exp( - rT_B * tW_gw124bvarmeancontrol(:,1)); % cm, expected length at time
+  end
+  EW_gw124bvarmeancontrol = L.^3 * (1 + f_tW * w);
   
   % pack to output
   prdData.tW = EWw;
@@ -145,4 +179,6 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   prdData.Tab = EaT_b ;
   prdData.tL_Davidson2014 = EL_Davidson2014;
   prdData.tW_Davidson2014 = EW_Davidson2014 ;
+  prdData.tW_gw150meancontrol = EW_gw150meancontrol ;
+  prdData.tW_gw124bvarmeancontrol = EW_gw124bvarmeancontrol ;
      

@@ -125,6 +125,62 @@ label.tL_Davidson2014 = {'days post hatch', 'length'}; label.tW_Davidson2014 = {
 bibkey.tL_Davidson2014 = {'Davidson2014'}; bibkey.tW_Davidson2014 = {'Davidson2014'} ;
 comment.tL_Davidson2014 = 'fish reared in water recirculating system'; comment.tW_Davidson2014 = 'fish reared in water recirculating system' ;
 
+% Our data for control (study gw150)
+%  1  t days from first feeding
+%  2 W g, wet weight
+
+tW_gw150meancontrol=[...
+0  0.1282200
+14  0.2334573
+28  0.4303732
+42  0.7740772
+56  1.2671954
+70  2.0529108
+84  2.7651187
+98  3.9946960
+112  5.8676441
+126  7.8636423
+140 10.1615652
+154 13.8897513
+175 21.7316214
+196 31.7072512
+217 42.2058984
+245 59.1872994
+273 76.6984780
+];
+
+data.tW_gw150meancontrol = tW_gw150meancontrol;
+units.tW_gw150meancontrol = {'d', 'g'};  label.tW_gw150meancontrol = {'time', 'wet weight'};  bibkey.tW_gw150meancontrol = {'gw150meancontrol'};
+ temp.tW_gw150meancontrol = C2K(8.5); units.temp.tW_gw150meancontrol = 'K'; label.temp.tW_gw150meancontrol = 'temperature';
+
+ 
+ % Our data for control (study gw124bvar)
+%  1  t days from first feeding
+%  2 W g, wet weight
+
+tW_gw124bvarmeancontrol=[...
+0   0.1098937
+13   0.1736597
+34   0.4294043
+59   1.2248276
+76   2.1546229
+97   3.8053241
+118   6.4102299
+139  10.6440034
+160  17.1597931
+181  26.4256495
+202  37.3273004
+223  51.5487573
+244  65.2009580
+286 106.1100752
+];
+
+data.tW_gw124bvarmeancontrol = tW_gw124bvarmeancontrol;
+units.tW_gw124bvarmeancontrol = {'d', 'g'};  label.tW_gw124bvarmeancontrol = {'time', 'wet weight'};  bibkey.tW_gw124bvarmeancontrol = {'gw124bvarmeancontrol'};
+ temp.tW_gw124bvarmeancontrol = C2K(8.5); units.temp.tW_gw124bvarmeancontrol = 'K'; label.temp.tW_gw124bvarmeancontrol = 'temperature';
+
+ 
+ 
 %% set weights for all real data
 weights = setweights(data, []);
 
