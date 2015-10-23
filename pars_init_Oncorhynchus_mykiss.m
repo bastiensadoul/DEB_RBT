@@ -31,9 +31,9 @@ par.del_M = 0.1353; free.del_M = 1; units.del_M = '-';      label.del_M = 'shape
 %% Environmental parameters (temperatures are in data)
 par.f    = 1;     free.f     = 1; units.f    = '-';       label.f = 'scaled functional response for 0-var data';
 par.f_tW = 1;   free.f_tW  = 1; units.f_tW = '-';       label.f_tW = 'scaled functional response for tW data';
-par.f_tWL_Davidson2014 = 1;   free.f_tWL_Davidson2014  = 0; units.f_tWL_Davidson2014 = '-';       label.f_tWL_Davidson2014 = 'scaled functional response for tW data';
-par.f_tW_gw150meancontrol = 1; free.f_tW_gw150meancontrol  = 0; units.f_tW_gw150meancontrol = '-';       label.f_tW_gw150meancontrol = 'scaled functional response for tW_gw150meancontrol data';
-par.f_tW_gw124bvarmeancontrol = 1; free.f_tW_gw124bvarmeancontrol  = 0; units.f_tW_gw124bvarmeancontrol = '-';       label.f_tW_gw124bvarmeancontrol = 'scaled functional response for tW_gw150meancontrol data';
+par.f_tWL_Davidson2014 = 1;   free.f_tWL_Davidson2014  = 1; units.f_tWL_Davidson2014 = '-';       label.f_tWL_Davidson2014 = 'scaled functional response for tW data';
+par.f_tW_gw150meancontrol = 1; free.f_tW_gw150meancontrol  = 1; units.f_tW_gw150meancontrol = '-';       label.f_tW_gw150meancontrol = 'scaled functional response for tW_gw150meancontrol data';
+par.f_tW_gw124bvarmeancontrol = 1; free.f_tW_gw124bvarmeancontrol  = 1; units.f_tW_gw124bvarmeancontrol = '-';       label.f_tW_gw124bvarmeancontrol = 'scaled functional response for tW_gw150meancontrol data';
 par.W_0 = 1.471;    free.W_0   = 0; units.W_0 = 'g';        label.W_0 = 'wet weight at t = 0 for YaniHisa2002';
 par.WDavidson2014_0 = 0.1;    free.WDavidson2014_0   = 0; units.WDavidson2014_0 = 'g';        label.WDavidson2014_0 = 'wet weight at t = 0 for tWDavidson2014';
 par.W150meancontrol_0 = 0.1282200;    free.W150meancontrol_0   = 0; units.W150meancontrol_0 = 'g';        label.W150meancontrol_0 = 'wet weight at t = 0 for tW150meancontrol';
