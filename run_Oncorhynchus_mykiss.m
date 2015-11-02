@@ -1,4 +1,4 @@
-close all
+clear all; clc; close all
 global pets
 
 pets = {'Oncorhynchus_mykiss'};

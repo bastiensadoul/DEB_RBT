@@ -59,6 +59,7 @@ data.tW = [... % time (d), wet weight (g)
 154.725	20.335];
 units.tW = {'d', 'g'};  label.tW = {'time', 'wet weight'};  bibkey.tW = {'YaniHisa2002'};
  temp.tW = C2K(8.5); units.temp.tW = 'K'; label.temp.tW = 'temperature';
+ auxData.initWeight.tW = 1.471; units.initWeight.tW = 'g'; label.initWeight.tW = 'initial weight'; 
  
 % T-ah data from From1991
 % given as the 50% value
@@ -150,7 +151,7 @@ tW_gw150meancontrol=[...
 ];
 
 data.tW_gw150meancontrol = tW_gw150meancontrol;
-units.tW_gw150meancontrol = {'d', 'g'};  label.tW_gw150meancontrol = {'time', 'wet weight'};  bibkey.tW_gw150meancontrol = {'gw150meancontrol'};
+units.tW_gw150meancontrol = {'d', 'g'};  label.tW_gw150meancontrol = {'age since birth', 'wet weight'};  bibkey.tW_gw150meancontrol = {'gw150meancontrol'};
  temp.tW_gw150meancontrol = C2K(8.5); units.temp.tW_gw150meancontrol = 'K'; label.temp.tW_gw150meancontrol = 'temperature';
 
  
@@ -176,7 +177,7 @@ tW_gw124bvarmeancontrol=[...
 ];
 
 data.tW_gw124bvarmeancontrol = tW_gw124bvarmeancontrol;
-units.tW_gw124bvarmeancontrol = {'d', 'g'};  label.tW_gw124bvarmeancontrol = {'time', 'wet weight'};  bibkey.tW_gw124bvarmeancontrol = {'gw124bvarmeancontrol'};
+units.tW_gw124bvarmeancontrol = {'d', 'g'};  label.tW_gw124bvarmeancontrol = {'age since birth', 'wet weight'};  bibkey.tW_gw124bvarmeancontrol = {'gw124bvarmeancontrol'};
  temp.tW_gw124bvarmeancontrol = C2K(8.5); units.temp.tW_gw124bvarmeancontrol = 'K'; label.temp.tW_gw124bvarmeancontrol = 'temperature';
 
  
