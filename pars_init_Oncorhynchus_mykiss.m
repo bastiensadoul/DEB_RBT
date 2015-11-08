@@ -6,7 +6,7 @@ metaPar.model = 'abj'; % see online manual for explanation and alternatives
 par.T_ref = C2K(20); free.T_ref = 0; units.T_ref = 'K';     label.T_ref = 'Reference temperature';
 
 %% Core parameters
-par.z = 17.07;      free.z     = 1; units.z = '-';          label.z = 'zoom factor';
+par.z = 17.07*3;      free.z     = 1; units.z = '-';          label.z = 'zoom factor';
 par.F_m = 6.5;      free.F_m   = 0; units.F_m = 'l/d.cm^2'; label.F_m = '{F_m}, max spec searching rate';
 par.kap_X = 0.8;    free.kap_X = 0; units.kap_X = '-';      label.kap_X = 'digestion efficiency of food to reserve';
 par.kap_P = 0.1;    free.kap_P = 0; units.kap_P = '-';      label.kap_P = 'faecation efficiency of food to faeces';
@@ -25,15 +25,15 @@ par.h_a = 1.211e-13;free.h_a   = 1; units.h_a = '1/d^2';    label.h_a = 'Weibull
 par.s_G = 10;       free.s_G   = 0; units.s_G = '-';        label.s_G = 'Gompertz stress coefficient';
 
 %% Auxiliary parameters
-par.T_A = 8000;     free.T_A   = 0; units.T_A = 'K';        label.T_A = 'Arrhenius temp';
+par.T_A = 8000;     free.T_A   = 1; units.T_A = 'K';        label.T_A = 'Arrhenius temp';
 par.del_M = 0.1353; free.del_M = 1; units.del_M = '-';      label.del_M = 'shape coefficient';
 
 %% Environmental parameters (temperatures are in data)
-par.f    = 1;     free.f     = 1; units.f    = '-';       label.f = 'scaled functional response for 0-var data';
-par.f_tW = 1;   free.f_tW  = 1; units.f_tW = '-';       label.f_tW = 'scaled functional response for tW data';
-par.f_tWL_Davidson2014 = 1;   free.f_tWL_Davidson2014  = 1; units.f_tWL_Davidson2014 = '-';       label.f_tWL_Davidson2014 = 'scaled functional response for tW data';
-par.f_tW_gw150meancontrol = 1; free.f_tW_gw150meancontrol  = 1; units.f_tW_gw150meancontrol = '-';       label.f_tW_gw150meancontrol = 'scaled functional response for tW_gw150meancontrol data';
-par.f_tW_gw124bvarmeancontrol = 1; free.f_tW_gw124bvarmeancontrol  = 1; units.f_tW_gw124bvarmeancontrol = '-';       label.f_tW_gw124bvarmeancontrol = 'scaled functional response for tW_gw150meancontrol data';
+par.f    = 1;     free.f     = 0; units.f    = '-';       label.f = 'scaled functional response for 0-var data';
+par.f_tW = 0.5;   free.f_tW  = 0; units.f_tW = '-';       label.f_tW = 'scaled functional response for tW data';
+par.f_tWL_Davidson2014 = 0.5;   free.f_tWL_Davidson2014  = 0; units.f_tWL_Davidson2014 = '-';       label.f_tWL_Davidson2014 = 'scaled functional response for tW data';
+par.f_tW_gw150meancontrol = 0.5; free.f_tW_gw150meancontrol  = 0; units.f_tW_gw150meancontrol = '-';       label.f_tW_gw150meancontrol = 'scaled functional response for tW_gw150meancontrol data';
+par.f_tW_gw124bvarmeancontrol = 0.5; free.f_tW_gw124bvarmeancontrol  = 0; units.f_tW_gw124bvarmeancontrol = '-';       label.f_tW_gw124bvarmeancontrol = 'scaled functional response for tW_gw150meancontrol data';
 % par.W_0 = 1.471;    free.W_0   = 0; units.W_0 = 'g';        label.W_0 = 'wet weight at t = 0 for YaniHisa2002';
 % par.WDavidson2014_0 = 0.1;    free.WDavidson2014_0   = 0; units.WDavidson2014_0 = 'g';        label.WDavidson2014_0 = 'wet weight at t = 0 for tWDavidson2014';
 % par.W150meancontrol_0 = 0.1282200;    free.W150meancontrol_0   = 0; units.W150meancontrol_0 = 'g';        label.W150meancontrol_0 = 'wet weight at t = 0 for tW150meancontrol';
