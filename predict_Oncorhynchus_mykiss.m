@@ -120,14 +120,14 @@ tL = tL_Davidson2014(:,1);
 t_emb = tL(tL < aT_b - aT_h,1); % selects times after hatch and before birth    
 if isempty(t_emb) == 0
 pars = [v * TC; g; L_m; k_J * TC; kap];
- if a_emb(1) > 0
- a_emb = [0;a_emb];    
- [AA, ULH] = ode23s(@dget_ulh_modified, a_emb, [UT_Eh; L_h; UT_Hh],[],pars); 
+ if t_emb(1) > 0
+ t_emb = [0;t_emb];    
+ [AA, ULH] = ode23s(@dget_ulh_modified, t_emb, [UT_Eh; L_h; UT_Hh],[],pars); 
  ULH(1,:) = [];
  else 
- [AA, ULH] = ode23s(@dget_ulh_modified, a_emb, [UT_Eh; L_h; UT_Hh],[],pars);
+ [AA, ULH] = ode23s(@dget_ulh_modified, t_emb, [UT_Eh; L_h; UT_Hh],[],pars);
  end 
- if length(a_emb) == 2
+ if length(t_emb) == 2
  ULH = ULH([1 end],:);
  end
 L_emb = ULH(:,2);   % cm, embryo structural length
@@ -146,14 +146,14 @@ tWw = tW_Davidson2014(:,1);
 t_emb = tWw((tWw <= aT_b - aT_h),1); % selects times after hatch and before birth    
 if isempty(t_emb) == 0
 pars = [v * TC; g; L_m; k_J * TC; kap];
- if a_emb(1) > 0
- a_emb = [0;a_emb];    
- [AA, ULH] = ode23s(@dget_ulh_modified, a_emb, [UT_Eh; L_h; UT_Hh],[],pars); 
+ if t_emb(1) > 0
+ t_emb = [0;t_emb];    
+ [AA, ULH] = ode23s(@dget_ulh_modified, t_emb, [UT_Eh; L_h; UT_Hh],[],pars); 
  ULH(1,:) = [];
  else 
- [AA, ULH] = ode23s(@dget_ulh_modified, a_emb, [UT_Eh; L_h; UT_Hh],[],pars);
+ [AA, ULH] = ode23s(@dget_ulh_modified, t_emb, [UT_Eh; L_h; UT_Hh],[],pars);
  end
- if length(a_emb) == 2
+ if length(t_emb) == 2
  ULH = ULH([1 end],:);
  end
 L_emb = ULH(:,2);   % cm, embryo structural length
