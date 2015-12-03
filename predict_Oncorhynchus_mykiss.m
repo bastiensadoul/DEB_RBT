@@ -13,6 +13,7 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   TC_ab_8_5 = tempcorr(temp.ab_8_5, T_ref, T_A);
   TC_Tah = tempcorr(Tah(:,1), T_ref, T_A);
   TC_Tab = tempcorr(Tab(:,1), T_ref, T_A);
+  TC_Tah_Velsen = tempcorr(Tah_Velsen(:,1), T_ref, T_A);
   TC_ap = tempcorr(temp.ap, T_ref, T_A);
   TC_am = tempcorr(temp.am, T_ref, T_A);
   TC_Ri = tempcorr(temp.Ri, T_ref, T_A);
@@ -99,6 +100,11 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   EaT_h =  a_h ./ TC_Tah;              % d, age at hatch at f and T
   EaT_b =  a_b ./ TC_Tab;              % d, age at birth at f and T
   
+  % T-ah from Velsen:
+  U_E0 = initial_scaled_reserve(f, pars_UE0); % d.cm^2, initial scaled reserve
+  [U_H, aUL] = ode45(@dget_aul, [0; U_Hh; U_Hb], [0 U_E0 1e-10], [], kap, v, k_J, g, L_m);
+  a_h = aUL(2,1);                 % d, age at hatch at f and T_ref
+  EaT_h_Velsen =  a_h ./ TC_Tah_Velsen;              % d, age at hatch at f and T
   
 % Davidson2014
 U_E0 = initial_scaled_reserve(f_tWL_Davidson2014, pars_UE0); % d.cm^2, initial scaled reserve
@@ -194,6 +200,7 @@ EW_gw124bvarmeancontrol = [Ww_bj; Ww_jm]; % g, wet weight
 prdData.tW = EWw;
 prdData.Tah = EaT_h ;
 prdData.Tab = EaT_b ;
+prdData.Tah_Velsen = EaT_h_Velsen ;
 prdData.tL_Davidson2014 = EL_Davidson2014;
 prdData.tW_Davidson2014 = EW_Davidson2014 ;
 prdData.tW_gw150meancontrol = EW_gw150meancontrol ;

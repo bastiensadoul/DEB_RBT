@@ -5,7 +5,7 @@ metaData.phylum     = 'Chordata';
 metaData.class      = 'Actinopterygii'; 
 metaData.order      = 'Salmoniformes'; 
 metaData.family     = 'Salmonidae';
-metaData.species    = 'Oncorhynchus_mykiss'; 
+metaData.species    = 'Oncorhynchus_mykiss';    % previously called Salmo gairdneri (see Billard 1989)
 metaData.species_en = 'rainbow trout'; 
 metaData.T_typical  = C2K(15.5); % K, body temp
 metaData.data_0     = {'ah'; 'ab'; 'ap'; 'am'; 'Lb'; 'Lp'; 'Li'; 'Wwi'; 'Ri'};  % tags for different types of zero-variate data
@@ -81,6 +81,83 @@ units.Tab = {'K', 'd'};  label.Tab = {'Temperature', 'age at birth'};  bibkey.Ta
 comment.Tab = 'age is given as the 50% value';
 data.Tab(:,1) = C2K(data.Tab(:,1)); % convert C to K
 
+% T-ab data from Velsen 1987
+% given as the 50% value
+
+Tah_Velsen = [...
+2	115
+2.5	106
+2.8	93
+3	111
+3.2	101
+4.5	72.9
+4.8	75
+5	72
+5	68
+5	64
+5.8	63
+6.1	61
+6.2	61
+6.5	57.5
+7	56
+7	60
+7.2	45
+7.5	43
+7.5	43
+7.7	48
+7.7	44
+7.7	46.5
+7.8	48
+7.8	49
+7.8	44
+7.9	42
+7.9	43
+7.9	48
+7.9	46
+7.9	46
+8	41
+8.7	40.3
+9.2	41
+9.3	35
+9.5	36
+9.5	36
+9.5	36
+9.5	36
+10	38
+10	34
+10	33
+10	35.5
+10.3	29.6
+10.3	28
+10.4	32.1
+10.7	27
+10.7	29.2
+10.8	29.5
+11.3	30
+11.5	30.3
+11.5	27
+11.5	28
+11.7	24
+12	25
+12.2	26
+12.2	23
+12.4	24
+12.5	27
+12.8	24.5
+12.9	18
+13	28
+14.5	21
+15	26
+15	22
+15.5	18
+17.5	18];
+
+Tah_Velsen(:,1)=C2K(Tah_Velsen(:,1));
+data.Tah_Velsen=Tah_Velsen;
+units.Tah_Velsen={'K','d'}; label.Tah_Velsen={'Temperature', 'age at hatch'};
+bibkey.Tah_Velsen={'Velsen1987'};
+comment.Tah_Velsen = 'age is given as the 50% value';
+
 % Davidson2014
 % Colums of tLW:
 %  1  t days post hatch
@@ -89,31 +166,31 @@ data.Tab(:,1) = C2K(data.Tab(:,1)); % convert C to K
 %  4 T degC, not constant
 
 tLW = [...
-30	NaN 1	12
-61	NaN	2	13.9
-91	NaN	12	14
-122	NaN	37	13.5
-152	NaN	68	13.4
-183	20.14568672	130	13.3
-213	21.5443469	182	12.5
-244	25.04752863	297	12.7
-274	30.37304642	566	13.5
-305	32.15692038	685	13.6
-335	35.37616057	943	14.8
-366	38.472504	1230	15.2
-396	41.5666287	1501	13
-427	43.30037284	1713	13
-457	45.39591421	2002	13.1
-488	47.81766661	2307	13
-518	49.18429576	2570	12.7
-549	51.38700584	2836	12.6
-579	53.4819702	3136	12.5
-610	55.32407387	3556	12.5
+30	NaN 1	12;
+61	NaN	2	13.9;
+91	NaN	12	14;
+122	NaN	37	13.5;
+152	NaN	68	13.4;
+183	20.14568672	130	13.3;
+213	21.5443469	182	12.5;
+244	25.04752863	297	12.7;
+274	30.37304642	566	13.5;
+305	32.15692038	685	13.6;
+335	35.37616057	943	14.8;
+366	38.472504	1230	15.2;
+396	41.5666287	1501	13;
+427	43.30037284	1713	13;
+457	45.39591421	2002	13.1;
+488	47.81766661	2307	13;
+518	49.18429576	2570	12.7;
+549	51.38700584	2836	12.6;
+579	53.4819702	3136	12.5;
+610	55.32407387	3556	12.5;
 640	57.17912711	4038	12.5
-671	59.42611275	4533	12.7
-701	60.72011595	4858	12.9
-732	61.56382501	4970	13.4
-762	62.32757629	5012	13.6
+671	59.42611275	4533	12.7;
+701	60.72011595	4858	12.9;
+732	61.56382501	4970	13.4;
+762	62.32757629	5012	13.6;
 793	61.98695269	5097	13.4];
 
 data.tL_Davidson2014 = tLW(6:end,[1 2]) ;  % I think we would run into problems if we compare predictions with NaN values
@@ -125,6 +202,25 @@ units.temp.tW_Davidson2014 = {'d', 'K'} ;  % we need units and label for temp in
 label.tL_Davidson2014 = {'days post hatch', 'length'}; label.tW_Davidson2014 = {'days post hatch', 'wet weight'} ; label.temp.tW_Davidson2014 = {'days post hatch', 'K'} ;
 bibkey.tL_Davidson2014 = {'Davidson2014'}; bibkey.tW_Davidson2014 = {'Davidson2014'} ;
 comment.tL_Davidson2014 = 'fish reared in water recirculating system'; comment.tW_Davidson2014 = 'fish reared in water recirculating system' ;
+
+% t-Wd-Wdyolk from Ninness 2006
+% age dpf, dry W mg of embryo, dry W mg of yolk
+% tWd_Ninness=[...
+% 24	1.01	32.74;
+% 30	3.08	31.8;
+% 45	12.6	15.55;
+% 50	22.91	8.24;
+% 60	46.55	2.53;
+% 75	118.93	0;
+% 90	230.55	0];
+% 
+% tWd_Ninness(:,[2 3]) = tWd_Ninness(:,[2 3])/1000; % convert mg to g
+% 
+% data.tWd_Ninness=tWd_Ninness(:, [1 2]);
+% units.tWd_Ninness={'d', 'g'} ; label.tWd_Ninness={'time since fecundation', 'dry weight'};
+% bibkey.tWd_Ninness={'Ninness2006'};
+
+
 
 % Our data for control (study gw150)
 %  1  t days from first feeding
@@ -243,6 +339,12 @@ bibkey = 'From1991'; type = 'Article'; bib = [ ...
 'pages = {31-38}'];
 metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
 %
+bibkey = 'Velsen1987'; type = 'Book'; bib = [ ...  
+'author = {F. P. J. Velsen}, ' ...
+'year = {1987}, ' ...
+'title = {Temperature and Incubation in Pacific Salmon and Rainbow Trout: Compilation of Data on Median Hatching Time, Mortality and Embryonic Staging}, '];
+metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
+%
 bibkey = 'Davidson2014'; type = 'Article'; bib = [ ...  
 'author = {J. W. Davidson, P. B. Kenney, M. Manor, C. M. Good, G. M. Weber, A. Aussanasuwannakul, P. J. Turk, C. Welsh, S. T. Summerfelt}, ' ...
 'year = {2014}, ' ...
@@ -259,5 +361,3 @@ metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
 bibkey = 'Kooy2014'; type = 'Misc'; bib = ...
 'note = {taken from from Salmo trutta}';  
 metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-  
-% we need the reference for From1991
