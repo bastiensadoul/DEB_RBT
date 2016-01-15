@@ -209,9 +209,9 @@ tWw = tL_ind(:,1);
 kT_M = k_M * TC_tL_ind; 
 rT_j = rho_j * kT_M; rT_B = rho_B * kT_M;        
 L_b = l_b * L_m; L_j = l_j * L_m; L_i = l_i * L_m; aT_b = t_b/ kT_M; aT_j = t_j/ kT_M;
-tT_j = aT_j - aT_b; % d, time since birth at metamorphosis
+% tT_j = aT_j - aT_b; % d, time since birth at metamorphosis
+tT_j = aT_j;
 L_bj = L_b * exp(tWw((tWw(:,1) <= tT_j),1) * rT_j/ 3); L_jm = L_i - (L_i - L_j) * exp( - rT_B * (tWw((tWw(:,1) > tT_j),1) - tT_j)); 
-Ww_bj = L_bj.^3 * (1 + w * f);   Ww_jm = L_jm.^3 * (1 + w * f); 
 EL_tL_ind = [L_bj; L_jm]/ del_M2;                   % cm, structural total length
 
 % tW_ind-data
@@ -220,7 +220,8 @@ tWw = tW_ind(:,1);
 kT_M = k_M * TC_tW_ind; 
 rT_j = rho_j * kT_M; rT_B = rho_B * kT_M;        
 L_b = l_b * L_m; L_j = l_j * L_m; L_i = l_i * L_m; aT_b = t_b/ kT_M; aT_j = t_j/ kT_M;
-tT_j = aT_j - aT_b; % d, time since birth at metamorphosis
+% tT_j = aT_j - aT_b; % d, time since birth at metamorphosis
+tT_j = aT_j;
 L_bj = L_b * exp(tWw((tWw(:,1) <= tT_j),1) * rT_j/ 3); L_jm = L_i - (L_i - L_j) * exp( - rT_B * (tWw((tWw(:,1) > tT_j),1) - tT_j)); 
 Ww_bj = L_bj.^3 * (1 + w * f);   Ww_jm = L_jm.^3 * (1 + w * f); 
 EW_tW_ind = [Ww_bj; Ww_jm];                         % g, wet weight
@@ -239,8 +240,8 @@ prdData.tL_Davidson2014 = EL_Davidson2014;
 prdData.tW_Davidson2014 = EW_Davidson2014 ;
 prdData.tW_gw150meancontrol = EW_gw150meancontrol ;
 prdData.tW_gw124bvarmeancontrol = EW_gw124bvarmeancontrol ;
-prdData.tW_ind = EL_tL_ind;
-prdData.tL_ind= EW_tW_ind ;
+prdData.tW_ind = EW_tW_ind;
+prdData.tL_ind=  EL_tL_ind;
 
 %%% SUBFUNCTION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
