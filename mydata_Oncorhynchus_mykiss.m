@@ -553,6 +553,8 @@ weights = setweights(data, []);
 %% set pseudodata and respective weights
 [data, units, label, weights] = addpseudodata(data, units, label, weights);
 
+
+weights.Tah_Velsen = weights.Tah_Velsen * 5;
 %% pack auxData and txtData for output
 auxData.temp = temp;
 txtData.units = units;

@@ -7,6 +7,18 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   if E_Hh >= E_Hb
    info = 0; prdData = {}; return
   end
+  
+   % customized filters for allowable parameters of the standard DEB model (std)
+  % for other models consult the appropriate filter function.
+  filterChecks = k * v_Hp >= f_tW^3 || ...         % constraint required for reaching puberty with f_tL
+                 ~reach_birth(g, k, v_Hb, f_tW);   % constraint required for reaching birth with f_tL
+  
+  if filterChecks  
+    info = 0;
+    prdData = {};
+    return;
+  end  
+  
 
 %% compute temperature correction factors
   TC_ah_8_5 = tempcorr(temp.ah_8_5, T_ref, T_A);

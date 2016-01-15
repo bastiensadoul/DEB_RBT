@@ -31,7 +31,7 @@ par.del_M2 = 0.1353; free.del_M2 = 1; units.del_M2 = '-';      label.del_M2 = 's
 
 %% Environmental parameters (temperatures are in data)
 par.f    = 1;     free.f     = 0; units.f    = '-';       label.f = 'scaled functional response for 0-var data';
-par.f_tW = 1;   free.f_tW  = 0; units.f_tW = '-';       label.f_tW = 'scaled functional response for tW data';
+par.f_tW = 1;   free.f_tW  = 1; units.f_tW = '-';       label.f_tW = 'scaled functional response for tW data';
 par.f_tWL_Davidson2014 = 1;   free.f_tWL_Davidson2014  = 0; units.f_tWL_Davidson2014 = '-';       label.f_tWL_Davidson2014 = 'scaled functional response for tW data';
 par.f_tW_gw150meancontrol = 1; free.f_tW_gw150meancontrol  = 0; units.f_tW_gw150meancontrol = '-';       label.f_tW_gw150meancontrol = 'scaled functional response for tW_gw150meancontrol data';
 par.f_tW_gw124bvarmeancontrol = 1; free.f_tW_gw124bvarmeancontrol  = 0; units.f_tW_gw124bvarmeancontrol = '-';       label.f_tW_gw124bvarmeancontrol = 'scaled functional response for tW_gw150meancontrol data';
