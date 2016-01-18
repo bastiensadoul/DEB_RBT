@@ -31,8 +31,8 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   TC_Ri = tempcorr(temp.Ri, T_ref, T_A);
   TC_tW = tempcorr(temp.tW, T_ref, T_A);
   TC_tT_Davidson2014 = tempcorr(mean(temp.tT_Davidson2014(:,2)), T_ref, T_A);
-  TC_gw150meancontrol = tempcorr(temp.tW_gw150meancontrol, T_ref, T_A);
-  TC_gw124bvarmeancontrol = tempcorr(temp.tW_gw124bvarmeancontrol, T_ref, T_A);
+  TC_gw150 = tempcorr(temp.tW_gw150, T_ref, T_A);
+  TC_gw124b = tempcorr(temp.tW_gw124b, T_ref, T_A);
   TC_tL_ind = tempcorr(temp.tL_ind, T_ref, T_A);
   TC_tW_ind = tempcorr(temp.tW_ind, T_ref, T_A);
  
@@ -191,28 +191,28 @@ L_jm = L_i - (L_i - L_j) * exp( - rT_B * (t_ji - aT_j - aT_h)); Ww_jm = L_jm.^3 
 EW_Davidson2014 = [Ww_emb; Ww_bj; Ww_jm];  % g, wet weight
 
 %-------------------------------------
-% time -weight tW_gw150meancontrol
-tWw = tW_gw150meancontrol(:,1);
-[t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f_tW_gw150meancontrol);
-kT_M = k_M * TC_gw124bvarmeancontrol; 
+% time -weight tW_gw150
+tWw = tW_gw150(:,1);
+[t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f_tW_gw150);
+kT_M = k_M * TC_gw124b; 
 rT_j = rho_j * kT_M; rT_B = rho_B * kT_M; L_b = l_b * L_m; L_j = l_j * L_m; L_i = l_i * L_m;
 aT_b = t_b/ kT_M; aT_j = t_j/ kT_M;
 tT_j = aT_j - aT_b; % d, time since birth at metamorphosis
 L_bj = L_b * exp(tWw((tWw <= tT_j),1) * rT_j/ 3); L_jm = L_i - (L_i - L_j) * exp( - rT_B * (tWw((tWw > tT_j),1) - tT_j)); 
 Ww_bj = L_bj.^3 * (1 + w * f);   Ww_jm = L_jm.^3 * (1 + w * f); 
-EW_gw150meancontrol = [Ww_bj; Ww_jm]; % g, wet weight
+EW_gw150 = [Ww_bj; Ww_jm]; % g, wet weight
 
 %-------------------------------------
-% tW_gw124bvarmeancontrol-data
-tWw = tW_gw124bvarmeancontrol(:,1);
-[t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f_tW_gw124bvarmeancontrol);
-kT_M = k_M * TC_gw124bvarmeancontrol; 
+% tW_gw124b-data
+tWw = tW_gw124b(:,1);
+[t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f_tW_gw124b);
+kT_M = k_M * TC_gw124b; 
 rT_j = rho_j * kT_M; rT_B = rho_B * kT_M;        
 L_b = l_b * L_m; L_j = l_j * L_m; L_i = l_i * L_m; aT_b = t_b/ kT_M; aT_j = t_j/ kT_M;
 tT_j = aT_j - aT_b; % d, time since birth at metamorphosis
 L_bj = L_b * exp(tWw((tWw(:,1) <= tT_j),1) * rT_j/ 3); L_jm = L_i - (L_i - L_j) * exp( - rT_B * (tWw((tWw(:,1) > tT_j),1) - tT_j)); 
 Ww_bj = L_bj.^3 * (1 + w * f);   Ww_jm = L_jm.^3 * (1 + w * f); 
-EW_gw124bvarmeancontrol = [Ww_bj; Ww_jm]; % g, wet weight
+EW_gw124b = [Ww_bj; Ww_jm]; % g, wet weight
 
 %-------------------------------------
 % tL_ind-data
@@ -250,8 +250,8 @@ prdData.Tab = EaT_b ;
 prdData.Tah_Velsen = EaT_h_Velsen ;
 prdData.tL_Davidson2014 = EL_Davidson2014;
 prdData.tW_Davidson2014 = EW_Davidson2014 ;
-prdData.tW_gw150meancontrol = EW_gw150meancontrol ;
-prdData.tW_gw124bvarmeancontrol = EW_gw124bvarmeancontrol ;
+prdData.tW_gw150 = EW_gw150 ;
+prdData.tW_gw124b = EW_gw124b ;
 prdData.tW_ind = EW_tW_ind;
 prdData.tL_ind=  EL_tL_ind;
 

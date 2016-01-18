@@ -193,7 +193,7 @@ tLW = [...
 762	62.32757629	5012	13.6;
 793	61.98695269	5097	13.4];
 
-data.tL_Davidson2014 = tLW(6:end,[1 2]) ;  % I think we would run into problems if we compare predictions with NaN values
+data.tL_Davidson2014 = tLW(5:end,[1 2]) ;  % I think we would run into problems if we compare predictions with NaN values
 data.tW_Davidson2014 = tLW(:,[1 3]) ; 
 temp.tT_Davidson2014 = tLW(:,[1 4]);  % for the auxData we need to put temp.dataLabel or it was other info we could use another name than temp
 temp.tT_Davidson2014(:,2) = C2K(temp.tT_Davidson2014(:,2));
@@ -226,7 +226,7 @@ comment.tL_Davidson2014 = 'fish reared in water recirculating system'; comment.t
 %  1  t days from first feeding
 %  2 W g, wet weight
 
-tW_gw150meancontrol=[...
+tW_gw150=[...
 0  0.1282200
 14  0.2334573
 28  0.4303732
@@ -246,16 +246,16 @@ tW_gw150meancontrol=[...
 273 76.6984780
 ];
 
-data.tW_gw150meancontrol = tW_gw150meancontrol;
-units.tW_gw150meancontrol = {'d', 'g'};  label.tW_gw150meancontrol = {'age since birth', 'wet weight'};  bibkey.tW_gw150meancontrol = {'gw150meancontrol'};
- temp.tW_gw150meancontrol = C2K(8.5); units.temp.tW_gw150meancontrol = 'K'; label.temp.tW_gw150meancontrol = 'temperature';
+data.tW_gw150 = tW_gw150;
+units.tW_gw150 = {'d', 'g'};  label.tW_gw150 = {'age since birth', 'wet weight'};  bibkey.tW_gw150 = {'gw150'};
+ temp.tW_gw150 = C2K(8.5); units.temp.tW_gw150 = 'K'; label.temp.tW_gw150 = 'temperature';
 
  
  % Our data for control (study gw124bvar)
 %  1  t days from first feeding
 %  2 W g, wet weight
 
-tW_gw124bvarmeancontrol=[...
+tW_gw124b=[...
 0   0.1098937
 13   0.1736597
 34   0.4294043
@@ -272,9 +272,9 @@ tW_gw124bvarmeancontrol=[...
 286 106.1100752
 ];
 
-data.tW_gw124bvarmeancontrol = tW_gw124bvarmeancontrol;
-units.tW_gw124bvarmeancontrol = {'d', 'g'};  label.tW_gw124bvarmeancontrol = {'age since birth', 'wet weight'};  bibkey.tW_gw124bvarmeancontrol = {'gw124bvarmeancontrol'};
- temp.tW_gw124bvarmeancontrol = C2K(8.5); units.temp.tW_gw124bvarmeancontrol = 'K'; label.temp.tW_gw124bvarmeancontrol = 'temperature';
+data.tW_gw124b = tW_gw124b;
+units.tW_gw124b = {'d', 'g'};  label.tW_gw124b = {'age since birth', 'wet weight'};  bibkey.tW_gw124b = {'gw124b'};
+ temp.tW_gw124b = C2K(8.5); units.temp.tW_gw124b = 'K'; label.temp.tW_gw124b = 'temperature';
 
 % Our data, weight and length individually
 % 1 is day post fertilization

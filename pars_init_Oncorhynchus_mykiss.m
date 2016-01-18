@@ -33,13 +33,13 @@ par.del_M2 = 0.1353; free.del_M2 = 1; units.del_M2 = '-';      label.del_M2 = 's
 par.f    = 1;     free.f     = 0; units.f    = '-';       label.f = 'scaled functional response for 0-var data';
 par.f_tW = 1;   free.f_tW  = 1; units.f_tW = '-';       label.f_tW = 'scaled functional response for tW data';
 par.f_tWL_Davidson2014 = 1;   free.f_tWL_Davidson2014  = 0; units.f_tWL_Davidson2014 = '-';       label.f_tWL_Davidson2014 = 'scaled functional response for tW data';
-par.f_tW_gw150meancontrol = 1; free.f_tW_gw150meancontrol  = 0; units.f_tW_gw150meancontrol = '-';       label.f_tW_gw150meancontrol = 'scaled functional response for tW_gw150meancontrol data';
-par.f_tW_gw124bvarmeancontrol = 1; free.f_tW_gw124bvarmeancontrol  = 0; units.f_tW_gw124bvarmeancontrol = '-';       label.f_tW_gw124bvarmeancontrol = 'scaled functional response for tW_gw150meancontrol data';
+par.f_tW_gw150 = 1; free.f_tW_gw150  = 0; units.f_tW_gw150 = '-';       label.f_tW_gw150 = 'scaled functional response for tW_gw150 data';
+par.f_tW_gw124b = 1; free.f_tW_gw124b  = 0; units.f_tW_gw124b = '-';       label.f_tW_gw124b = 'scaled functional response for tW_gw150 data';
 par.f_tLW_ind = 1; free.f_tLW_ind  = 0; units.f_tLW_ind = '-';       label.f_tLW_ind = 'scaled functional response for tLW_ind data';
 % par.W_0 = 1.471;    free.W_0   = 0; units.W_0 = 'g';        label.W_0 = 'wet weight at t = 0 for YaniHisa2002';
 % par.WDavidson2014_0 = 0.1;    free.WDavidson2014_0   = 0; units.WDavidson2014_0 = 'g';        label.WDavidson2014_0 = 'wet weight at t = 0 for tWDavidson2014';
-% par.W150meancontrol_0 = 0.1282200;    free.W150meancontrol_0   = 0; units.W150meancontrol_0 = 'g';        label.W150meancontrol_0 = 'wet weight at t = 0 for tW150meancontrol';
-% par.W124bvarmeancontrol_0 = 0.1098937;    free.W124bvarmeancontrol_0   = 0; units.W124bvarmeancontrol_0 = 'g';        label.W124bvarmeancontrol_0 = 'wet weight at t = 0 for tW124bvarmeancontrol';
+% par.W150_0 = 0.1282200;    free.W150_0   = 0; units.W150_0 = 'g';        label.W150_0 = 'wet weight at t = 0 for tW150';
+% par.W124b_0 = 0.1098937;    free.W124b_0   = 0; units.W124b_0 = 'g';        label.W124b_0 = 'wet weight at t = 0 for tW124b';
 
 % par.f_Tah = 1.0;         free.f_Tah  = 0;        units.f_Tah = '-';        label.f_Tah = 'scaled functional response for Tah data';
 % par.f_Tab = 1.0;         free.f_Tab  = 0;        units.f_Tab = '-';        label.f_Tab = 'scaled functional response for Tab data';
