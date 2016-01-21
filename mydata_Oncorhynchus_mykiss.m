@@ -222,60 +222,121 @@ comment.tL_Davidson2014 = 'fish reared in water recirculating system'; comment.t
 
 
 
-% Our data for control (study gw150)
-%  1  t days from first feeding
-%  2 W g, wet weight
+% Our data for control (study gw150b)
+%  days from first feeding (64dpf)
+%  on 3 different tanks
+%  weight : wet weight in g
+%  surv : cumulated survival in the tank from first feeding
+%  column names: date   weight.A702_A133	surv.A702_A133	weight.A706_A137	surv.A706_A137	weight.A713_A144	surv.A713_A144
 
 tW_gw150=[...
-0  0.1282200
-14  0.2334573
-28  0.4303732
-42  0.7740772
-56  1.2671954
-70  2.0529108
-84  2.7651187
-98  3.9946960
-112  5.8676441
-126  7.8636423
-140 10.1615652
-154 13.8897513
-175 21.7316214
-196 31.7072512
-217 42.2058984
-245 59.1872994
-273 76.6984780
+    0.0        0.1301370      1.0000000        0.1280822      1.0000000        0.1264407      1.0000000
+   14.0        0.2308772      0.9760274        0.2238596      0.9760274        0.2456349      0.8542373
+   28.0        0.4258993      0.9520548        0.4257143      0.9589041        0.4395062      0.8237288
+   42.0        0.7931408      0.9486301        0.7700000      0.9589041        0.7590909      0.8203390
+   56.0        1.3334545      0.9417808        1.2082143      0.9589041        1.2599174      0.8203390
+   70.0        2.1609489      0.9383562        1.9246429      0.9589041        2.0731405      0.8203390
+   84.0        2.9242424      0.9349315        2.6357843      0.9554795        2.7353293      0.8169492
+   98.0        4.1257576      0.9349315        3.8529412      0.9554795        4.0053892      0.8169492
+  112.0        6.2828283      0.9349315        5.5490196      0.9554795        5.7710843      0.8120572
+ 126.0        8.0085859      0.9349315        7.7745098      0.9554795        7.8078313      0.8120572
+ 140.0       10.4131980      0.9302096       10.2745098      0.9554795        9.7969880      0.8120572
+ 154.0       14.6192893      0.9302096       13.6764706      0.9554795       13.3734940      0.8120572
+ 175.0       22.0558376      0.9302096       21.8137255      0.9554795       21.3253012      0.8120572
+ 196.0       31.8622449      0.9254878       31.8137255      0.9554795       31.4457831      0.8120572
+ 217.0       42.5765306      0.9254878       42.0833333      0.9554795       41.9578313      0.8120572
+ 245.0       59.9744898      0.9254878       58.0392157      0.9554795       59.5481928      0.8120572
+ 273.0       76.7692308      0.9207659       76.5686275      0.9554795       76.7575758      0.8120572
+ 357.0      109.1714286      0.9113221      115.9836066      0.9414283      114.3197279      0.8120572
+ 357.5      119.2000000      0.9113221      124.8000000      0.9414283      118.0000000      0.8120572
+ 385.0      163.6111111      0.9113221      163.5000000      0.9414283      167.5675676      0.7958161
+ 412.0      187.9166667      0.9113221      189.1250000      0.9414283      191.7567568      0.7958161
 ];
 
-data.tW_gw150 = tW_gw150;
-units.tW_gw150 = {'d', 'g'};  label.tW_gw150 = {'age since birth', 'wet weight'};  bibkey.tW_gw150 = {'gw150'};
- temp.tW_gw150 = C2K(8.5); units.temp.tW_gw150 = 'K'; label.temp.tW_gw150 = 'temperature';
+tW_gw150(:,1)=tW_gw150(:,1)+64;         % to put in dpf
+
+data.tW_gw150A = tW_gw150(:,[1 2]);
+data.tW_gw150B = tW_gw150(:,[1 4]);
+data.tW_gw150C = tW_gw150(:,[1 6]);
+
+units.tW_gw150A = {'d', 'g'};  label.tW_gw150A = {'age since fertilization', 'wet weight'};  bibkey.tW_gw150A = {'gw150A'};
+units.tW_gw150B = {'d', 'g'};  label.tW_gw150B = {'age since fertilization', 'wet weight'};  bibkey.tW_gw150B = {'gw150B'};
+units.tW_gw150C = {'d', 'g'};  label.tW_gw150C = {'age since fertilization', 'wet weight'};  bibkey.tW_gw150C = {'gw150C'};
+
+temp.tW_gw150A = C2K(8.5); units.temp.tW_gw150A = 'K'; label.temp.tW_gw150A = 'temperature';
+temp.tW_gw150B = C2K(8.5); units.temp.tW_gw150B = 'K'; label.temp.tW_gw150B = 'temperature';
+temp.tW_gw150C = C2K(8.5); units.temp.tW_gw150C = 'K'; label.temp.tW_gw150C = 'temperature';
 
  
- % Our data for control (study gw124bvar)
-%  1  t days from first feeding
-%  2 W g, wet weight
+ % Our data for control (study gw124b)
+%  days from first feeding (don't know the dpf...)
+%  on 3 different tanks
+%  weight : wet weight in g
+%  surv : cumulated survival in the tank from first feeding
+%  column names:   date weight.C57_C10_B17	surv.C57_C10_B17	weight.C63_C17_B17	surv.C63_C17_B17	weight.C69_C22_B17 surv.C69_C22_B17
 
-tW_gw124b=[...
-0   0.1098937
-13   0.1736597
-34   0.4294043
-59   1.2248276
-76   2.1546229
-97   3.8053241
-118   6.4102299
-139  10.6440034
-160  17.1597931
-181  26.4256495
-202  37.3273004
-223  51.5487573
-244  65.2009580
-286 106.1100752
+tW_gw124ini=[...
+    0          0.1181818        1.0000000          0.1026596        1.0000000          0.1088398        1.0000000
+   13          0.1785276        0.9431818          0.1675978        0.9680851          0.1748538        0.9613260
+   34          0.4401361        0.9142499          0.4166667        0.9194104          0.4314103        0.9388388
+   59          1.2429630        0.9018111          1.1756579        0.9194104          1.2558621        0.9328206
+   76          2.1733333        0.9018111          2.0960526        0.9194104          2.1944828        0.9328206
+   97          3.8037037        0.9018111          3.6315789        0.9194104          3.9806897        0.9328206
+  118          6.6153846        0.8951310          5.9246575        0.9073129          6.6906475        0.9135209
+  139         10.6201550        0.8882454         10.0344828        0.9010985         11.2773723        0.9003767
+  160         17.1317829        0.8882454         16.1724138        0.9010985         18.1751825        0.9003767
+  181         26.7460317        0.8882454         25.1428571        0.8886695         27.3880597        0.9003767
+  202         38.7301587        0.8882454         34.3795620        0.8696266         38.8721805        0.8936575
+  223         53.3730159        0.8882454         47.6642336        0.8696266         53.6090226        0.8936575
+  244         68.1200000        0.8811958         59.8888889        0.8569313         67.5939850        0.8936575
+  286        112.2400000        0.8811958         96.4661654        0.8442360        109.6240602        0.8936575
+  327                 NaN        0.8741462                 NaN        0.8315408                 NaN        0.8936575
 ];
 
-data.tW_gw124b = tW_gw124b;
-units.tW_gw124b = {'d', 'g'};  label.tW_gw124b = {'age since birth', 'wet weight'};  bibkey.tW_gw124b = {'gw124b'};
- temp.tW_gw124b = C2K(8.5); units.temp.tW_gw124b = 'K'; label.temp.tW_gw124b = 'temperature';
+data.tW_gw124iniA = tW_gw124ini(1:14,[1 2]);
+data.tW_gw124iniB = tW_gw124ini(1:14,[1 4]);
+data.tW_gw124iniC = tW_gw124ini(1:14,[1 6]);
 
+units.tW_gw124iniA = {'d', 'g'};  label.tW_gw124iniA = {'age since first feeding', 'wet weight'};  bibkey.tW_gw124iniA = {'gw124iniA'};
+units.tW_gw124iniB = {'d', 'g'};  label.tW_gw124iniB = {'age since first feeding', 'wet weight'};  bibkey.tW_gw124iniB = {'gw124iniA'};
+units.tW_gw124iniC = {'d', 'g'};  label.tW_gw124iniC = {'age since first feeding', 'wet weight'};  bibkey.tW_gw124iniC = {'gw124iniA'};
+
+temp.tW_gw124iniA = C2K(8.5); units.temp.tW_gw124iniA = 'K'; label.temp.tW_gw124iniA = 'temperature';
+temp.tW_gw124iniB = C2K(8.5); units.temp.tW_gw124iniB = 'K'; label.temp.tW_gw124iniB = 'temperature';
+temp.tW_gw124iniC = C2K(8.5); units.temp.tW_gw124iniC = 'K'; label.temp.tW_gw124iniC = 'temperature';
+
+% Our data for control (study gw124b)
+%  1  t days from first feeding (don't know the dpf)
+%  weight : wet weight in g
+%  surv : cumulated survival in the tank from first feeding (surv taken using the mean of the 
+%  column names:         date     weight      surv 
+
+tW_gw124fin=[...
+    375.0  235.53333 0.8664482
+    431.0  358.33333 0.8664482
+    488.0  522.00000 0.8664482
+    552.0  724.05405 0.8548955
+    552.5  688.49315 0.8548955
+    608.0  816.91781 0.8548955
+    664.0  901.87500 0.8431846
+    720.0 1049.45652 0.8197628
+    720.5 1097.15909 0.8197628
+    781.0 1332.95455 0.8197628
+    837.0 1688.97727 0.8197628
+    894.0 1853.86364 0.8197628
+    894.5 1853.86364 0.8197628
+    949.0 2145.22727 0.8197628
+   1005.0 2118.02326 0.8011318
+   1013.5 2118.02326 0.8011318
+];
+
+data.tW_gw124fin = tW_gw124fin;
+units.tW_gw124fin = {'d', 'g'};  label.tW_gw124fin = {'age since first feeding', 'wet weight'};  bibkey.tW_gw124fin = {'gw124fin'};
+ temp.tW_gw124fin = C2K(8.5); units.temp.tW_gw124fin = 'K'; label.temp.tW_gw124fin = 'temperature';
+
+ 
+ 
+ 
 % Our data, weight and length individually
 % 1 is day post fertilization
 % 2 is length (mm)
