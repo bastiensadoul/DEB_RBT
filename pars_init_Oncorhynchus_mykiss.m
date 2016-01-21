@@ -34,7 +34,7 @@ par.f    = 1;     free.f     = 0; units.f    = '-';       label.f = 'scaled func
 par.f_tW = 1;   free.f_tW  = 1; units.f_tW = '-';       label.f_tW = 'scaled functional response for tW data';
 par.f_tWL_Davidson2014 = 1;   free.f_tWL_Davidson2014  = 0; units.f_tWL_Davidson2014 = '-';       label.f_tWL_Davidson2014 = 'scaled functional response for tW data';
 par.f_tW_gw150 = 1; free.f_tW_gw150  = 0; units.f_tW_gw150 = '-';       label.f_tW_gw150 = 'scaled functional response for gw150 data';
-par.f_tW_gw124 = 1; free.f_tW_gw124  = 0; units.f_tW_gw124b = '-';       label.f_tW_gw124 = 'scaled functional response for gw124 data';
+par.f_tW_gw124 = 1; free.f_tW_gw124  = 0; units.f_tW_gw124 = '-';       label.f_tW_gw124 = 'scaled functional response for gw124 data';
 par.f_tLW_ind = 1; free.f_tLW_ind  = 0; units.f_tLW_ind = '-';       label.f_tLW_ind = 'scaled functional response for tLW_ind data';
 % par.W_0 = 1.471;    free.W_0   = 0; units.W_0 = 'g';        label.W_0 = 'wet weight at t = 0 for YaniHisa2002';
 % par.WDavidson2014_0 = 0.1;    free.WDavidson2014_0   = 0; units.WDavidson2014_0 = 'g';        label.WDavidson2014_0 = 'wet weight at t = 0 for tWDavidson2014';

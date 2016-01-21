@@ -30,7 +30,7 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   TC_am = tempcorr(temp.am, T_ref, T_A);
   TC_Ri = tempcorr(temp.Ri, T_ref, T_A);
   TC_tW = tempcorr(temp.tW, T_ref, T_A);
-  TC_tT_Davidson2014 = tempcorr(mean(temp.tT_Davidson2014(:,2)), T_ref, T_A);
+  TC_Davidson2014 = tempcorr(mean(temp.tT_Davidson2014(:,2)), T_ref, T_A);
   TC_gw150 = tempcorr(temp.tW_gw150A, T_ref, T_A);
   TC_gw124 = tempcorr(temp.tW_gw124iniA, T_ref, T_A);
   TC_ind = tempcorr(temp.tL_ind, T_ref, T_A);
@@ -40,7 +40,7 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B, info] = get_tj(pars_tj, f);
 
   % initial 
-  pars_UE0 = [V_Hb; g; k_J; k_M; v]; % compose parameter vector
+  pars_UE0 = [V_Hb g k_J k_M v]; % compose parameter vector
   U_E0 = initial_scaled_reserve(f, pars_UE0); % d.cm^2, initial scaled reserve
 
   % hatch
@@ -83,7 +83,16 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   prdData.Wi = Ww_i;
   prdData.Ri = RT_i;
 
+  
+%-------------------------------------
+% Build in pred_pars, all the parameters needed in predict_length and predict_weight 
+%(parameters common to all studies, independent from f and T
+
+pred_pars=[pars_UE0 U_Hh U_Hb kap v k_J g L_m pars_tj k_M E_Hh p_Am w];
+ 
+  
   %% uni-variate data
+  
   
 %-------------------------------------
 % t-Ww-data from YaniHisa2002
@@ -125,18 +134,18 @@ EaT_h_Velsen =  a_h ./ TC_Tah_Velsen;              % d, age at hatch at f and T
 % Davidson2014
 
 % tL_Davidson2014
-EL_Davidson2014 = predict_length(f_tWL_Davidson2014, TC_tT_Davidson2014, tL_Davidson2014, 'dph');
+EL_Davidson2014 = predict_length(f_tWL_Davidson2014, TC_Davidson2014, tL_Davidson2014, 'dph', pred_pars);
 EL_Davidson2014 = EL_Davidson2014/del_M;
 
 % T-Ww davidson2014
-EW_Davidson2014=predict_weight(f_tWL_Davidson2014, TC_tT_Davidson2014, tW_Davidson2014, 'dph');
+EW_Davidson2014=predict_weight(f_tWL_Davidson2014, TC_Davidson2014, tW_Davidson2014, 'dph', pred_pars);
 
 %-------------------------------------
 % Study gw150
 
-EW_tW_gw150A=predict_weight(f_tW_gw150, TC_tW_gw150, tW_gw150A, 'dpf');
-EW_tW_gw150B=predict_weight(f_tW_gw150, TC_tW_gw150, tW_gw150B, 'dpf');
-EW_tW_gw150C=predict_weight(f_tW_gw150, TC_tW_gw150, tW_gw150C, 'dpf');
+EW_tW_gw150A=predict_weight(f_tW_gw150, TC_gw150, tW_gw150A, 'dpf', pred_pars);
+EW_tW_gw150B=predict_weight(f_tW_gw150, TC_gw150, tW_gw150B, 'dpf', pred_pars);
+EW_tW_gw150C=predict_weight(f_tW_gw150, TC_gw150, tW_gw150C, 'dpf', pred_pars);
 
 %-------------------------------------
 % Study gw124ini
@@ -146,9 +155,9 @@ tW_gw124iniA(:,1)=tW_gw124iniA(:,1)+64;
 tW_gw124iniB(:,1)=tW_gw124iniB(:,1)+64;
 tW_gw124iniC(:,1)=tW_gw124iniC(:,1)+64;
 
-EW_tW_gw124iniA=predict_weight(f_tW_gw124, TC_tW_gw124, tW_gw124iniA, 'dpf');
-EW_tW_gw124iniB=predict_weight(f_tW_gw124, TC_tW_gw124, tW_gw124iniB, 'dpf');
-EW_tW_gw124iniC=predict_weight(f_tW_gw124, TC_tW_gw124, tW_gw124iniC, 'dpf');
+EW_tW_gw124iniA=predict_weight(f_tW_gw124, TC_gw124, tW_gw124iniA, 'dpf', pred_pars);
+EW_tW_gw124iniB=predict_weight(f_tW_gw124, TC_gw124, tW_gw124iniB, 'dpf', pred_pars);
+EW_tW_gw124iniC=predict_weight(f_tW_gw124, TC_gw124, tW_gw124iniC, 'dpf', pred_pars);
 
 %-------------------------------------
 % Study gw124fin
@@ -156,18 +165,18 @@ EW_tW_gw124iniC=predict_weight(f_tW_gw124, TC_tW_gw124, tW_gw124iniC, 'dpf');
 % Same here
 tW_gw124fin(:,1)=tW_gw124fin(:,1)+64;
 
-EW_tW_gw124fin=predict_weight(f_tW_gw124, TC_tW_gw124, tW_gw124fin, 'dpf');
+EW_tW_gw124fin=predict_weight(f_tW_gw124, TC_gw124, tW_gw124fin, 'dpf', pred_pars);
 
 
 %-------------------------------------
 % Study ind
 
 % tL_ind-data
-EL_ind=predict_length(f_tWL_ind, TC_tT_ind, tL_ind, 'dpf');
+EL_ind=predict_length(f_tLW_ind, TC_ind, tL_ind, 'dpf', pred_pars);
 EL_tL_ind=EL_ind/del_M2;
 
 % tW_ind-data
-EW_tW_ind=predict_weight(f_tWL_ind, TC_tT_ind, tL_ind, 'dpf');
+EW_tW_ind=predict_weight(f_tLW_ind, TC_ind, tL_ind, 'dpf', pred_pars);
 
 
 
@@ -218,11 +227,26 @@ function dULH = dget_ulh_modified(t,ULH,p)
   
   %%%%%%%%%%------------------- get length   ------------------------------------------------------
   
-  function [EL_Data] = predict_length(f, TC_t, tL_data, dp, pars_UE0)                      %tL_data (1st column is time in dpf, second is length)    
+  function [EL_Data] = predict_length(f, TC_t, tL_data, dp, pred_pars)                      %tL_data (1st column is time in dpf, second is length)    
                                                                                % 'dpf' for days post fertilization    
-                                                                               % 'dph' for days post hatch                  
-                                                                                                                         
-% Parameters
+                                                                               % 'dph' for days post hatch 
+% Extract common parameters
+pars_UE0 = pred_pars(1:5);
+U_Hh=pred_pars(6);
+U_Hb=pred_pars(7);
+kap=pred_pars(8);
+v=pred_pars(9);
+k_J=pred_pars(10);
+g=pred_pars(11);
+L_m=pred_pars(12);
+pars_tj=pred_pars(13:18);
+k_M=pred_pars(19);
+E_Hh=pred_pars(20);
+p_Am=pred_pars(21);
+w=pred_pars(22);
+
+                                                                        
+% Calculate Parameters
 U_E0 = initial_scaled_reserve(f, pars_UE0); % d.cm^2, initial scaled reserve
 [U_H, aUL] = ode45(@dget_aul, [0; U_Hh; U_Hb], [0 U_E0 1e-10], [], kap, v, k_J, g, L_m);
 a_h   = aUL(2,1);                 % d, age at hatch at f and T_ref
@@ -245,7 +269,7 @@ aT_j = t_j/ kT_M;    % d, age at end V1-morph period
 tL = tL_data(:,1);
 
 if strcmp(dp, 'dph') == 1                            % if data expressed in dph, need to add the predicted value for age at hatch
-  tL=tL+aT_h
+  tL=tL+aT_h;
   t_emb = tL(aT_h < tL & tL < aT_b,1);
 end
 t_emb = tL(aT_h < tL & tL < aT_b,1);    % available ages between hatch and birth in the dataset
@@ -282,10 +306,23 @@ EL_Data = [L_emb; L_bj; L_jm];                            % cm, structural lengt
  %%%%%%%%%%------------------- get weight   ------------------------------------------------------
 
 
-function [EW_Data] = predict_weight(f, TC_t, tW_data, dp, pars_pred)        %tL_data (1st column is time in dpf, second is length)    
+function [EW_Data] = predict_weight(f, TC_t, tW_data, dp, pred_pars)        %tL_data (1st column is time in dpf, second is length)    
                                                                                % 'dpf' for days post fertilization    
                                                                                % 'dph' for days post hatch
-                                                                                   
+% Extract common parameters
+pars_UE0 = pred_pars(1:5);
+U_Hh=pred_pars(6);
+U_Hb=pred_pars(7);
+kap=pred_pars(8);
+v=pred_pars(9);
+k_J=pred_pars(10);
+g=pred_pars(11);
+L_m=pred_pars(12);
+pars_tj=pred_pars(13:18);
+k_M=pred_pars(19);  
+E_Hh=pred_pars(20);
+p_Am=pred_pars(21);
+w=pred_pars(22);
                                                               
 % Parameters
 U_E0 = initial_scaled_reserve(f, pars_UE0); % d.cm^2, initial scaled reserve
@@ -310,7 +347,7 @@ aT_j = t_j/ kT_M;    % d, age at end V1-morph period
 tW = tW_data(:,1);
 
 if strcmp(dp, 'dph') == 1               % if data expressed in dph, need to add the predicted value for age at hatch
-  tW=tW+aT_h
+  tW=tW+aT_h;
   t_emb = tW(aT_h < tW & tW < aT_b,1);
 end
 t_emb = tW(aT_h < tW & tW < aT_b,1);    % available ages between hatch and birth in the dataset
@@ -334,8 +371,8 @@ else
 Ww_emb = [];
 end
 
-t_bj = tWw(tWw >= aT_b - aT_h & tWw < aT_j - aT_h,1); % selects times after hatch and before birth
-t_ji = tWw(tWw >= aT_j - aT_h,1); % selects times after metamorphosis
+t_bj = tW(tW >= aT_b - aT_h & tW < aT_j - aT_h,1); % selects times after hatch and before birth
+t_ji = tW(tW >= aT_j - aT_h,1); % selects times after metamorphosis
 L_bj = L_b * exp(t_bj * rT_j/ 3); Ww_bj = L_bj.^3 * (1 + w * f);
 L_jm = L_i - (L_i - L_j) * exp( - rT_B * (t_ji - aT_j - aT_h)); Ww_jm = L_jm.^3 * (1 + w * f);
 EW_Data = [Ww_emb; Ww_bj; Ww_jm];                           % cm, structural length
