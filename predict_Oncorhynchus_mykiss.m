@@ -12,7 +12,7 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
                  k * v_Hp >= f_LW^3 ||    ~reach_birth(g, k, v_Hb, f_LW) || ...   
                  k * v_Hp >= f_tWL^3 ||   ~reach_birth(g, k, v_Hb, f_tWL) || ...   
                  E_Hh >= E_Hb || ...
-                 f_tWL>1 || f_tW > 1 ;   
+                 f_tWL>1 || f_tW > 1  ;   
              
   if filterChecks  
     info = 0;
@@ -30,8 +30,9 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   TC_tW = tempcorr(temp.tW, T_ref, T_A);
   TC_tWw = tempcorr(temp.tWw, T_ref, T_A);
   TC_Tah = tempcorr(Tah(:,1), T_ref, T_A);
+  TC_tWde = tempcorr(temp.tWde, T_ref, T_A);
   
-  
+%% zero -variate data  
 
   % life cycle
   pars_tj = [g; k; l_T; v_Hb; v_Hj; v_Hp];
@@ -61,7 +62,7 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   L_p = L_m * l_p;                  % cm, structural length at puberty at f
   Lw_p = L_p/ del_M;                % cm, total length at puberty at f
   aT_p = t_p/ k_M/ TC_ap;           % d, time since birth at puberty at f and T
-  Ww_p = 1e3 * d_V * L_p^3 * (1 + f * w); % g, wet weight at puberty at f
+  Ww_p = L_p^3 * (1 + f * w); % g, wet weight at puberty at f
 
   % ultimate
   L_i = L_m * l_i;                  % cm, ultimate structural length at f
@@ -95,7 +96,40 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
 
   %% uni-variate data
   
-  % t-Ww-data
+  % tWde and tWde_E from NinnStev2006 - at f and T
+  vT = v * TC_tWde; kT_J = TC_tWde * k_J; kT_M = k_M * TC_tWde; pT_Am = p_Am * TC_tWde;
+%   JT_E_Am = J_E_Am * TC_tWde; 
+  UT_E0   = U_E0/ TC_tWde;
+%    JT_E_M  = J_E_M * TC_tWde; 
+  e_b     = f * L_b^3/ E_m;      % -, scaled reserve density at birth
+  aT_b  = t_b/ kT_M; aT_j  = t_j/ kT_M; rT_j = rho_j * kT_M; rT_B = rho_B * kT_M; 
+  L_j = l_j * L_m;
+  if tWde_E(1,1) >0
+     time = [0;tWde_E(:,1)];
+  else
+     time = tWde_E(:,1);
+  end
+  
+  % embryo yolk
+  [a LUH] = ode45(@dget_LUH, time, [1e-10 UT_E0 0], [], kap, vT, kT_J, g, L_m);
+  EWde_E = 1e3 * max(0, LUH(:,2) * pT_Am * w_E/ mu_E - f * m_Em * d_V * LUH(:,1) .^ 3 );
+%   EWde_E = max(0, LUH(:,2) * JT_E_Am  - e_b * m_Em * LUH(:,1) .^ 3 * M_V) * w_E * 1e3; % predicted yolk in mg
+  % embryo body mass
+  t_bj = time(time >= aT_b & time < aT_j); t_ji = time(time >=  aT_j); 
+  L_0b = LUH(time < aT_b,1);
+  L_bj = L_b * exp((t_bj - aT_b) * rT_j/ 3);
+  L_ji = L_i - (L_i - L_j) * exp( - rT_B * (t_ji - aT_j)); % cm, expected length at time
+  
+  Wd_0b = (1 + f * m_Em) * d_V * L_0b.^3;
+  Wd_bi = [L_bj;L_ji].^3 * d_V * (1 + f * w); % predicted dry structure in mg
+  EWde  = 1e3 * [Wd_0b; Wd_bi];  
+  
+  if tWde_E(1,1) >0
+  EWde_E =  EWde_E(2:end);
+  EWde = EWde(2:end);     
+  end
+  
+  % t-Ww , YaniHisa2002
   [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f_tW);
   rT_B = TC_tW * rho_B * k_M; rT_j = TC_tW * rho_j * k_M; % 1/d, von Bert, exponential growth rate
   aT_b = t_b/ k_M/ TC_tW; aT_j = t_j/ k_M/ TC_tW;
@@ -116,10 +150,6 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   % L-Ww,  
   LWw = (LWw(:,1) * del_M).^3 * (1 + f_LW * w); % g, wet mass
   
-  %-------------------------------------
-% Build in pred_pars, all the parameters needed in predict_length and predict_weight 
-%(parameters common to all studies, independent from f and T
-
   % t-L and t-Ww, DaviKenn2014
   [EWw, EL]  = predict_WL(f_tWL, TC_tWw, tL, 'dph', par, cPar);
   EL  = EL/ del_M; % cm, structural length
@@ -130,17 +160,15 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   [U_H, aUL] = ode45(@dget_aul, [0; U_Hh; U_Hb], [0 U_E0 1e-10], [], kap, v, k_J, g, L_m);
   a_h = aUL(2,1);                 % d, age at hatch at f and T_ref
   EaT_h =  a_h ./ TC_Tah;              % d, age at hatch at f and T
-  
-  
-  
-  
+   
   % pack to output
   prdData.tW  = EW;
   prdData.LWw = LWw;
   prdData.tL  = EL;
   prdData.tWw = EWw;
   prdData.Tah = EaT_h;
-     
+  prdData.tWde_E = EWde_E;
+  prdData.tWde = EWde;  
   
   
 %% %%%%%%%%------------------- get length   ------------------------------------------------------
@@ -165,11 +193,8 @@ aT_h  = a_h/ TC;                % d, age at hatch at f and T
 kT_M  = c.k_M * TC; 
 rT_j = rho_j * kT_M; % 1/d, von Bert, exponential growth rate between first feeding and end of V1-morph period
 rT_B = rho_B * kT_M; % 1/d, von Bert, exponential growth rate after V1-morph period
-L_b = l_b * c.L_m;   % cm, length at birth
-L_j = l_j * c.L_m;     % cm, length at metamorphosis
-L_i = l_i * c.L_m;     % cm, ultimate length
-aT_b  = t_b/ kT_M;   % d, age at birth
-aT_j = t_j/ kT_M;    % d, age at end V1-morph period
+L_b = l_b * c.L_m; L_j = l_j * c.L_m; L_i = l_i * c.L_m;     % cm, length at birth, metamorphosis, ultimate
+aT_b  = t_b/ kT_M; aT_j = t_j/ kT_M;    % d, age at birth, metamorphosis at T
 
 % tL_data
 tL = tL_data(:,1);
@@ -182,18 +207,18 @@ t_emb = tL(aT_h < tL & tL < aT_b,1);    % available ages between hatch and birth
 if isempty(t_emb) == 0     % if t_emb is not empty
 pars = [p.v * TC; c.g; c.L_m; p.k_J * TC; p.kap];
  if t_emb(1) > aT_h                     % if first age value is after hatch
- t_emb = [0;t_emb];    
- [AA, ULH] = ode23s(@dget_ulh_modified, t_emb, [UT_Eh; L_h; UT_Hh],[],pars); 
+ t_emb = [0;t_emb];   
+ [AA, ULH] = ode23s(@dget_ulh_modified, t_emb, [UT_E0; 1e-4; 0],[],pars); 
  ULH(1,:) = [];
  else 
- [AA, ULH] = ode23s(@dget_ulh_modified, t_emb, [UT_Eh; L_h; UT_Hh],[],pars);
+ [AA, ULH] = ode23s(@dget_ulh_modified, t_emb, [UT_E0; 1e-4; 0],[],pars);
  end 
  if length(t_emb) == 2
  ULH = ULH([1 end],:);
  end
  L_emb = ULH(:,2);   % cm, embryo structural length
  E_emb = ULH(:,1) * c.p_Am * TC;   % J, embryo energy in reserve
- Ww_emb = d_V * L_emb.^3 + w_E/ mu_E * E_emb; % g, embryo wet weight
+ Ww_emb = p.d_V * L_emb.^3 + c.w_E/ p.mu_E * E_emb; % g, embryo wet weight
 else
 L_emb = []; Ww_emb = [];
 end

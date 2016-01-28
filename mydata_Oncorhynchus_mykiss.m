@@ -72,6 +72,11 @@ comment.Wdh = 'large eggs, 10 deg C, Table 2, wet weight times percent dry matte
 data.Wdb = 1e3 * 0.1665 * 0.1929;  units.Wdb = 'mg'; label.Wdb = 'weight at birth'; bibkey.Wdb = {'FromRasm1991'};   
 comment.Wdb = 'large eggs, 10 deg C, Table 2, wet weight times percent dry matter';
  
+% data.JO_h = 1.3;   units.JO_h = 'micromol/min/g'; label.JO_h = 'respiration per gram embryo mass at hatch'; bibkey.JO_h = 'NinnStev2006'; % 4-5 month 
+%   temp.JO_h = C2K(10);  units.temp.JO_h = 'K'; label.temp.JO_h = 'temperature';
+%   comment.JO_h = 'fig 2 pp 1877';
+
+
 % uni-variate data
 % t-Ww data from YaniHisa2002 at T = 273 + 8.5
 % initial weight 1.54 g
@@ -120,6 +125,30 @@ Tah(:,1) = C2K(Tah(:,1));
 data.Tah = Tah; units.Tah = {'K','d'}; label.Tah = {'Temperature', 'age at hatch'}; bibkey.Tah = {'Vels1987'};
 comment.Tah = 'age is given as the 50% value';
 
+% t-Wd-Wdyolk from NinnStev2006
+% age dpf, dry W mg of embryo, dry W mg of yolk
+tWdY=[...
+24	1.01	32.74;
+30	3.08	31.8;
+45	12.6	15.55;
+50	22.91	8.24;
+60	46.55	2.53;
+75	118.93	0;
+90	230.55	0];
+
+data.tWde = tWdY(:,[1 2]); % yolk-free embryo dry mass, mg 
+units.tWde = {'d','mg'} ; label.tWde = {'time since fertilization', 'yolk-free dry weight'};
+bibkey.tWde ={'NinnStev2006'};
+comment.tWde ={'Table 1, pp 1878, chorionated'};
+temp.tWde = C2K(10); units.temp.tWde = 'K'; label.temp.tWde = 'temperature'; 
+
+data.tWde_E = tWdY(:,[1 3]); % yolk dry mass, mg 
+units.tWde_E = {'d','mg'} ; label.tWde_E = {'time since fertilization', 'yolk dry weight'};
+bibkey.tWde_E ={'NinnStev2006'};
+comment.tWde_E ={'Table 1, pp 1878, chorionated'};
+temp.tWde_E = C2K(10); units.temp.tWde_E = 'K'; label.temp.tWde_E = 'temperature'; 
+
+
 % DaviKenn2014
 % Colums of tLW:
 %  1  t days post hatch
@@ -159,12 +188,17 @@ data.tWw = tLW(:,[1 3]) ;   units.tWw = {'d', 'g'} ; label.tWw = {'days post hat
 temp.tWw = mean(C2K(tLW(:, 4))); units.temp.tWw = 'K' ;  label.temp.tWw = 'mean temperature in recirculation system' ; 
 comment.tWw = 'fish reared in water recirculating system, we use the mean temperature' ;
 
+% %% Grouped plots
+% set1 = {'tWde_E','tWde'}; comment1 = {'mg, dry weight of yolk, embryo'};
+% metaData.grp.sets = {set1}; metaData.grp.comment = {comment1};
+
 %% set weights for all real data
 weights = setweights(data, []);
 
-weights.tWw = weights.tWw * 80; % this is empirical, it just helped
-weights.tL = weights.tL * 20; % this is empirical, it just helped
-weights.Lp = weights.Lp * 50; % this is empirical, it just helped
+% weights.tWw = weights.tWw * 10; % this is empirical, it just helped
+% weights.tL = weights.tL * 80; % this is empirical, it just helped
+weights.tWde_E = weights.tWde_E * 100; % this is empirical, it just helped
+weights.Tah = weights.Tah * 20; % this is empirical, it just helped
 
 %% set pseudodata and respective weights
 [data, units, label, weights] = addpseudodata(data, units, label, weights);
@@ -273,6 +307,17 @@ bibkey = 'DaviKenn2014'; type = 'Article'; bib = [ ...
 'year = {2014}, ' ...
 'title = {Growth performance, fillet quality, and reproductive maturity of Rainbow Trout (Oncorhynchus mykiss) cultured to 5 kilograms within freshwater recirculating systems}, ' ... 
 'journal = {Journal of Aquaculture Research and Development}, ' ...
-'volume = {5(4)}, '...
+'volume = {5}, '...
+'number = {4},' ...
 'pages = {}'];
+metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
+%
+bibkey = 'NinnStev2006'; type = 'Article'; bib = [ ...  
+'author = {Ninness, Marcie M. and  Stevens, E. Don and Wright, Patricia A.}, ' ...
+'year = {2006}, ' ...
+'title = {Removal of the chorion before hatching results in increased movement and accelerated growth in rainbow trout (Oncorhynchus mykiss) embryos}, ' ... 
+'journal = {Journal of Experimental Biology}, ' ...
+'volume = {209}, '...
+'number = {10},' ...
+'pages = {1874-1882}'];
 metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
