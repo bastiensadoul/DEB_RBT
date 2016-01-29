@@ -6,10 +6,10 @@ metaData.class      = 'Actinopterygii';
 metaData.order      = 'Salmoniformes'; 
 metaData.family     = 'Salmonidae';
 metaData.species    = 'Oncorhynchus_mykiss'; 
-metaData.species_en = 'rainbow trout'; 
+metaData.species_en = 'Rainbow trout'; 
 metaData.T_typical  = C2K(15.5); % K, body temp
 metaData.data_0     = {'ah_T'; 'ab_T'; 'ap'; 'am'; 'Lb'; 'Lp'; 'Li'; 'Wd0'; 'Wdh'; 'Wdb'; 'Wwi'; 'Ri'};  % tags for different types of zero-variate data
-metaData.data_1     = {'t-Ww'; 'L-Ww'}; % tags for different types of uni-variate data
+metaData.data_1     = {'t-Ww'; 'L-Ww'; 't-L'; 'tWde'; 'tWde_E'; 'T-ah'}; % tags for different types of uni-variate data
 
 metaData.COMPLETE = 2.4; % using criteria of LikaKear2011
 
@@ -22,6 +22,13 @@ metaData.author_mod_1   = {'Starrlight Augustine'};
 metaData.date_mod_1 = [2016 01 26];                           
 metaData.email_mod_1    = {'starrlight.augustine@akvaplan.niva.no'};                 
 metaData.address_mod_1  = {'akvaplan-niva'};
+
+metaData.author_mod_2   = {'Bastien Sadoul';'Starrlight Augustine'; };        
+metaData.date_mod_2 = [2016 01 9];                           
+metaData.email_mod_2    = {'bastien.sadoul@hotmail.fr';'starrlight.augustine@akvaplan.niva.no'};                 
+metaData.address_mod_2  = {'University of Calgary';'akvaplan-niva'};
+
+
 
 metaData.curator     = {'Starrlight Augustine'};
 metaData.email_cur   = {'starrlight.augustine@akvaplan.niva.no'}; 
@@ -225,7 +232,7 @@ metaData.discussion = struct('D1',D1);
 
 %% References
 bibkey = 'Wiki'; type = 'Misc'; bib = ...
-'howpublished = {\url{http://en.wikipedia.org/wiki/wiki/Oncorhynchus_mykiss}';  
+'howpublished = {\url{https://en.wikipedia.org/wiki/Rainbow_trout}';  
 metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
 %
 bibkey = 'Kooy2010'; type = 'Book'; bib = [ ...  % used in setting of chemical parameters and pseudodata
@@ -248,10 +255,6 @@ metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
 %
 bibkey = 'fishbase'; type = 'Misc'; bib = ...
 'howpublished = {\url{http://www.fishbase.org/summary/239}';  
-metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-%
-bibkey = 'Kooy2014'; type = 'Misc'; bib = ...
-'note = {taken from from Salmo trutta}';  
 metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
 % 
 bibkey = 'ChenSnow2015'; type = 'Misc'; bib = [...

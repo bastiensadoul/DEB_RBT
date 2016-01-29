@@ -1,7 +1,7 @@
-%% pars_init_Oncorhynchus_mykiss
+%% pars_init_Oncorhynchus_mykiss_bayer
 % sets (initial values for) parameters
 
-function [par, metaPar, txtPar] = pars_init_Oncorhynchus_mykiss(metaData)
+function [par, metaPar, txtPar] = pars_init_Oncorhynchus_mykiss_bayer(metaData)
 
 metaPar.model = 'abj'; 
 
@@ -30,6 +30,7 @@ par.T_ref = 293.15;  free.T_ref = 0;  units.T_ref = 'K';  label.T_ref = 'Referen
 par.del_M = 0.14634;  free.del_M = 1;  units.del_M = '-';  label.del_M = 'shape coefficient'; 
 par.f = 1;  free.f = 0;  units.f = '-';  label.f = 'scaled functional response for 0-var data'; 
 par.f_LW = 1;  free.f_LW = 0;  units.f_LW = '-';  label.f_LW = 'scaled functional response for LW data'; 
+par.f_cW0 = 1;  free.f_cW0 = 0;  units.f_cW0 = '-';  label.f_cW0 = 'scaled functional response in bayer ecotox exp.'; 
 par.f_tW = 0.51741;  free.f_tW = 1;  units.f_tW = '-';  label.f_tW = 'scaled functional response for YaniHisa2002'; 
 par.f_tWL = 1;  free.f_tWL = 0;  units.f_tWL = '-';  label.f_tWL = 'scaled functional response for DaviKenn2014'; 
 
