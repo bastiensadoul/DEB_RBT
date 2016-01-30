@@ -9,7 +9,7 @@ metaData.species    = 'Oncorhynchus_mykiss';
 metaData.species_en = 'Rainbow trout'; 
 metaData.T_typical  = C2K(15.5); % K, body temp
 metaData.data_0     = {'ah_T'; 'ab_T'; 'ap'; 'am'; 'Lb'; 'Lp'; 'Li'; 'Wd0'; 'Wdh'; 'Wdb'; 'Wwi'; 'Ri'};  % tags for different types of zero-variate data
-metaData.data_1     = {'t-Ww'; 'L-Ww'; 't-L'; 'tWde'; 'tWde_E'; 'T-ah'}; % tags for different types of uni-variate data
+metaData.data_1     = {'L-Ww'; 't-Ww'; 't-L'; 'tWde'; 'tWde_E'; 'T-ah'}; % tags for different types of uni-variate data
 
 metaData.COMPLETE = 2.4; % using criteria of LikaKear2011
 
@@ -24,11 +24,9 @@ metaData.email_mod_1    = {'starrlight.augustine@akvaplan.niva.no'};
 metaData.address_mod_1  = {'akvaplan-niva'};
 
 metaData.author_mod_2   = {'Bastien Sadoul';'Starrlight Augustine'; };        
-metaData.date_mod_2 = [2016 01 9];                           
+metaData.date_mod_2 = [2016 02 01];                           
 metaData.email_mod_2    = {'bastien.sadoul@hotmail.fr';'starrlight.augustine@akvaplan.niva.no'};                 
 metaData.address_mod_2  = {'University of Calgary';'akvaplan-niva'};
-
-
 
 metaData.curator     = {'Starrlight Augustine'};
 metaData.email_cur   = {'starrlight.augustine@akvaplan.niva.no'}; 
@@ -36,53 +34,50 @@ metaData.date_acc    = [2015 01 26];
 
 %% set data
 % zero-variate data
-data.ah_5 = 33 + 34;  units.ah_5 = 'd'; label.ah_5 = 'age at hatching at 5 degrees'; bibkey.ah_5 = {'FromRasm1991'};   
-temp.ah_5 = C2K(5); units.temp.ah_5 = 'K'; label.temp.ah_5 = 'temperature';
+data.Wd0 = 0.1007 * 0.4111;  units.Wd0 = 'g'; label.Wd0 = 'dry egg weight'; bibkey.Wd0 = {'FromRasm1991'};   
+comment.Wd0 = 'wet weight multiplied by percent dry matter of large eggs, see Table 1'; 
 
 data.ah = 19 + 13;  units.ah = 'd'; label.ah = 'age at hatching at 10 degrees'; bibkey.ah = {'FromRasm1991'};   
 temp.ah = C2K(10); units.temp.ah = 'K'; label.temp.ah = 'temperature';
 
-data.ab_5 = 33 + 34 + 52; units.ab_5 = 'd'; label.ab_5 = 'age at birth at 5 degrees'; bibkey.ab_5 = {'FromRasm1991'};   
-temp.ab_5 = C2K(5); units.temp.ab_5 = 'K'; label.temp.ab_5 = 'temperature';
+data.ah_5 = 33 + 34;  units.ah_5 = 'd'; label.ah_5 = 'age at hatching at 5 degrees'; bibkey.ah_5 = {'FromRasm1991'};   
+temp.ah_5 = C2K(5); units.temp.ah_5 = 'K'; label.temp.ah_5 = 'temperature';
+
+data.Wdh = 0.1101 * 0.3523;  units.Wdh = 'g'; label.Wdh = 'weight at hatch'; bibkey.Wdh = {'FromRasm1991'};   
+comment.Wdh = 'large eggs, 10 deg C, Table 2, wet weight times percent dry matter';
+
+% data.JO_h = 1.3;   units.JO_h = 'micromol/min/g'; label.JO_h = 'respiration per gram embryo mass at hatch'; bibkey.JO_h = 'NinnStev2006'; % 4-5 month 
+%   temp.JO_h = C2K(10);  units.temp.JO_h = 'K'; label.temp.JO_h = 'temperature';
+%   comment.JO_h = 'fig 2 pp 1877';
 
 data.ab = 19 + 13 + 22; units.ab = 'd'; label.ab = 'age at birth at 10 degrees'; bibkey.ab = {'FromRasm1991'};   
 temp.ab = C2K(10); units.temp.ab = 'K'; label.temp.ab = 'temperature';
 
+data.ab_5 = 33 + 34 + 52; units.ab_5 = 'd'; label.ab_5 = 'age at birth at 5 degrees'; bibkey.ab_5 = {'FromRasm1991'};   
+temp.ab_5 = C2K(5); units.temp.ab_5 = 'K'; label.temp.ab_5 = 'temperature';
+
+data.Wdb = 0.1665 * 0.1929;  units.Wdb = 'g'; label.Wdb = 'weight at birth'; bibkey.Wdb = {'FromRasm1991'};   
+comment.Wdb = 'large eggs, 10 deg C, Table 2, wet weight times percent dry matter';
+
 data.ap =28 + (20 * 30); units.ap = 'd';    label.ap = 'age at puberty';         bibkey.ap = 'DaviKenn2014';
   temp.ap = C2K(13); units.temp.ap = 'K'; label.temp.ap = 'temperature';
   comment.ap = 'GSI assessment indicated that rapid egg growth started at 20 Mo post hatch, and we assume that it takes about 28 d to hatch according to Vels1987';
+
 data.am = 11*365;  units.am = 'd';    label.am = 'life span';              bibkey.am = {'fishbase'};   
   temp.am = C2K(5); units.temp.am = 'K'; label.temp.am = 'temperature';
 
 data.Lp = 54;      units.Lp = 'cm';   label.Lp = 'forked length at puberty'; bibkey.Lp = 'DaviKenn2014';
-comment.Wp = 'approx length at 20 months post hatch, when egg rapid egg growth occurred'; 
-data.Li = 120;     units.Li = 'cm';   label.Li = 'ultimate total length';  bibkey.Li = {'fishbase'};
 
 data.Wp = 3.5 * 1e3;   units.Wp = 'g';    label.Wp = 'wet weight at puberty';    bibkey.Wp = {'DaviKenn2014'};
 comment.Wp = 'weigth at 20 montsh post hatch, when rapid egg growth occurred'; 
+
+data.Li = 120;     units.Li = 'cm';   label.Li = 'ultimate total length';  bibkey.Li = {'fishbase'};
+
 data.Wi = 25400;   units.Wi = 'g';    label.Wi = 'ultimate wet weight';    bibkey.Wi = {'fishbase'};
   
 data.Ri = data.Wi * 2.5/ 365; units.Ri = '#/d'; label.Ri = 'maximum reprod rate'; bibkey.Ri = {'Wiki'};   
   temp.Ri = C2K(5); units.temp.Ri = 'K'; label.temp.Ri = 'temperature';
   comment.Ri = '2000 till 3000 eggs per kg';
-    
-% zero-variate data
-% egg weight at different temperatures
-% choosing large eggs
-
-data.Wd0 = 1e3 * 0.1007 * 0.4111;  units.Wd0 = 'mg'; label.Wd0 = 'dry egg weight'; bibkey.Wd0 = {'FromRasm1991'};   
-comment.Wd0 = 'wet weight multiplied by percent dry matter of large eggs, see Table 1'; 
-
-data.Wdh = 1e3 * 0.1101 * 0.3523;  units.Wdh = 'mg'; label.Wdh = 'weight at hatch'; bibkey.Wdh = {'FromRasm1991'};   
-comment.Wdh = 'large eggs, 10 deg C, Table 2, wet weight times percent dry matter';
-
-data.Wdb = 1e3 * 0.1665 * 0.1929;  units.Wdb = 'mg'; label.Wdb = 'weight at birth'; bibkey.Wdb = {'FromRasm1991'};   
-comment.Wdb = 'large eggs, 10 deg C, Table 2, wet weight times percent dry matter';
- 
-% data.JO_h = 1.3;   units.JO_h = 'micromol/min/g'; label.JO_h = 'respiration per gram embryo mass at hatch'; bibkey.JO_h = 'NinnStev2006'; % 4-5 month 
-%   temp.JO_h = C2K(10);  units.temp.JO_h = 'K'; label.temp.JO_h = 'temperature';
-%   comment.JO_h = 'fig 2 pp 1877';
-
 
 % uni-variate data
 % t-Ww data from YaniHisa2002 at T = 273 + 8.5
@@ -155,7 +150,6 @@ bibkey.tWde_E ={'NinnStev2006'};
 comment.tWde_E ={'Table 1, pp 1878, chorionated'};
 temp.tWde_E = C2K(10); units.temp.tWde_E = 'K'; label.temp.tWde_E = 'temperature'; 
 
-
 % DaviKenn2014
 % Colums of tLW:
 %  1  t days post hatch
@@ -202,10 +196,13 @@ comment.tWw = 'fish reared in water recirculating system, we use the mean temper
 %% set weights for all real data
 weights = setweights(data, []);
 
-% weights.tWw = weights.tWw * 10; % this is empirical, it just helped
-% weights.tL = weights.tL * 80; % this is empirical, it just helped
-weights.tWde_E = weights.tWde_E * 100; % this is empirical, it just helped
-weights.Tah = weights.Tah * 20; % this is empirical, it just helped
+% growth does something strange after 20 m post hatch, see discussion and paper
+weights.tWw = weights.tWw * 20; 
+weights.tWw(end-7:end) = weights.tWw(end-7:end) * 0; 
+weights.tL(end-7:end) = weights.tL(end-7:end) * 0; % 
+% % weights.tL = weights.tL * 80; % this is empirical, it just helped
+% weights.tWde_E = weights.tWde_E * 100; % this is empirical, it just helped
+weights.ab= weights.ab * 20; % this is empirical, it just helped
 
 %% set pseudodata and respective weights
 [data, units, label, weights] = addpseudodata(data, units, label, weights);
@@ -227,8 +224,11 @@ metaData.bibkey.F3 = 'Wiki';
 metaData.facts = struct('F1',F1,'F2',F2,'F3',F3);
       
 %% Discussion
-D1 = 'fish base says that ';
-metaData.discussion = struct('D1',D1);
+D1 = 'fish base says that females mature after 3 years and males after 2. However there is no reference to back this up. DaviKlemm2014 observed that rapid egg growth occured after 20 months post hatch, so we assume that this coincided with puberty';
+D2 = 'the model fits for NinnStev2006 are not good. However, it might well be that some structure was in the yolk with was dissected and some extra reserve in the yolk-free embryo.';
+D3 = 'the growth after 20 months post hatch in the RAS system of DaviKemm2014 was not so good. We gave those observations zero-weight.';
+metaData.discussion = struct('D1',D1, 'D2', D2, 'D3', D3);
+
 
 %% References
 bibkey = 'Wiki'; type = 'Misc'; bib = ...

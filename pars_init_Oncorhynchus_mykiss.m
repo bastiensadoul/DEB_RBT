@@ -29,7 +29,7 @@ par.T_A = 11007.6355;  free.T_A = 1;  units.T_A = 'K';  label.T_A = 'Arrhenius t
 par.T_ref = 293.15;  free.T_ref = 0;  units.T_ref = 'K';  label.T_ref = 'Reference temperature'; 
 par.del_M = 0.17616;  free.del_M = 1;  units.del_M = '-';  label.del_M = 'shape coefficient'; 
 par.f = 1;  free.f = 0;  units.f = '-';  label.f = 'scaled functional response for 0-var data'; 
-par.f_LW = 0.82532;  free.f_LW = 1;  units.f_LW = '-';  label.f_LW = 'scaled functional response for LW data'; 
+par.f_LW = 1;  free.f_LW = 0;  units.f_LW = '-';  label.f_LW = 'scaled functional response for LW data'; 
 par.f_tW = 0.82611;  free.f_tW = 1;  units.f_tW = '-';  label.f_tW = 'scaled functional response for YaniHisa2002'; 
 par.f_tWL = 1;  free.f_tWL = 1;  units.f_tWL = '-';  label.f_tWL = 'scaled functional response for DaviKenn2014'; 
 
