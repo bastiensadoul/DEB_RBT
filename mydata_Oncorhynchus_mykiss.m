@@ -197,12 +197,16 @@ comment.tWw = 'fish reared in water recirculating system, we use the mean temper
 weights = setweights(data, []);
 
 % growth does something strange after 20 m post hatch, see discussion and paper
-weights.tWw = weights.tWw * 20; 
+weights.LWw = weights.LWw * 0.1; 
+weights.tWw = weights.tWw * 40; 
+weights.tL = weights.tL * 10; 
 weights.tWw(end-7:end) = weights.tWw(end-7:end) * 0; 
 weights.tL(end-7:end) = weights.tL(end-7:end) * 0; % 
-% % weights.tL = weights.tL * 80; % this is empirical, it just helped
+weights.ab = weights.ab * 80; % this is empirical, it just helped
 % weights.tWde_E = weights.tWde_E * 100; % this is empirical, it just helped
-weights.ab= weights.ab * 20; % this is empirical, it just helped
+weights.Wi= weights.Wi * 80; % this is empirical, it just helped
+weights.Wd0= weights.Wd0 * 20; % this is empirical, it just helped
+
 
 %% set pseudodata and respective weights
 [data, units, label, weights] = addpseudodata(data, units, label, weights);
