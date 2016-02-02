@@ -198,7 +198,8 @@ weights = setweights(data, []);
 
 % growth does something strange after 20 m post hatch, see discussion and paper
 weights.LWw = weights.LWw * 0.1; 
-weights.tWw = weights.tWw * 40; 
+weights.tW = weights.tW * 10; 
+weights.tWw = weights.tWw * 50; 
 weights.tL = weights.tL * 10; 
 weights.tWw(end-7:end) = weights.tWw(end-7:end) * 0; 
 weights.tL(end-7:end) = weights.tL(end-7:end) * 0; % 
