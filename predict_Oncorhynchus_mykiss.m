@@ -58,11 +58,11 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   aT_b  = t_b/ k_M/ TC_ah;            % d, age at birth of foetus at f and T
   Wdb   = d_V * L_b^3 * (1 + f * w);  % g, dry weight at birth at f 
      
-  % puberty 
-  L_p = L_m * l_p;                  % cm, structural length at puberty at f
-  Lw_p = L_p/ del_M;                % cm, total length at puberty at f
-  aT_p = t_p/ k_M/ TC_ap;           % d, time since birth at puberty at f and T
-  Ww_p = L_p^3 * (1 + f * w);       % g, wet weight at puberty at f
+%   % puberty 
+%   L_p = L_m * l_p;                  % cm, structural length at puberty at f
+%   Lw_p = L_p/ del_M;                % cm, total length at puberty at f
+%   aT_p = t_p/ k_M/ TC_ap;           % d, time since birth at puberty at f and T
+%   Ww_p = L_p^3 * (1 + f * w);       % g, wet weight at puberty at f
 
   % ultimate
   L_i = L_m * l_i;                  % cm, ultimate structural length at f
@@ -86,10 +86,7 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   prdData.ab = aT_b;  
   prdData.ab_5 = aT_b5;
   prdData.Wdb = Wdb;
-  prdData.ap = aT_p;
   prdData.am = aT_m;
-  prdData.Lp = Lw_p;
-  prdData.Wp =  Ww_p;
   prdData.Li = Lw_i;
   prdData.Wi = Ww_i;
   prdData.Ri = RT_i;
@@ -146,6 +143,13 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   LWw = (LWw(:,1) * del_M).^3 * (1 + f_LW * w); % g, wet mass
   
   % t-L and t-Ww, DaviKenn2014
+  [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f_tWL);
+  % puberty 
+  L_p = L_m * l_p;                  % cm, structural length at puberty at f
+  Lw_p = L_p/ del_M;                % cm, total length at puberty at f
+  aT_p = t_p/ k_M/ TC_ap;           % d, time since birth at puberty at f and T
+  Ww_p = L_p^3 * (1 + f_tWL * w);       % g, wet weight at puberty at f
+
   [EWw, EL]  = predict_WL(f_tWL, TC_tWw, tL(:,1), par, cPar);
   EL  = EL/ del_M; % cm, structural length
   EWw = predict_WL (f_tWL, TC_tWw, tWw(:,1), par, cPar); % g, wet weight
@@ -159,6 +163,9 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   prdData.tWde_E = EWde_E;
   prdData.tWde   = EWde;  
   
+  prdData.ap = aT_p;
+  prdData.Lp = Lw_p;
+  prdData.Wp =  Ww_p;
   
 %% Subfunctions :
   
