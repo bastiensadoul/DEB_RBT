@@ -209,9 +209,12 @@ weights.tWde = weights.tWde * 200; % this is empirical, it just helped
 weights.Wi= weights.Wi * 80; % this is empirical, it just helped
 weights.Wd0= weights.Wd0 * 800; % this is empirical, it just helped
 
-
 %% set pseudodata and respective weights
 [data, units, label, weights] = addpseudodata(data, units, label, weights);
+
+weights.psd.kap = weights.psd.kap * 0;
+% weights.k_J = weights.k_J * 0;
+
 
 %% pack auxData and txtData for output
 auxData.temp = temp;
@@ -231,9 +234,8 @@ metaData.facts = struct('F1',F1,'F2',F2,'F3',F3);
       
 %% Discussion
 D1 = 'fish base says that females mature after 3 years and males after 2. However there is no reference to back this up. DaviKlemm2014 observed that rapid egg growth occured after 20 months post hatch, so we assume that this coincided with puberty';
-D2 = 'the model fits for NinnStev2006 are not good. However, it might well be that some structure was in the yolk with was dissected and some extra reserve in the yolk-free embryo.';
-D3 = 'the growth after 20 months post hatch in the RAS system of DaviKemm2014 was not so good. We gave those observations zero-weight.';
-metaData.discussion = struct('D1',D1, 'D2', D2, 'D3', D3);
+D2 = 'we did a lot of empirical adjustments to the weights which needs further study.';
+metaData.discussion = struct('D1',D1, 'D2', D2);
 
 
 %% References

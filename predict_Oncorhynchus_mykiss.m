@@ -140,7 +140,7 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   EW = L.^3 * (1 + f_tW * w);
     
   % L-Ww,  
-  LWw = (LWw(:,1) * del_M).^3 * (1 + f_LW * w); % g, wet mass
+  LWw = (LWw(:,1) * del_M2).^3 * (1 + f_LW * w); % g, wet mass
   
   % t-L and t-Ww, DaviKenn2014
   [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f_tWL);
@@ -183,6 +183,7 @@ pars_UE0 = [c.V_Hb; c.g; p.k_J; c.k_M; p.v]; % compose parameter vector
       
 % Calculate Parameters
 U_E0 = initial_scaled_reserve(f, pars_UE0); % d.cm^2, initial scaled reserve
+UT_E0 = U_E0/ TC; % cm * d , scaled initial reserve at T
 [U_H, aUL] = ode45(@dget_aul, [0; c.U_Hh; c.U_Hb], [0 U_E0 1e-10], [], p.kap, p.v, p.k_J, c.g, c.L_m);
 [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f);
 
@@ -202,9 +203,10 @@ t_ji = t(t >= aT_j,1);                % selects times after metamorphosis
 if isempty(t_0b) == 0     % if t_emb is not empty    
 t_0b = [0;t_0b];   
 [a, LUH] = ode45(@dget_LUH, t_0b, [1e-4 UT_E0 0], [], p.kap, p.v * TC, p.k_J * TC, c.g, c.L_m);
-LUH(1,:) = [];
     if length(t_0b) == 2
-    LUH = LUH([1 end],:);
+    LUH = LUH(end,:);
+    else
+    LUH = LUH(2:end,:);    
     end
     L_emb = LUH(:,1);   % cm, embryo structural length
     E_emb = LUH(:,2) * c.p_Am * TC;   % J, embryo energy in reserve
