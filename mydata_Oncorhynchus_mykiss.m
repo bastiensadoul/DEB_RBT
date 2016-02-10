@@ -156,38 +156,54 @@ temp.tWde_E = C2K(10); units.temp.tWde_E = 'K'; label.temp.tWde_E = 'temperature
 %  2  L cm, fork length 
 %  3 W g, wet weight
 %  4 T degC, not constant
+%  5 g, food given (calculated from FER)
 tLW = [...
-30	NaN 1	12;
-61	NaN	2	13.9;
-91	NaN	12	14;
-122	NaN	37	13.5;
-152	NaN	68	13.4;
-183	20.14568672	130	13.3;
-213	21.5443469	182	12.5;
-244	25.04752863	297	12.7;
-274	30.37304642	566	13.5;
-305	32.15692038	685	13.6;
-335	35.37616057	943	14.8;
-366	38.472504	1230	15.2;
-396	41.5666287	1501	13;
-427	43.30037284	1713	13;
-457	45.39591421	2002	13.1;
-488	47.81766661	2307	13;
-518	49.18429576	2570	12.7;
-549	51.38700584	2836	12.6;
-579	53.4819702	3136	12.5;
-610	55.32407387	3556	12.5;
-640	57.17912711	4038	12.5
-671	59.42611275	4533	12.7;
-701	60.72011595	4858	12.9;
-732	61.56382501	4970	13.4;
-762	62.32757629	5012	13.6;
-793	61.98695269	5097	13.4];
+30	NaN	1	12  NaN ;
+61	NaN	2	13.9	0.061612903 ;
+91	NaN	12	14	0.53 ;
+122	NaN	37	13.5	0.588709677 ;
+152	NaN	68	13.4	1.105666667 ;
+183	20.14568672	130	13.3	2.58 ;
+213	21.5443469	182	12.5	1.82 ;
+244	25.04752863	297	12.7	4.340322581 ;
+274	30.37304642	566	13.5	12.374 ;
+305	32.15692038	685	13.6	6.602580645 ;
+335	35.37616057	943	14.8	13.244 ;
+366	38.472504	1230	15.2	15.18322581 ;
+396	41.5666287	1501	13	17.43433333 ;
+427	43.30037284	1713	13	12.99354839 ;
+457	45.39591421	2002	13.1	11.46366667 ;
+488	47.81766661	2307	13	19.08709677 ;
+518	49.18429576	2570	12.7	16.13066667 ;
+549	51.38700584	2836	12.6	10.98322581 ;
+579	53.4819702	3136	12.5	11.1 ;
+610	55.32407387	3556	12.5	11.92258065 ;
+640	57.17912711	4038	12.5	18.47666667 ;
+671	59.42611275	4533	12.7	19.16129032 ;
+701	60.72011595	4858	12.9	24.15833333 ;
+732	61.56382501	4970	13.4	22.32774194 ;
+762	62.32757629	5012	13.6	30.24 ;
+793	61.98695269	5097	13.4	1.946774194];
 data.tL  = tLW(6:end,[1 2]); units.tL = {'d', 'cm'}; label.tL  = {'days post hatch', 'fork length'}; bibkey.tL = {'DaviKenn2014'};
 comment.tL = 'fish reared in water recirculating system, we use the mean temperature';
 data.tWw = tLW(:,[1 3]) ;   units.tWw = {'d', 'g'} ; label.tWw = {'days post hatch', 'wet weight'};  bibkey.tWw = {'DaviKenn2014'} ;
 temp.tWw = mean(C2K(tLW(:, 4))); units.temp.tWw = 'K' ;  label.temp.tWw = 'mean temperature in recirculation system' ; 
 comment.tWw = 'fish reared in water recirculating system, we use the mean temperature' ;
+
+% GomeWeil1999
+% Colums of tWGomeWeill:
+%  1  t days post fertilization
+%  2 W g, wet weight
+%  3 -, maturation stage
+%  4 -, actual date given in the articl
+tWGomeWeill=[...
+0	NaN	'Immature'	'OctNov_year1' ;
+441	508	'Immature'	'Jan_year3' ;
+517	NaN	'First_signs_of_gametogenesis'	'MarApr_year3' ;
+745	1755	'Mature'	'Nov_year3'];
+
+
+
 
 % %% Grouped plots
 % set1 = {'tWde_E','tWde'}; comment1 = {'mg, dry weight of yolk, embryo'};
