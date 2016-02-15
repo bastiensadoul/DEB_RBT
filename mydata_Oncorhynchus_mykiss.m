@@ -196,11 +196,11 @@ comment.tWw = 'fish reared in water recirculating system, we use the mean temper
 %  2 W g, wet weight
 %  3 -, maturation stage
 %  4 -, actual date given in the articl
-tWGomeWeill=[...
-0	NaN	'Immature'	'OctNov_year1' ;
-441	508	'Immature'	'Jan_year3' ;
-517	NaN	'First_signs_of_gametogenesis'	'MarApr_year3' ;
-745	1755	'Mature'	'Nov_year3'];
+% tWGomeWeill=[...
+% 0	NaN	'Immature'	'OctNov_year1' ;
+% 441	508	'Immature'	'Jan_year3' ;
+% 517	NaN	'First_signs_of_gametogenesis'	'MarApr_year3' ;
+% 745	1755	'Mature'	'Nov_year3'];
 
 
 
