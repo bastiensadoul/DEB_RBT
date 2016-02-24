@@ -65,9 +65,9 @@ ELH(1,:) = []; E = ELH(:,1); L = ELH(:,2); EW_tW_gw150C_BPA30 = L.^3 + E * w_E/ 
 
 %--------------------------------------
 % pack to output
-prdData.tW_gw150A_BPA3 = EW_tW_gw150A_BPA30 ;
-prdData.tW_gw150B_BPA3 = EW_tW_gw150B_BPA30 ;
-prdData.tW_gw150C_BPA3 = EW_tW_gw150C_BPA30 ;
+prdData.tW_gw150A_BPA3 = EW_tW_gw150A_BPA3 ;
+prdData.tW_gw150B_BPA3 = EW_tW_gw150B_BPA3 ;
+prdData.tW_gw150C_BPA3 = EW_tW_gw150C_BPA3 ;
 prdData.tW_gw150A_BPA30 = EW_tW_gw150A_BPA30 ;
 prdData.tW_gw150B_BPA30 = EW_tW_gw150B_BPA30 ;
 prdData.tW_gw150C_BPA30 = EW_tW_gw150C_BPA30 ;

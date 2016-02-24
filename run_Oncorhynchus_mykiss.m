@@ -1,7 +1,7 @@
 close all
 global pets
 
-pets = {'Oncorhynchus_mykiss'};
+pets = {'Oncorhynchus_mykiss_BPA'};
 % check_my_pet(pets); 
 
 estim_options('default'); % runs estimation, uses nmregr method and filter
