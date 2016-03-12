@@ -12,7 +12,15 @@ function [prdData, info] = predict_Oncorhynchus_mykiss_BPA3and30(par, data, auxD
             k * v_Hp >= f_tW_gw150C_BPA3^3 ||  ~reach_birth(g, k, v_Hb, f_tW_gw150C_BPA3) || ...
             k * v_Hp >= f_tW_gw150A_BPA30^3 ||  ~reach_birth(g, k, v_Hb, f_tW_gw150A_BPA30) || ...
             k * v_Hp >= f_tW_gw150B_BPA30^3 ||  ~reach_birth(g, k, v_Hb, f_tW_gw150B_BPA30) || ...
-            k * v_Hp >= f_tW_gw150C_BPA30^3 ||  ~reach_birth(g, k, v_Hb, f_tW_gw150C_BPA30);    
+            k * v_Hp >= f_tW_gw150C_BPA30^3 ||  ~reach_birth(g, k, v_Hb, f_tW_gw150C_BPA30) || ...
+            k * v_Hp >= f_tW_gw124A_BPA100^3 ||  ~reach_birth(g, k, v_Hb, f_tW_gw124A_BPA100) || ...
+            k * v_Hp >= f_tW_gw124B_BPA100^3 ||  ~reach_birth(g, k, v_Hb, f_tW_gw124B_BPA100) || ...
+            k * v_Hp >= f_tW_gw124C_BPA100^3 ||  ~reach_birth(g, k, v_Hb, f_tW_gw124C_BPA100) || ...
+            k * v_Hp >= f_tW_gw124_BPA100end^3 ||  ~reach_birth(g, k, v_Hb, f_tW_gw124_BPA100end) || ...
+            k * v_Hp >= f_tW_gw124_BPA03^3 ||  ~reach_birth(g, k, v_Hb, f_tW_gw124_BPA03) || ...
+            k * v_Hp >= f_tW_gw124_BPA3^3 ||  ~reach_birth(g, k, v_Hb, f_tW_gw124_BPA3) || ...
+            k * v_Hp >= f_tW_gw124_BPA30^3 ||  ~reach_birth(g, k, v_Hb, f_tW_gw124_BPA30) || ...
+            k * v_Hp >= f_tW_gw124_BPA300^3 ||  ~reach_birth(g, k, v_Hb, f_tW_gw124_BPA300);    
           
   if filterChecks  
     info = 0;
@@ -23,6 +31,7 @@ function [prdData, info] = predict_Oncorhynchus_mykiss_BPA3and30(par, data, auxD
 
 %% compute temperature correction factors
   TC_gw150 = tempcorr(temp.tW_gw150A_BPA3, T_ref, T_A);
+  TC_gw124 = tempcorr(temp.tW_gw124A_BPA100, T_ref, T_A);
 
   
   pars_UE0 = [V_Hb; g; k_J; k_M; v]; % compose parameter vector
@@ -30,7 +39,8 @@ function [prdData, info] = predict_Oncorhynchus_mykiss_BPA3and30(par, data, auxD
   E_0 = U_E0 * p_Am;     % J, initial reserve
   ELH_init = [E_0; 1e-4; 0];
   
-
+  
+%-------------------------------------
 % Study gw150_BPA3
 p = [g, k, l_T, v_Hb, v_Hj, v_Hp];
 
@@ -63,6 +73,64 @@ ELH(1,:) = []; E = ELH(:,1); L = ELH(:,2); EW_tW_gw150B_BPA30 = L.^3 + E * w_E/ 
 ELH(1,:) = []; E = ELH(:,1); L = ELH(:,2); EW_tW_gw150C_BPA30 = L.^3 + E * w_E/ mu_E/ d_E;  % g, wet weight
 
 
+%-------------------------------------
+% Study gw124_BPA100
+p = [g, k, l_T, v_Hb, v_Hj, v_Hp];
+
+[lj, lp, lb, info] = get_lj(p, f_tW_gw124A_BPA100); L_b = lb * L_m; L_j = lj * L_m;
+[a, ELH] = ode45(@dget_ELH_pj, [0; tW_gw124A_BPA100(:,1)], ELH_init, [], L_b, L_j, L_m, p_Am, v, g, k_J, kap, f_tW_gw124A_BPA100, E_Hb, E_Hj, TC_gw124);
+ELH(1,:) = []; E = ELH(:,1); L = ELH(:,2); EW_tW_gw124A_BPA100 = L.^3 + E * w_E/ mu_E/ d_E;  % g, wet weight
+
+[lj, lp, lb, info] = get_lj(p, f_tW_gw124B_BPA100); L_b = lb * L_m; L_j = lj * L_m;
+[a, ELH] = ode45(@dget_ELH_pj, [0; tW_gw124B_BPA100(:,1)], ELH_init, [], L_b, L_j, L_m, p_Am, v, g, k_J, kap, f_tW_gw124B_BPA100, E_Hb, E_Hj, TC_gw124);
+ELH(1,:) = []; E = ELH(:,1); L = ELH(:,2); EW_tW_gw124B_BPA100 = L.^3 + E * w_E/ mu_E/ d_E;  % g, wet weight
+
+[lj, lp, lb, info] = get_lj(p, f_tW_gw124C_BPA100); L_b = lb * L_m; L_j = lj * L_m;
+[a, ELH] = ode45(@dget_ELH_pj, [0; tW_gw124C_BPA100(:,1)], ELH_init, [], L_b, L_j, L_m, p_Am, v, g, k_J, kap, f_tW_gw124C_BPA100, E_Hb, E_Hj, TC_gw124);
+ELH(1,:) = []; E = ELH(:,1); L = ELH(:,2); EW_tW_gw124C_BPA100 = L.^3 + E * w_E/ mu_E/ d_E;  % g, wet weight
+
+%-------------------------------------
+% Study gw124_BPA100end
+p = [g, k, l_T, v_Hb, v_Hj, v_Hp];
+
+[lj, lp, lb, info] = get_lj(p, f_tW_gw124_BPA100end); L_b = lb * L_m; L_j = lj * L_m;
+[a, ELH] = ode45(@dget_ELH_pj, [0; tW_gw124_BPA100end(:,1)], ELH_init, [], L_b, L_j, L_m, p_Am, v, g, k_J, kap, f_tW_gw124_BPA100end, E_Hb, E_Hj, TC_gw124);
+ELH(1,:) = []; E = ELH(:,1); L = ELH(:,2); EW_tW_gw124_BPA100end = L.^3 + E * w_E/ mu_E/ d_E;  % g, wet weight
+
+%-------------------------------------
+% Study gw124_BPA0.3
+p = [g, k, l_T, v_Hb, v_Hj, v_Hp];
+
+[lj, lp, lb, info] = get_lj(p, f_tW_gw124_BPA03); L_b = lb * L_m; L_j = lj * L_m;
+[a, ELH] = ode45(@dget_ELH_pj, [0; tW_gw124_BPA03(:,1)], ELH_init, [], L_b, L_j, L_m, p_Am, v, g, k_J, kap, f_tW_gw124_BPA03, E_Hb, E_Hj, TC_gw124);
+ELH(1,:) = []; E = ELH(:,1); L = ELH(:,2); EW_tW_gw124_BPA03 = L.^3 + E * w_E/ mu_E/ d_E;  % g, wet weight
+
+%-------------------------------------
+% Study gw124_BPA3
+p = [g, k, l_T, v_Hb, v_Hj, v_Hp];
+
+[lj, lp, lb, info] = get_lj(p, f_tW_gw124_BPA3); L_b = lb * L_m; L_j = lj * L_m;
+[a, ELH] = ode45(@dget_ELH_pj, [0; tW_gw124_BPA3(:,1)], ELH_init, [], L_b, L_j, L_m, p_Am, v, g, k_J, kap, f_tW_gw124_BPA3, E_Hb, E_Hj, TC_gw124);
+ELH(1,:) = []; E = ELH(:,1); L = ELH(:,2); EW_tW_gw124_BPA3 = L.^3 + E * w_E/ mu_E/ d_E;  % g, wet weight
+
+%-------------------------------------
+% Study gw124_BPA30
+p = [g, k, l_T, v_Hb, v_Hj, v_Hp];
+
+[lj, lp, lb, info] = get_lj(p, f_tW_gw124_BPA30); L_b = lb * L_m; L_j = lj * L_m;
+[a, ELH] = ode45(@dget_ELH_pj, [0; tW_gw124_BPA30(:,1)], ELH_init, [], L_b, L_j, L_m, p_Am, v, g, k_J, kap, f_tW_gw124_BPA30, E_Hb, E_Hj, TC_gw124);
+ELH(1,:) = []; E = ELH(:,1); L = ELH(:,2); EW_tW_gw124_BPA30 = L.^3 + E * w_E/ mu_E/ d_E;  % g, wet weight
+
+%-------------------------------------
+% Study gw124_BPA300
+p = [g, k, l_T, v_Hb, v_Hj, v_Hp];
+
+[lj, lp, lb, info] = get_lj(p, f_tW_gw124_BPA300); L_b = lb * L_m; L_j = lj * L_m;
+[a, ELH] = ode45(@dget_ELH_pj, [0; tW_gw124_BPA300(:,1)], ELH_init, [], L_b, L_j, L_m, p_Am, v, g, k_J, kap, f_tW_gw124_BPA300, E_Hb, E_Hj, TC_gw124);
+ELH(1,:) = []; E = ELH(:,1); L = ELH(:,2); EW_tW_gw124_BPA300 = L.^3 + E * w_E/ mu_E/ d_E;  % g, wet weight
+
+
+
 %--------------------------------------
 % pack to output
 prdData.tW_gw150A_BPA3 = EW_tW_gw150A_BPA3 ;
@@ -71,6 +139,15 @@ prdData.tW_gw150C_BPA3 = EW_tW_gw150C_BPA3 ;
 prdData.tW_gw150A_BPA30 = EW_tW_gw150A_BPA30 ;
 prdData.tW_gw150B_BPA30 = EW_tW_gw150B_BPA30 ;
 prdData.tW_gw150C_BPA30 = EW_tW_gw150C_BPA30 ;
+prdData.tW_gw124A_BPA100 = EW_tW_gw124A_BPA100 ;
+prdData.tW_gw124B_BPA100 = EW_tW_gw124B_BPA100 ;
+prdData.tW_gw124C_BPA100 = EW_tW_gw124C_BPA100 ;
+prdData.tW_gw124_BPA100end = EW_tW_gw124_BPA100end ;
+prdData.tW_gw124_BPA03 = EW_tW_gw124_BPA03 ;
+prdData.tW_gw124_BPA3 = EW_tW_gw124_BPA3 ;
+prdData.tW_gw124_BPA30 = EW_tW_gw124_BPA30 ;
+prdData.tW_gw124_BPA300 = EW_tW_gw124_BPA300 ;
+
 
 
 % info = 1;

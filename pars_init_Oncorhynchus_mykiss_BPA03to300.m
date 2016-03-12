@@ -36,6 +36,21 @@ par.f_tW_gw150A_BPA30 = 1;  free.f_tW_gw150A_BPA30 = 1;  units.f_tW_gw150A_BPA30
 par.f_tW_gw150B_BPA30 = 1;  free.f_tW_gw150B_BPA30 = 1;  units.f_tW_gw150B_BPA30 = '-';  label.f_tW_gw150B_BPA30 = 'scaled functional response for gw150_BPA30 tank B'; 
 par.f_tW_gw150C_BPA30 = 1;  free.f_tW_gw150C_BPA30 = 1;  units.f_tW_gw150C_BPA30 = '-';  label.f_tW_gw150C_BPA30 = 'scaled functional response for gw150_BPA30 tank C'; 
 
+par.f_tW_gw124A_BPA100 = 1;  free.f_tW_gw124A_BPA100 = 1;  units.f_tW_gw124A_BPA100 = '-';  label.f_tW_gw124A_BPA100 = 'scaled functional response for gw124_BPA100 tank A'; 
+par.f_tW_gw124B_BPA100 = 1;  free.f_tW_gw124B_BPA100 = 1;  units.f_tW_gw124B_BPA100 = '-';  label.f_tW_gw124B_BPA100 = 'scaled functional response for gw124_BPA100 tank B'; 
+par.f_tW_gw124C_BPA100 = 1;  free.f_tW_gw124C_BPA100 = 1;  units.f_tW_gw124C_BPA100 = '-';  label.f_tW_gw124C_BPA100 = 'scaled functional response for gw124_BPA100 tank C'; 
+
+par.f_tW_gw124_BPA100end = 1;  free.f_tW_gw124_BPA100end = 1;  units.f_tW_gw124_BPA100end = '-';  label.f_tW_gw124_BPA100end = 'scaled functional response for gw124_BPA100end tank A'; 
+
+par.f_tW_gw124_BPA03 = 1;  free.f_tW_gw124_BPA03 = 1;  units.f_tW_gw124_BPA03 = '-';  label.f_tW_gw124_BPA03 = 'scaled functional response for gw124_BPA0.3'; 
+
+par.f_tW_gw124_BPA3 = 1;  free.f_tW_gw124_BPA3 = 1;  units.f_tW_gw124_BPA3 = '-';  label.f_tW_gw124_BPA3 = 'scaled functional response for gw124_BPA3'; 
+
+par.f_tW_gw124_BPA30 = 1;  free.f_tW_gw124_BPA30 = 1;  units.f_tW_gw124_BPA30 = '-';  label.f_tW_gw124_BPA30 = 'scaled functional response for gw124_BPA30'; 
+
+par.f_tW_gw124_BPA300 = 1;  free.f_tW_gw124_BPA300 = 1;  units.f_tW_gw124_BPA300 = '-';  label.f_tW_gw124_BPA300 = 'scaled functional response for gw124_BPA300'; 
+
+
 %% set chemical parameters from Kooy2010 
 [par, units, label, free] = addchem(par, units, label, free, metaData.phylum, metaData.class);
 
