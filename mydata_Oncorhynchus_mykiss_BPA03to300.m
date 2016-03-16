@@ -1,4 +1,4 @@
-function [data, auxData, metaData, txtData, weights] = mydata_Oncorhynchus_mykiss_BPA3and30
+function [data, auxData, metaData, txtData, weights] = mydata_Oncorhynchus_mykiss_BPA03to300
 
 %% set metadata
 metaData.phylum     = 'Chordata'; 
