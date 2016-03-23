@@ -18,6 +18,8 @@ load('results_Oncorhynchus_mykiss_BPA0.mat');
 d = data;
 pD = prdData;
 
+
+
 %% exposed
 load('results_Oncorhynchus_mykiss_BPA03to300.mat');
 [data, auxData, metaData, txtData, weights] = mydata_Oncorhynchus_mykiss_BPA03to300;
@@ -25,6 +27,8 @@ load('results_Oncorhynchus_mykiss_BPA03to300.mat');
 % just to get the names shorter :
 dC = data;
 pDc = prdData;
+
+
 
 %% makes loglogs of residues 
 % tell me if you think of better way I can do this ...
@@ -82,5 +86,32 @@ loglog(d.tW_gw124fin(:,2),pD.tW_gw124fin,'.b'); hold on
 title('tW_gw124fin') ; xlabel('observed'); ylabel('predicted')
 
 loglog(dC.tW_gw124_BPA100end(:,2),pDc.tW_gw124_BPA100end,'or'); hold on
+
+
+%% exposed
+
+names=fieldnames(pDc);
+for i=1:length(names) 
+    name=names{i};
+    field=getfield(pDc,name);
+    dCfield=getfield(dC,name);
+    field(:,2)=dCfield(:,2);
+    field(:,3)=dCfield(:,1);
+    pDc = setfield(pDc,name,field);
+end
+    
+names=fieldnames(pD);
+for i=1:length(names) 
+    name=names{i};
+    field=getfield(pD,name);
+    dfield=getfield(d,name);
+    field(:,2)=dfield(:,2);
+    field(:,3)=dfield(:,1);
+    pD = setfield(pD,name,field);
+end
+    
+
+save('prdDataControls.mat','pD');
+save('prdDataExposed.mat','pDc');
 
 
