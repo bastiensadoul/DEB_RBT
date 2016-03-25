@@ -3,7 +3,7 @@ library("R.matlab")
 dir="C:\\Users\\Owner\\Documents\\GitHub\\DEB_Oncorhynchus_mykiss\\DEB_RBT"
 setwd(dir)
 
-pDCont=readMat("prdDataControls.mat")$pDc[,,1]
+pDCont=readMat("prdDataControls.mat")$pD[,,1]
 pDExp=readMat("prdDataExposed.mat")$pD[,,1]
 
 
