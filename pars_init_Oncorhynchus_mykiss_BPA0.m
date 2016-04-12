@@ -37,10 +37,6 @@ metaPar.model = 'abj';
 % par.f_tW_gw150B = 0.5446;  free.f_tW_gw150B = 1;  units.f_tW_gw150B = '-';  label.f_tW_gw150B = 'scaled functional response for gw150 tank B'; 
 % par.f_tW_gw150C = 0.5399;  free.f_tW_gw150C = 1;  units.f_tW_gw150C = '-';  label.f_tW_gw150C = 'scaled functional response for gw150 tank C'; 
 
-
-
-
-
 %% hig p_M high k_J parameter set - 
 par.z = 2.3400;      free.z = 0;  units.z = '-';  label.z = 'zoom factor'; 
 par.F_m = 6.5;       free.F_m = 0;  units.F_m = 'l/d.cm^2';  label.F_m = '{F_m}, max spec searching rate'; 

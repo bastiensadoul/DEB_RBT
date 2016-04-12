@@ -2,7 +2,10 @@ clear all; close all; clc
 
 global pets
 
+% pets = {'Oncorhynchus_mykis'};
 pets = {'Oncorhynchus_mykiss_BPA0'};
+% pets = {'Oncorhynchus_mykiss_BPA03to300'};
+
 
 estim_options('default'); % runs estimation, uses nmregr method and filter
 
