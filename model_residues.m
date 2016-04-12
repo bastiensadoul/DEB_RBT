@@ -114,7 +114,7 @@ end
 % first column predicted
 % second column real data
 % third column time
-save('prdDataControls.mat','pD');
-save('prdDataExposed.mat','pDc');
+save('prdDataControls.mat','pD', 'par');
+save('prdDataExposed.mat','pDc','par');
 
 
