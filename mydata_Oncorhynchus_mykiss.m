@@ -197,7 +197,7 @@ comment.tWw = 'fish reared in water recirculating system, we use the mean temper
 %  1 days post fertization, 
 %  2 W g, wet weight
 %  3 -, maturation stage
-%  4 -, actual date given in the articl
+%  4 -, actual date given in the article
 % tWGomeWeill=[...
 % 0	NaN	'Immature'	'OctNov_year1' ;
 % 441	508	'Immature'	'Jan_year3' ;

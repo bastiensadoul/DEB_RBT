@@ -110,7 +110,10 @@ for i=1:length(names)
     pD = setfield(pD,name,field);
 end
     
-
+% information is saved in matrixes
+% first column predicted
+% second column real data
+% third column time
 save('prdDataControls.mat','pD');
 save('prdDataExposed.mat','pDc');
 
