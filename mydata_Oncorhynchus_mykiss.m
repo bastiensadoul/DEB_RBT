@@ -9,7 +9,7 @@ metaData.species    = 'Oncorhynchus_mykiss';
 metaData.species_en = 'Rainbow trout'; 
 metaData.T_typical  = C2K(15.5); % K, body temp
 metaData.data_0     = {'ah_T'; 'ab_T'; 'ap'; 'am'; 'Lb'; 'Lp'; 'Li'; 'Wd0'; 'Wdh'; 'Wdb'; 'Wwi'; 'Ri'};  % tags for different types of zero-variate data
-metaData.data_1     = {'L-Ww'; 't-Ww'; 't-L'; 'tWde'; 'tWde_E'; 'T-ah'}; % tags for different types of uni-variate data
+metaData.data_1     = {'L-Ww'; 't-Ww'; 't-L'; 'tWde'; 'tWde_E'; 'T-ah'; 'Ww-JO'}; % tags for different types of uni-variate data
 
 metaData.COMPLETE = 2.4; % using criteria of LikaKear2011
 
@@ -23,7 +23,7 @@ metaData.date_mod_1 = [2016 01 26];
 metaData.email_mod_1    = {'starrlight.augustine@akvaplan.niva.no'};                 
 metaData.address_mod_1  = {'akvaplan-niva'};
 
-metaData.author_mod_2   = {'Bastien Sadoul';'Starrlight Augustine'; };        
+metaData.author_mod_2   = {'Bastien Sadoul';'Starrlight Augustine' };        
 metaData.date_mod_2 = [2016 02 01];                           
 metaData.email_mod_2    = {'bastien.sadoul@hotmail.fr';'starrlight.augustine@akvaplan.niva.no'};                 
 metaData.address_mod_2  = {'University of Calgary';'akvaplan-niva'};
@@ -32,6 +32,12 @@ metaData.author_mod_3   = {'Bas Kooijman'};
 metaData.date_mod_3 = [2016 04 07];                           
 metaData.email_mod_3    = {'bas.kooijman@vu.nl'};                 
 metaData.address_mod_3  = {'VU University Amsterdam'};
+
+metaData.author_mod_4   = {'Bastien Sadoul';'Starrlight Augustine' };       
+metaData.date_mod_4 = [2016 04 27];                           
+metaData.email_mod_4    = {'bastien.sadoul@hotmail.fr';'starrlight.augustine@akvaplan.niva.no'};                 
+metaData.address_mod_4  = {'University of Calgary';'akvaplan-niva'};
+% we added respiration data and re-did parameter estimation
 
 metaData.curator     = {'Starrlight Augustine'};
 metaData.email_cur   = {'starrlight.augustine@akvaplan.niva.no'}; 
@@ -243,52 +249,52 @@ comment.tWw = 'fish reared in water recirculating system, we use the mean temper
 % comment.wO2_1 = 'Water flow of 0.55BL/s, probably at the 182g. At 213.93g food was withdrawn for 2 days.';
 % temp.wO2_1 = C2K(14); units.temp.wO2_1 = 'K' ;  label.temp.wO2_1 = 'mean temperature' ; 
 % 
-% 
-% % McKenPed2007 for large size-at-age family (LSAF)
-% % Colums of wO2:
-% %  1 W g, wet weight
-% %  2 mean O2 uptake per day, mmol/d
-% wO2_2 = [...
-% 181.966299	34.20024145;
-% 185.016057	35.34066636;
-% 187.608351	37.09269751;
-% 190.505626	39.65565454;
-% 193.402893	40.56620072;
-% 196.147678	41.5873676;
-% 199.044952	42.65367815;
-% 201.94222	44.6045036;
-% 205.144468	46.26686371;
-% 208.194232	46.62372168;
-% 211.0915	46.96094466;
-% 214.293747	47.84367026;
-% 217.343505	48.77135785;
-% 220.545752	49.79044845;
-% 223.900489	49.88679642;
-% 227.255227	49.9633361;
-% 230.609951	50.09862151;
-% 233.812198	50.4756995;
-% 237.471915	51.99381419;
-% 239.911727	43.34750274;
-% 241.894069	44.03527827;
-% 244.638847	48.42395257;
-% 248.298564	51.12195049;
-% 251.805778	52.10137853;
-% 255.770474	51.29533228;
-% 259.430178	50.49747008;
-% 263.394875	50.49157301;
-% 267.054579	51.31441558;
-% 271.171752	51.2125789;
-% 275.136449	51.61768034;
-% 279.253622	52.96085712;
-% 283.523286	53.99596248;
-% 287.792949	55.69142944;
-% 292.367579	55.21555101;
-% 296.332276	54.88756234;
-% 300.906906	54.94902987];
-% data.wO2_2=wO2_2; units.wO2_2 = {'g', 'mmol/d'}; label.wO2_2  = {'wet weight', 'O2 uptake'}; bibkey.wO2_2 = {'McKenPed2007 LSAF'};
-% comment.wO2_2 = 'Water flow of 0.55BL/s, probably at the 182g. At 239.9g food was withdrawn for 2 days.';
-% temp.wO2_2 = C2K(14); units.temp.wO2_2 = 'K' ;  label.temp.wO2_2 = 'mean temperature' ; 
-% 
+
+% McKenPed2007 for large size-at-age family (LSAF)
+% Colums of wO2:
+%  1 W g, wet weight
+%  2 mean O2 uptake per day, mmol/d
+WwJO_2 = [...
+181.966299	34.20024145;
+185.016057	35.34066636;
+187.608351	37.09269751;
+190.505626	39.65565454;
+193.402893	40.56620072;
+196.147678	41.5873676;
+199.044952	42.65367815;
+201.94222	44.6045036;
+205.144468	46.26686371;
+208.194232	46.62372168;
+211.0915	46.96094466;
+214.293747	47.84367026;
+217.343505	48.77135785;
+220.545752	49.79044845;
+223.900489	49.88679642;
+227.255227	49.9633361;
+230.609951	50.09862151;
+233.812198	50.4756995;
+237.471915	51.99381419;
+239.911727	43.34750274;
+241.894069	44.03527827;
+244.638847	48.42395257;
+248.298564	51.12195049;
+251.805778	52.10137853;
+255.770474	51.29533228;
+259.430178	50.49747008;
+263.394875	50.49157301;
+267.054579	51.31441558;
+271.171752	51.2125789;
+275.136449	51.61768034;
+279.253622	52.96085712;
+283.523286	53.99596248;
+287.792949	55.69142944;
+292.367579	55.21555101;
+296.332276	54.88756234;
+300.906906	54.94902987];
+data.WwJO_2 = WwJO_2; units.WwJO_2 = {'g', 'mmol/d'}; label.WwJO_2  = {'wet weight', 'O2 uptake'}; bibkey.WwJO_2 = {'McKenPed2007'};
+comment.WwJO_2 = 'LSAF - large size at age family. Water flow of 0.55BL/s, probably at the 182g. At 239.9g food was withdrawn for 2 days.';
+temp.WwJO_2 = C2K(14); units.temp.WwJO_2 = 'K' ;  label.temp.WwJO_2 = 'mean temperature' ; 
+
 
 
 % %% Grouped plots

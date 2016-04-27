@@ -5,15 +5,16 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   vars_pull(cPar);  vars_pull(data);  vars_pull(auxData);
      
 %% compute temperature correction factors
-  TC_ah5 = tempcorr(temp.ah_5, T_ref, T_A);
-  TC_ah  = tempcorr(temp.ah, T_ref, T_A);  
-  TC_ap  = tempcorr(temp.ap, T_ref, T_A);
-  TC_am  = tempcorr(temp.am, T_ref, T_A);
-  TC_Ri  = tempcorr(temp.Ri, T_ref, T_A);
-  TC_tW  = tempcorr(temp.tW, T_ref, T_A);
-  TC_tWw = tempcorr(temp.tWw, T_ref, T_A);
-  TC_Tah = tempcorr(Tah(:,1), T_ref, T_A);
-  TC_tWde= tempcorr(temp.tWde, T_ref, T_A);
+  TC_ah5  = tempcorr(temp.ah_5, T_ref, T_A);
+  TC_ah   = tempcorr(temp.ah, T_ref, T_A);  
+  TC_ap   = tempcorr(temp.ap, T_ref, T_A);
+  TC_am   = tempcorr(temp.am, T_ref, T_A);
+  TC_Ri   = tempcorr(temp.Ri, T_ref, T_A);
+  TC_tW   = tempcorr(temp.tW, T_ref, T_A);
+  TC_tWw  = tempcorr(temp.tWw, T_ref, T_A);
+  TC_Tah  = tempcorr(Tah(:,1), T_ref, T_A);
+  TC_tWde = tempcorr(temp.tWde, T_ref, T_A);
+  TC_WwJO = tempcorr(temp.WwJO_2, T_ref, T_A);
   
 %% zero -variate data  
 
@@ -125,7 +126,7 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   % L-Ww,  
   LWw = (LWw(:,1) * del_M).^3 * (1 + f_LW * w); % g, wet mass
   
-  % t-L and t-Ww, DaviKenn2014
+  % t-L and t-Ww, a-p, L_p Ww_p DaviKenn2014
   [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f_tWL);
   % puberty 
   L_p = L_m * l_p;                  % cm, structural length at puberty at f
@@ -137,6 +138,16 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   EL  = EL/ del_M; % cm, structural length
   EWw = predict_WL (f_tWL, TC_tWw, tWw(:,1), par, cPar); % g, wet weight
    
+  % Ww-JO McKenPed2007
+  % weight - respiration at f and T
+  pars_p = [kap; kap_R; g; k_J; k_M; L_T; v; U_Hb; U_Hj; U_Hp]; % compose pars
+  p_ref = p_Am * L_m^2; % J/d, max assimilation power at max size
+  L = (WwJO_2(:,1)/ (1 + f * w)) .^ (1/3);  % cm, structural length
+  pACSJGRD = p_ref * scaled_power_j(L, f, pars_p, l_b, l_j, l_p);  % J/d, powers
+  J_M = - (n_M\n_O) * eta_O * pACSJGRD(:, [1 7 5])';  % mol/d: J_C, J_H, J_O, J_N in rows
+  EWwJO_2= - J_M(3,:)' * TC_WwJO * 1e3;         % mmol O2/d, O2 consumption 
+  
+   
   % pack to output
   prdData.tW     = EW;
   prdData.LWw    = LWw;
@@ -145,6 +156,7 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   prdData.Tah    = EaT_h;
   prdData.tWde_E = EWde_E;
   prdData.tWde   = EWde;  
+  prdData.WwJO_2   = EWwJO_2; 
   
   prdData.ap = aT_p;
   prdData.Lp = Lw_p;
