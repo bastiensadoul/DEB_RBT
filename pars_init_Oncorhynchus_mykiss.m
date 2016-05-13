@@ -29,7 +29,7 @@ par.s_G = 10;       free.s_G = 0;   units.s_G = '-';        label.s_G = 'Gompert
 %% other parameters 
 par.E_Hh = 26.55;   free.E_Hh = 1;  units.E_Hh = 'J';       label.E_Hh = 'maturity at hatch'; 
 par.T_A = 6930;     free.T_A = 1;   units.T_A = 'K';        label.T_A = 'Arrhenius temp'; 
-par.del_M = 0.1133; free.del_M = 1; units.del_M = '-';      label.del_M = 'shape coefficient DaviKlemm2014'; 
+par.del_M = 0.1133; free.del_M = 1; units.del_M = '-';      label.del_M = 'shape coefficient'; 
 par.f = 1;          free.f = 0;     units.f = '-';          label.f = 'scaled functional response for 0-var data'; 
 par.f_LW = 1;       free.f_LW = 0;  units.f_LW = '-';       label.f_LW = 'scaled functional response for LW data'; 
 par.f_tW = 0.5355;  free.f_tW = 1;  units.f_tW = '-';       label.f_tW = 'scaled functional response for YaniHisa2002'; 

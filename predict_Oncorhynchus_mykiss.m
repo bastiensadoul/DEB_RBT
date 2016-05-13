@@ -138,29 +138,75 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   EL  = EL/ del_M; % cm, structural length
   EWw = predict_WL (f_tWL, TC_tWw, tWw(:,1), par, cPar); % g, wet weight
    
-  % Ww-JO McKenPed2007
-  % weight - respiration at f and T
+  % McKenPed2007
+  
+  % length - weight - respiration at f and T
+  [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f);
   pars_p = [kap; kap_R; g; k_J; k_M; L_T; v; U_Hb; U_Hj; U_Hp]; % compose pars
   p_ref = p_Am * L_m^2; % J/d, max assimilation power at max size
+ 
+  % SSAF - small size at age family
+  % Ww-JO
+  L = (WwJO_1(:,1)/ (1 + f * w)) .^ (1/3);  % cm, structural length
+  pACSJGRD = p_ref * scaled_power_j(L, f, pars_p, l_b, l_j, l_p);  % J/d, powers
+  J_M = - (n_M\n_O) * eta_O * pACSJGRD(:, [1 7 5])';  % mol/d: J_C, J_H, J_O, J_N in rows
+  EWwJO_1 = - J_M(3,:)' * TC_WwJO * 1e3;         % mmol O2/d, O2 consumption 
+  % t-Ww , and t-L
+  rT_B = TC_WwJO * rho_B * k_M; rT_j = TC_WwJO * rho_j * k_M; % 1/d, von Bert, exponential growth rate
+  L_j = l_j * L_m; L_i = l_i * L_m;
+  L_0 = (76.5/ (1 + f * w))^(1/3); % cm, structural length at t = 0 
+  if L_0 < L_j 
+    tj = log(L_j/ L_0) * 3/ rT_j; % d, time since beginning of experiment that metamorphosis occurs
+    t_bj = tWw_1(tWw_1(:,1) < tj,1); % select times between birth & metamorphosis
+    L_bj = L_0 * exp(t_bj * rT_j/3); % exponential growth as V1-morph
+    t_ji = tWw_1(tWw_1(:,1) >= tj,1); % selects times after metamorphosis
+    L_ji = L_i - (L_i - L_j) * exp( - rT_B * (t_ji - tj)); % cm, expected length at time
+    L = [L_bj; L_ji]; % catenate lengths
+  else 
+    L = L_i - (L_i - L_0) * exp( - rT_B * tWw_1(:,1)); % cm, expected length at time
+  end
+  EWw_1 = L.^3 * (1 + f * w);
+  EL_1 =   spline(tL_1(:,1), [tWw_1(:,1) L] )./ del_M;
+  
+  % LSAF - small size at age family
   L = (WwJO_2(:,1)/ (1 + f * w)) .^ (1/3);  % cm, structural length
   pACSJGRD = p_ref * scaled_power_j(L, f, pars_p, l_b, l_j, l_p);  % J/d, powers
   J_M = - (n_M\n_O) * eta_O * pACSJGRD(:, [1 7 5])';  % mol/d: J_C, J_H, J_O, J_N in rows
   EWwJO_2= - J_M(3,:)' * TC_WwJO * 1e3;         % mmol O2/d, O2 consumption 
-  
+  % t-Ww , and t-L
+  rT_B = TC_tW * rho_B * k_M; rT_j = TC_WwJO * rho_j * k_M; % 1/d, von Bert, exponential growth rate
+  L_j = l_j * L_m; L_i = l_i * L_m;
+  L_0 = (181.5/ (1 + f * w))^(1/3); % cm, structural length at t = 0 
+  if L_0 < L_j
+    tj = log(L_j/ L_0) * 3/ rT_j; % d, time since beginning of experiment that metamorphosis occurs
+    t_bj = tWw_2(tWw_2(:,1) < tj,1); % select times between birth & metamorphosis
+    L_bj = L_0 * exp(t_bj * rT_j/3); % exponential growth as V1-morph
+    t_ji = tWw_2(tWw_2(:,1) >= tj,1); % selects times after metamorphosis
+    L_ji = L_i - (L_i - L_j) * exp( - rT_B * (t_ji - tj)); % cm, expected length at time
+    L = [L_bj; L_ji]; % catenate lengths
+  else 
+    L = L_i - (L_i - L_0) * exp( - rT_B * tWw_1(:,1)); % cm, expected length at time
+  end
+  EWw_2 = L.^3 * (1 + f * w);
+  EL_2 =  spline(tL_2(:,1), [tWw_2(:,1) L] )./ del_M;
    
   % pack to output
-  prdData.tW     = EW;
-  prdData.LWw    = LWw;
-  prdData.tL     = EL;
-  prdData.tWw    = EWw;
-  prdData.Tah    = EaT_h;
-  prdData.tWde_E = EWde_E;
-  prdData.tWde   = EWde;  
+  prdData.tW       = EW;
+  prdData.LWw      = LWw;
+  prdData.tL       = EL;
+  prdData.tWw      = EWw;
+  prdData.Tah      = EaT_h;
+  prdData.tWde_E   = EWde_E;
+  prdData.tWde     = EWde; 
+  prdData.WwJO_1   = EWwJO_1; 
+  prdData.tWw_1    = EWw_1; 
+  prdData.tL_1     = EL_1;     
   prdData.WwJO_2   = EWwJO_2; 
-  
-  prdData.ap = aT_p;
-  prdData.Lp = Lw_p;
-  prdData.Wp =  Ww_p;
+  prdData.tWw_2    = EWw_2; 
+  prdData.tL_2     = EL_2;     
+  prdData.ap       = aT_p;
+  prdData.Lp       = Lw_p;
+  prdData.Wp       =  Ww_p;
   
 %% Subfunctions :
   

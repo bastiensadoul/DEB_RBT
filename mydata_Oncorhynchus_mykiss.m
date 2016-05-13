@@ -211,44 +211,65 @@ comment.tWw = 'fish reared in water recirculating system, we use the mean temper
 % 745	1755	'Mature'	'Nov_year3'];
 
 
-% % McKenPed2007 for small size-at-age family (SSAF)
-% % Colums of wO2:
-% %  1 W g, wet weight
-% %  2 mean O2 uptake per day, mmol/d
-% wO2_1 = [...
-% 182.022478	35.88060123;
-% 188.53933	36.75507269;
-% 192.359557	36.66290692;
-% 196.179784	37.71930501;
-% 199.325846	38.09071511;
-% 203.146073	38.31084641;
-% 206.516857	37.35688011;
-% 210.337083	38.54067937;
-% 213.932589	30.32143471;
-% 217.752815	32.75766062;
-% 221.797757	38.89625944;
-% 225.393262	41.26175139;
-% 229.662926	43.0810136;
-% 233.483152	44.34460682;
-% 238.202246	44.84228932;
-% 242.022479	44.58948191;
-% 246.516857	45.17000526;
-% 251.348321	45.95614798;
-% 255.617984	46.30142718;
-% 260.345104	46.53687245;
-% 264.919747	46.99361587;
-% 269.951847	48.80583647;
-% 274.831469	49.4383897;
-% 279.711079	48.56930755;
-% 284.743178	48.99043223;
-% 289.927781	49.28986911;
-% 295.11237	50.4058565;
-% 300.601939	50.96802339];
-% 
-% data.wO2_1=wO2_1; units.wO2_1 = {'g', 'mmol/d'}; label.wO2_1  = {'wet weight', 'O2 uptake'}; bibkey.wO2_1 = {'McKenPed2007 SSAF'};
-% comment.wO2_1 = 'Water flow of 0.55BL/s, probably at the 182g. At 213.93g food was withdrawn for 2 days.';
-% temp.wO2_1 = C2K(14); units.temp.wO2_1 = 'K' ;  label.temp.wO2_1 = 'mean temperature' ; 
-% 
+% McKenPed2007 for small size-at-age family (SSAF)
+% Colums of wO2:
+%  1 W g, wet weight
+%  2 mean O2 uptake per day, mmol/d
+WwJO_1 = [...
+182.022478	35.88060123;
+188.53933	36.75507269;
+192.359557	36.66290692;
+196.179784	37.71930501;
+199.325846	38.09071511;
+203.146073	38.31084641;
+206.516857	37.35688011;
+210.337083	38.54067937;
+213.932589	30.32143471;
+217.752815	32.75766062;
+221.797757	38.89625944;
+225.393262	41.26175139;
+229.662926	43.0810136;
+233.483152	44.34460682;
+238.202246	44.84228932;
+242.022479	44.58948191;
+246.516857	45.17000526;
+251.348321	45.95614798;
+255.617984	46.30142718;
+260.345104	46.53687245;
+264.919747	46.99361587;
+269.951847	48.80583647;
+274.831469	49.4383897;
+279.711079	48.56930755;
+284.743178	48.99043223;
+289.927781	49.28986911;
+295.11237	50.4058565;
+300.601939	50.96802339];
+
+data.WwJO_1=WwJO_1; units.WwJO_1 = {'g', 'mmol/d'}; label.WwJO_1  = {'wet weight', 'O2 uptake'}; bibkey.WwJO_1 = {'McKenPed2007'};
+comment.WwJO_1 = 'Water flow of 0.55BL/s, probably at the 182g. At 213.93g food was withdrawn for 2 days.';
+temp.WwJO_1 = C2K(14); units.temp.WwJO_1 = 'K' ;  label.temp.WwJO_1 = 'mean temperature' ; 
+
+tWw_1 = [ ...
+0   	76.5
+21	110.3
+42	156.6
+63.0	214.4
+85	307.8
+];
+data.tWw_1 = tWw_1; units.tWw_1 = {'d', 'g'}; label.tWw_1  = {'time', 'wet weight'}; bibkey.tWw_1 = {'McKenPed2007'};
+comment.tWw_1 = 'SSAF - small size at age family. Diamonds fig. 1';
+temp.tWw_1 = C2K(14); units.temp.tWw_1 = 'K' ;  label.temp.tWw_1 = 'mean temperature' ; 
+
+tL_1 = [...
+ 42 1.45
+ 63 1.5
+ 85 1.6
+];
+tL_1(:,2) = (100 .* tWw_1(3:end,2) ./ tL_1(:,2)).^(1/3);
+data.tL_1 = tL_1; units.tL_1 = {'d', 'CM'}; label.tL_1  = {'time', 'fork length'}; bibkey.tL_1 = {'McKenPed2007'};
+comment.tL_1 = 'SSAF - small size at age family. Value computed from CF pp 282';
+temp.tL_1 = C2K(14); units.temp.WwL_1 = 'K' ;  label.temp.tL_1 = 'mean temperature' ; 
+
 
 % McKenPed2007 for large size-at-age family (LSAF)
 % Colums of wO2:
@@ -291,15 +312,37 @@ WwJO_2 = [...
 292.367579	55.21555101;
 296.332276	54.88756234;
 300.906906	54.94902987];
-data.WwJO_2 = WwJO_2; units.WwJO_2 = {'g', 'mmol/d'}; label.WwJO_2  = {'wet weight', 'O2 uptake'}; bibkey.WwJO_2 = {'McKenPed2007'};
+data.WwJO_2 = WwJO_2; units.WwJO_2 = {'g', 'mmol/kg/d'}; label.WwJO_2  = {'wet weight', 'O2 uptake'}; bibkey.WwJO_2 = {'McKenPed2007'};
 comment.WwJO_2 = 'LSAF - large size at age family. Water flow of 0.55BL/s, probably at the 182g. At 239.9g food was withdrawn for 2 days.';
 temp.WwJO_2 = C2K(14); units.temp.WwJO_2 = 'K' ;  label.temp.WwJO_2 = 'mean temperature' ; 
 
+tWw_2 = [ ...
+0    	181.5
+21.0	242.0
+42	    319.4
+63.0	371.9
+85   	443.1
+];
+data.tWw_2 = tWw_2; units.tWw_2 = {'d', 'g'}; label.tWw_2  = {'time', 'wet weight'}; bibkey.tWw_2 = {'McKenPed2007'};
+comment.tWw_2 = 'LSAF - large size at age family. Circles fig. 1';
+temp.tWw_2 = C2K(14); units.temp.tWw_2 = 'K' ;  label.temp.tWw_2 = 'mean temperature' ; 
+
+tL_2 = [...
+ 0 1.3
+ 21 1.4
+ 42 1.5
+];
+tL_2(:,2) = (100 .* tWw_2(1:3,2) ./ tL_2(:,2)).^(1/3);
+data.tL_2 = tL_2; units.tL_2 = {'d', 'CM'}; label.tL_2  = {'time', 'fork length'}; bibkey.tL_2 = {'McKenPed2007'};
+comment.tL_2 = 'LSAF - small size at age family. Value computed from CF pp 282';
+temp.tL_2 = C2K(14); units.temp.WwL_2 = 'K' ;  label.temp.tL_2 = 'mean temperature' ; 
 
 
 % %% Grouped plots
-% set1 = {'tWde_E','tWde'}; comment1 = {'mg, dry weight of yolk, embryo'};
-% metaData.grp.sets = {set1}; metaData.grp.comment = {comment1};
+set1 = {'WwJO_1','WwJO_2'}; comment1 = {'O2 uptake SSAF, LSAF'};
+set2 = {'tWw_1','tWw_2'}; comment2 = {'wet weight SSAF, LSAF'};
+set3 = {'tL_1','tL_2'}; comment3 = {'fork length SSAF, LSAF'};
+metaData.grp.sets = {set1, set2, set3}; metaData.grp.comment = {comment1, comment2, comment3};
 
 %% set weights for all real data
 weights = setweights(data, []);
@@ -319,8 +362,6 @@ weights.Wd0= weights.Wd0 * 800; % this is empirical, it just helped
 
 %% set pseudodata and respective weights
 [data, units, label, weights] = addpseudodata(data, units, label, weights);
-data.psd.f_tWL = 1;  units.psd.f_tWL = '-';  label.psd.f_tWL = 'scaled functional response for puberty data';
-weights.psd.f_tWL = weights.psd.kap * 20;
 weights.psd.kap = weights.psd.kap * 0;
 weights.psd.k_J = weights.psd.k_J * 50;
 
