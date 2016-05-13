@@ -1,6 +1,9 @@
 library("R.matlab")
 
+# You can add your dir here, so that you won't have to type it everytime!
+# dir=
 dir="C:\\Users\\Owner\\Documents\\GitHub\\DEB_Oncorhynchus_mykiss\\DEB_RBT"
+
 setwd(dir)
 
 pDCont=readMat("prdDataControls.mat")$pD[,,1]
