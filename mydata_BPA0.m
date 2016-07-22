@@ -1,28 +1,10 @@
-function [data, auxData, metaData, txtData, weights] = mydata_Oncorhynchus_mykiss_BPA0
+%% create data matrixes and associated information for the control fish
 
-%% set metadata
-metaData.phylum     = 'Chordata'; 
-metaData.class      = 'Actinopterygii'; 
-metaData.order      = 'Salmoniformes'; 
-metaData.family     = 'Salmonidae';
-metaData.species    = 'Oncorhynchus_mykiss_BPA0';    % previously called Salmo gairdneri (see Billard 1989)
-metaData.species_en = 'rainbow trout'; 
-metaData.T_typical  = C2K(15.5); % K, body temp
-metaData.data_0     = {''};  % tags for different types of zero-variate data
-metaData.data_1     = {'a-Ww';'L-Ww'}; % tags for different types of uni-variate data
-
-metaData.COMPLETE   = 1.5;        
+function [data, auxData, txtData, weights] = mydata_BPA0
 
 
-metaData.author   = {'Bastien Sadoul, Starrlight Augustine'};        
-metaData.date_subm = [2016 01 27];                           
-metaData.email    = {'bastien.sadoul@hotmail.fr'};                 
-metaData.address  = {'University of Calgary'}; 
-
-
-
-
-
+%% set temperature of the experiments:
+temp.tWw = C2K(8.5); units.temp.tWw = 'K'; label.temp.tWw = 'temperature';
 
 
 %% set data
@@ -106,9 +88,6 @@ units.tW_gw124iniA = {'d', 'g'};  label.tW_gw124iniA = {'age since first feeding
 units.tW_gw124iniB = {'d', 'g'};  label.tW_gw124iniB = {'age since first feeding', 'wet weight'};  bibkey.tW_gw124iniB = {'gw124iniB'};
 units.tW_gw124iniC = {'d', 'g'};  label.tW_gw124iniC = {'age since first feeding', 'wet weight'};  bibkey.tW_gw124iniC = {'gw124iniC'};
 
-temp.tW_gw124iniA = C2K(8.5); units.temp.tW_gw124iniA = 'K'; label.temp.tW_gw124iniA = 'temperature';
-temp.tW_gw124iniB = C2K(8.5); units.temp.tW_gw124iniB = 'K'; label.temp.tW_gw124iniB = 'temperature';
-temp.tW_gw124iniC = C2K(8.5); units.temp.tW_gw124iniC = 'K'; label.temp.tW_gw124iniC = 'temperature';
 
 % Our data for control (study gw124b)
 %  1  t days from first feeding (don't know the dpf)
@@ -137,7 +116,6 @@ tW_gw124fin=[...
 
 data.tW_gw124fin = tW_gw124fin(:,[1 2]);
 units.tW_gw124fin = {'d', 'g'};  label.tW_gw124fin = {'age since first feeding', 'wet weight'};  bibkey.tW_gw124fin = {'gw124fin'};
- temp.tW_gw124fin = C2K(8.5); units.temp.tW_gw124fin = 'K'; label.temp.tW_gw124fin = 'temperature';
  
 % % Our data, weight and length individually
 % % 1 is day post fertilization
@@ -413,9 +391,6 @@ units.tW_gw124fin = {'d', 'g'};  label.tW_gw124fin = {'age since first feeding',
 %% set weights for all real data
 weights = setweights(data, []);
 
-% %% set pseudodata and respective weights
-% [data, units, label, weights] = addpseudodata(data, units, label, weights);
-
 %% pack auxData and txtData for output
 auxData.temp = temp;
 txtData.units = units;
@@ -423,34 +398,4 @@ txtData.label = label;
 txtData.bibkey = bibkey;
 %txtData.comment = comment;
 
-% %% Grouped plots
-% 
-% set1 = {'tW_gw150A','tW_gw150B','tW_gw150C'};
-% set2 = {'tW_gw124iniA','tW_gw124iniB', 'tW_gw124iniC'};
-% comment1 = {'Wet weight, gw150, A, B and C'};
-% comment2 = {'Wet weight, gw124, A, B and C'};
-% 
-% metaData.grp.sets = {set1, set2};
-% metaData.grp.comment = {comment1, comment2};
 
-
-%% Facts
-                                 
-%% References
-bibkey = 'Wiki'; type = 'Misc'; bib = ...
-'howpublished = {\url{http://en.wikipedia.org/wiki/wiki/Oncorhynchus_mykiss}';  
-metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-%
-bibkey = 'Kooy2010'; type = 'Book'; bib = [ ...  % used in setting of chemical parameters and pseudodata
-'author = {Kooijman, S.A.L.M.}, ' ...
-'year = {2010}, ' ...
-'title  = {Dynamic Energy Budget theory for metabolic organisation}, ' ...
-'publisher = {Cambridge Univ. Press, Cambridge}, ' ...
-'pages = {Table 4.2 (page 150), 8.1 (page 300)}, ' ...
-'howpublished = {\url{http://www.bio.vu.nl/thb/research/bib/Kooy2010.html}'];
-metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-%
-%
-bibkey = 'Kooy2014'; type = 'Misc'; bib = ...
-'note = {taken from from Salmo trutta}';  
-metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
