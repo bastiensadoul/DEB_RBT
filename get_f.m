@@ -19,6 +19,8 @@ estim_options('max_step_number',18);  % set options for parameter estimation
 estim_options('max_fun_evals',5e3);    % set options for parameter estimation
 estim_options('lossfunction', 'E'); % there are three possibilities: 'E', 'F' or 'I'
 
+estim = 1;
+
 % filter: 0 for hold, 1 for pass
 % flag: indicator of reason for not passing the filter
 filterNm = 'filter_abj';
@@ -28,12 +30,29 @@ if ~filter
       print_filterflag(flag);  
 end
 
-newData.tWw = data.tW_gw150A;
-newWeights.tWw = weights.tW_gw150A;
-[par, info, nsteps] = petregr_f('predict_tWw', par, newData, auxData, newWeights, filterNm); % WLS estimate parameters using overwrite
+[nm, nst] = fieldnmnst_st(data); % cell array of string with fieldnames of data
 
-newPar = par;
-prdData = predict_tWw(newPar, newData, auxData);
+   newAuxData.temp = auxData.temp;
 
+for j = 1:nst
+j 
+nm{j}
+    newData.tWw = data.(nm{j});
+    newWeights.tWw = weights.(nm{j});
+    newAuxData.t0.tWw = auxData.t0.(nm{j});
+ 
+    
+    if estim
+    [newPar, info, nsteps] = petregr_f('predict_tWw', par, newData, newAuxData, newWeights, filterNm); % WLS estimate parameters using overwrite
+    else
+    newPar = par;
+    end
+    
+prdData = predict_tWw(newPar, newData, newAuxData);
+
+figure()
 plot(newData.tWw(:,1), prdData.tWw, 'r', newData.tWw(:,1), newData.tWw(:,2),'mo')
+
+clear prdData
+end
 

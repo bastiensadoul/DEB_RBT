@@ -41,7 +41,6 @@ tW_gw150=[...
 ];
 
 tW_gw150(:,1)=tW_gw150(:,1)+64;         % to put in dpf
-
 data.tW_gw150A = tW_gw150(:,[1 2]);
 data.tW_gw150B = tW_gw150(:,[1 4]);
 data.tW_gw150C = tW_gw150(:,[1 6]);
@@ -54,7 +53,10 @@ temp.tW_gw150A = C2K(8.5); units.temp.tW_gw150A = 'K'; label.temp.tW_gw150A = 't
 temp.tW_gw150B = C2K(8.5); units.temp.tW_gw150B = 'K'; label.temp.tW_gw150B = 'temperature';
 temp.tW_gw150C = C2K(8.5); units.temp.tW_gw150C = 'K'; label.temp.tW_gw150C = 'temperature';
 
- 
+auxData.t0.tW_gw150A  = 'dpf';
+auxData.t0.tW_gw150B  = 'dpf';
+auxData.t0.tW_gw150C  = 'dpf';
+
  % Our data for control (study gw124b)
 %  days from first feeding (don't know the dpf...)
 %  on 3 different tanks
@@ -88,6 +90,9 @@ units.tW_gw124iniA = {'d', 'g'};  label.tW_gw124iniA = {'age since first feeding
 units.tW_gw124iniB = {'d', 'g'};  label.tW_gw124iniB = {'age since first feeding', 'wet weight'};  bibkey.tW_gw124iniB = {'gw124iniB'};
 units.tW_gw124iniC = {'d', 'g'};  label.tW_gw124iniC = {'age since first feeding', 'wet weight'};  bibkey.tW_gw124iniC = {'gw124iniC'};
 
+auxData.t0.tW_gw124iniA  = 'dpb';
+auxData.t0.tW_gw124iniB  = 'dpb';
+auxData.t0.tW_gw124iniC  = 'dpb';
 
 % Our data for control (study gw124b)
 %  1  t days from first feeding (don't know the dpf)
@@ -117,6 +122,8 @@ tW_gw124fin=[...
 data.tW_gw124fin = tW_gw124fin(:,[1 2]);
 units.tW_gw124fin = {'d', 'g'};  label.tW_gw124fin = {'age since first feeding', 'wet weight'};  bibkey.tW_gw124fin = {'gw124fin'};
  
+auxData.t0.tW_gw124fin  = 'dpb';
+
 % % Our data, weight and length individually
 % % 1 is day post fertilization
 % % 2 is length (mm)
