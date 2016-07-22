@@ -35,8 +35,7 @@ end
    newAuxData.temp = auxData.temp;
 
 for j = 1:nst
-j 
-nm{j}
+
     newData.tWw = data.(nm{j});
     newWeights.tWw = weights.(nm{j});
     newAuxData.t0.tWw = auxData.t0.(nm{j});
@@ -50,8 +49,10 @@ nm{j}
     
 prdData = predict_tWw(newPar, newData, newAuxData);
 
-figure()
-plot(newData.tWw(:,1), prdData.tWw, 'r', newData.tWw(:,1), newData.tWw(:,2),'mo')
+fprintf(['f for ',nm{j},'is: %2.3f \n'],newPar.f)
+
+% figure()
+% plot(newData.tWw(:,1), prdData.tWw, 'r', newData.tWw(:,1), newData.tWw(:,2),'mo')
 
 clear prdData
 end
