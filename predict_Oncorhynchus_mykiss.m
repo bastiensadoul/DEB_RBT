@@ -15,6 +15,7 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   TC_Tah  = tempcorr(Tah(:,1), T_ref, T_A);
   TC_tWde = tempcorr(temp.tWde, T_ref, T_A);
   TC_WwJO = tempcorr(temp.WwJO_2, T_ref, T_A);
+  TC_150and124 = tempcorr(C2K(8.5), T_ref, T_A);
   
 %% zero -variate data  
 
@@ -190,6 +191,13 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   EWw_2 = L.^3 * (1 + f * w);
   EL_2 =  spline(tL_2(:,1), [tWw_2(:,1) L] )./ del_M;
    
+  
+  % DATA NOT PUBLISHED
+  % gw150
+  [EW150, EL150]  = predict_WL(f_150, TC_150and124, tW_gw150(:,1), par, cPar);
+  [EW124ini, EL124ini]  = predict_WL(f_124, TC_150and124, tW_gw124ini(:,1), par, cPar);
+  [EW124fin, EL124fin]  = predict_WL(f_124, TC_150and124, tW_gw124fin(:,1), par, cPar);
+  
   % pack to output
   prdData.tW       = EW;
   prdData.LWw      = LWw;
@@ -206,7 +214,10 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   prdData.tL_2     = EL_2;     
   prdData.ap       = aT_p;
   prdData.Lp       = Lw_p;
-  prdData.Wp       =  Ww_p;
+  prdData.Wp       = Ww_p;
+  prdData.tW_gw150     = EW150;
+  prdData.tW_gw124ini  = EW124ini;
+  prdData.tW_gw124fin  = EW124fin;
   
 %% Subfunctions :
   

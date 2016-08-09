@@ -49,10 +49,6 @@ units.tW_gw150A = {'d', 'g'};  label.tW_gw150A = {'age since fertilization', 'we
 units.tW_gw150B = {'d', 'g'};  label.tW_gw150B = {'age since fertilization', 'wet weight'};  bibkey.tW_gw150B = {'gw150B'};
 units.tW_gw150C = {'d', 'g'};  label.tW_gw150C = {'age since fertilization', 'wet weight'};  bibkey.tW_gw150C = {'gw150C'};
 
-temp.tW_gw150A = C2K(8.5); units.temp.tW_gw150A = 'K'; label.temp.tW_gw150A = 'temperature';
-temp.tW_gw150B = C2K(8.5); units.temp.tW_gw150B = 'K'; label.temp.tW_gw150B = 'temperature';
-temp.tW_gw150C = C2K(8.5); units.temp.tW_gw150C = 'K'; label.temp.tW_gw150C = 'temperature';
-
 auxData.t0.tW_gw150A  = 'dpf';
 auxData.t0.tW_gw150B  = 'dpf';
 auxData.t0.tW_gw150C  = 'dpf';
@@ -116,7 +112,7 @@ tW_gw124fin=[...
     894.5 1853.86364 0.8197628
     949.0 2145.22727 0.8197628
    1005.0 2118.02326 0.8011318
-   1013.5 2118.02326 0.8011318
+%    1013.5 2118.02326 0.8011318
 ];
 
 data.tW_gw124fin = tW_gw124fin(:,[1 2]);

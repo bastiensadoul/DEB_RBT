@@ -134,9 +134,9 @@ units.tW_gw124A_BPA100 = {'d', 'g'};  label.tW_gw124A_BPA100 = {'age since ferti
 units.tW_gw124B_BPA100 = {'d', 'g'};  label.tW_gw124B_BPA100 = {'age since fertilization', 'wet weight'};  bibkey.tW_gw124B_BPA100 = {'gw124B-BPA100'};
 units.tW_gw124C_BPA100 = {'d', 'g'};  label.tW_gw124C_BPA100 = {'age since fertilization', 'wet weight'};  bibkey.tW_gw124C_BPA100 = {'gw124C-BPA100'};
 
-auxData.t0.tW_gw124A_BPA100  = 'dpf';
-auxData.t0.tW_gw124B_BPA100 = 'dpf';
-auxData.t0.tW_gw124C_BPA100  = 'dpf';
+auxData.t0.tW_gw124A_BPA100  = 'dpb';
+auxData.t0.tW_gw124B_BPA100 = 'dpb';
+auxData.t0.tW_gw124C_BPA100  = 'dpb';
 
 % Our data for BPA100 end (study gw124)
 %  days from first feeding (64dpf)
@@ -161,7 +161,7 @@ tW_gw124_BPA100end=[...
 894.5	1855.814	0.7589778
 949	2014.3023	0.7589778
 1005	2006.6279	0.7589778
-1013.5	2006.6279	0.7589778
+% 1013.5	2006.6279	0.7589778
 ];
 
 
@@ -171,8 +171,7 @@ data.tW_gw124_BPA100end = tW_gw124_BPA100end(:,[1 2]);
 
 units.tW_gw124_BPA100end = {'d', 'g'};  label.tW_gw124_BPA100end = {'age since fertilization', 'wet weight'};  bibkey.tW_gw124_BPA100end = {'gw124-BPA100end'};
 
-temp.tW_gw124_BPA100end = C2K(8.5); units.temp.tW_gw124_BPA100end = 'K'; label.temp.tW_gw124_BPA100end = 'temperature';
-
+auxData.t0.tW_gw124_BPA100end  = 'dpb';
 
 
 % Our data for BPA03 (study gw124)
@@ -183,7 +182,7 @@ temp.tW_gw124_BPA100end = C2K(8.5); units.temp.tW_gw124_BPA100end = 'K'; label.t
 %  column names:  date	weight surv
 
 tW_gw124_BPA03=[...
-    0	0.1150735	1
+0	0.1150735	1
 13	0.172428	0.9411765
 34	0.4146226	0.8753328
 59	1.25	0.8753328
@@ -213,8 +212,8 @@ tW_gw124_BPA03=[...
 893.5	1960.131579	0.7386722
 949	2264.210526	0.7386722
 1005	2303.289474	0.7386722
-1013.5	2303.289474	0.7386722
-1019.5	2318.890454	0.7386722
+% 1013.5	2303.289474	0.7386722
+% 1019.5	2318.890454	0.7386722
 ];
 
 tW_gw124_BPA03(:,1)=tW_gw124_BPA03(:,1)+64;         % to put in dpf             !!!!!!!!!!!!!!!!!!!!!!!!!!!!    not sure....
@@ -225,6 +224,7 @@ units.tW_gw124_BPA03 = {'d', 'g'};  label.tW_gw124_BPA03 = {'age since fertiliza
 
 temp.tW_gw124_BPA03 = C2K(8.5); units.temp.tW_gw124_BPA03 = 'K'; label.temp.tW_gw124_BPA03 = 'temperature';
 
+auxData.t0.tW_gw124_BPA03  = 'dpb';
 
 
 % Our data for BPA3 (study gw124)
@@ -265,8 +265,8 @@ tW_gw124_BPA3=[...
 893.5	1827.794118	0.8075197
 949	2160.735294	0.8075197
 1005	2203.529412	0.8075197
-1013.5	2203.529412	0.8075197
-1019.5	2218.67711	0.8075197
+% 1013.5	2203.529412	0.8075197
+% 1019.5	2218.67711	0.8075197
 ];
 
 tW_gw124_BPA3(:,1)=tW_gw124_BPA3(:,1)+64;         % to put in dpf             !!!!!!!!!!!!!!!!!!!!!!!!!!!!    not sure....
@@ -275,7 +275,7 @@ data.tW_gw124_BPA3 = tW_gw124_BPA3(:,[1 2]);
 
 units.tW_gw124_BPA3 = {'d', 'g'};  label.tW_gw124_BPA3 = {'age since fertilization', 'wet weight'};  bibkey.tW_gw124_BPA3 = {'gw124-BPA3'};
 
-temp.tW_gw124_BPA3 = C2K(8.5); units.temp.tW_gw124_BPA3 = 'K'; label.temp.tW_gw124_BPA3 = 'temperature';
+auxData.t0.tW_gw124_BPA3  = 'dpb';
 
 
 % Our data for BPA30 (study gw124)
@@ -316,8 +316,8 @@ tW_gw124_BPA30=[...
 893.5	1915	0.7890697
 949	2169.73	0.7890697
 1005	2177.432	0.7890697
-1013.5	2177.432	0.7890697
-1019.5	2192.46	0.7890697
+% 1013.5	2177.432	0.7890697
+% 1019.5	2192.46	0.7890697
 ];
 
 tW_gw124_BPA30(:,1)=tW_gw124_BPA30(:,1)+64;         % to put in dpf             !!!!!!!!!!!!!!!!!!!!!!!!!!!!    not sure....
@@ -326,7 +326,7 @@ data.tW_gw124_BPA30 = tW_gw124_BPA30(:,[1 2]);
 
 units.tW_gw124_BPA30 = {'d', 'g'};  label.tW_gw124_BPA30 = {'age since fertilization', 'wet weight'};  bibkey.tW_gw124_BPA30 = {'gw124-BPA30'};
 
-temp.tW_gw124_BPA30 = C2K(8.5); units.temp.tW_gw124_BPA30 = 'K'; label.temp.tW_gw124_BPA30 = 'temperature';
+auxData.t0.tW_gw124_BPA30  = 'dpb';
 
 % Our data for BPA300 (study gw124)
 %  days from first feeding (64dpf)
@@ -366,8 +366,8 @@ tW_gw124_BPA300=[...
 893.5	2138.75	0.6126269
 949	2473.393	0.6126269
 1005	2517.5	0.6126269
-1013.5	2517.5	0.6126269
-1019.5	2534.053	0.6126269
+% 1013.5	2517.5	0.6126269
+% 1019.5	2534.053	0.6126269
 ];
 
 tW_gw124_BPA300(:,1)=tW_gw124_BPA300(:,1)+64;         % to put in dpf             !!!!!!!!!!!!!!!!!!!!!!!!!!!!    not sure....
@@ -376,7 +376,7 @@ data.tW_gw124_BPA300 = tW_gw124_BPA300(:,[1 2]);
 
 units.tW_gw124_BPA300 = {'d', 'g'};  label.tW_gw124_BPA300 = {'age since fertilization', 'wet weight'};  bibkey.tW_gw124_BPA300 = {'gw124-BPA300'};
 
-temp.tW_gw124_BPA300 = C2K(8.5); units.temp.tW_gw124_BPA300 = 'K'; label.temp.tW_gw124_BPA300 = 'temperature';
+auxData.t0.tW_gw124_BPA300  = 'dpb';
 
 
 %% set weights for all real data
@@ -392,24 +392,3 @@ txtData.label = label;
 txtData.bibkey = bibkey;
 %txtData.comment = comment;
 
-
-%% Facts
-                                 
-%% References
-bibkey = 'Wiki'; type = 'Misc'; bib = ...
-'howpublished = {\url{http://en.wikipedia.org/wiki/wiki/Oncorhynchus_mykiss}';  
-metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-%
-bibkey = 'Kooy2010'; type = 'Book'; bib = [ ...  % used in setting of chemical parameters and pseudodata
-'author = {Kooijman, S.A.L.M.}, ' ...
-'year = {2010}, ' ...
-'title  = {Dynamic Energy Budget theory for metabolic organisation}, ' ...
-'publisher = {Cambridge Univ. Press, Cambridge}, ' ...
-'pages = {Table 4.2 (page 150), 8.1 (page 300)}, ' ...
-'howpublished = {\url{http://www.bio.vu.nl/thb/research/bib/Kooy2010.html}'];
-metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-%
-%
-bibkey = 'Kooy2014'; type = 'Misc'; bib = ...
-'note = {taken from from Salmo trutta}';  
-metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];

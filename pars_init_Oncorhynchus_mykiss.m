@@ -34,6 +34,8 @@ par.f = 1;          free.f = 0;     units.f = '-';          label.f = 'scaled fu
 par.f_LW = 1;       free.f_LW = 0;  units.f_LW = '-';       label.f_LW = 'scaled functional response for LW data'; 
 par.f_tW = 0.5355;  free.f_tW = 1;  units.f_tW = '-';       label.f_tW = 'scaled functional response for YaniHisa2002'; 
 par.f_tWL = 1.585;  free.f_tWL = 1; units.f_tWL = '-';      label.f_tWL = 'scaled functional response for DaviKenn2014'; 
+par.f_150 = 1;  free.f_150 = 1; units.f_150 = '-';      label.f_150 = 'scaled functional response for our data gw150';
+par.f_124 = 1;  free.f_124 = 1; units.f_124 = '-';      label.f_124 = 'scaled functional response for our data gw124'; 
 
 %% set chemical parameters from Kooy2010 
 [par, units, label, free] = addchem(par, units, label, free, metaData.phylum, metaData.class);
