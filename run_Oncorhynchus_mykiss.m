@@ -11,7 +11,7 @@ estim_options('lossfunction', 'F'); % there are three possibilities: 'E', 'F' or
 % does not punish under-estimation - we are studying the behaviors of 'F'
 % and 'I' in a more simple case - a 4 parameter model for growth and
 % reproduction -
-% meanwhile we can be free to empically shift between the different loss
+% meanwhile we can be free to empirically shift between the different loss
 % fucntions ... whatevers help to come to a global minimum and not get stuck in an unattractive local minimum he he :-)
  
 % 'pars_init_method': 0 - get initial estimates from automatized computation (default)
@@ -25,8 +25,10 @@ estim_options('lossfunction', 'F'); % there are three possibilities: 'E', 'F' or
 
 estim_options('pars_init_method', 2);
 estim_options('results_output', 0);
-estim_options('method', 'nm');
+estim_options('method', 'no');
 
 % estim_options('filter', 0); % we no longer have all of the model parameters from the 'abj' model, so it is best to put this to zero
 
 estim_pars;          % run estimation
+
+%mat2pars_init('Oncorhynchus_mykiss')
