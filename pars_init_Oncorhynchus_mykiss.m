@@ -32,9 +32,9 @@ par.f = 1;            free.f     = 0;   units.f = '-';            label.f = 'sca
 par.f_124 = 1.2157;   free.f_124 = 1;   units.f_124 = '-';        label.f_124 = 'scaled functional response for our data gw124'; 
 par.f_150 = 0.94692;  free.f_150 = 1;   units.f_150 = '-';        label.f_150 = 'scaled functional response for our data gw150'; 
 par.f_LW = 1;         free.f_LW  = 0;   units.f_LW = '-';         label.f_LW = 'scaled functional response for LW data'; 
-par.f_WLO = 1;        free.f_WLO = 1;   units.f_WLO = '-';        label.f_WLO = 'scaled functional response for data WLO'; 
+% par.f_WLO = 1;        free.f_WLO = 1;   units.f_WLO = '-';        label.f_WLO = 'scaled functional response for data WLO'; 
 par.f_tW = 0.62541;   free.f_tW  = 1;   units.f_tW = '-';         label.f_tW = 'scaled functional response for YaniHisa2002'; 
-par.f_tWL = 1.2513;   free.f_tWL = 1;   units.f_tWL = '-';        label.f_tWL = 'scaled functional response for DaviKenn2014'; 
+par.f_tWL = 1;   free.f_tWL = 1;   units.f_tWL = '-';        label.f_tWL = 'scaled functional response for DaviKenn2014'; 
 
 %% set chemical parameters from Kooy2010 
 [par, units, label, free] = addchem(par, units, label, free, metaData.phylum, metaData.class);

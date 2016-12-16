@@ -6,7 +6,7 @@ pets = {'Oncorhynchus_mykiss'};
 estim_options('default'); % runs estimation, uses nmregr method and filter
 estim_options('max_step_number',50000);  % set options for parameter estimation
 estim_options('max_fun_evals',5e3);    % set options for parameter estimation
-estim_options('lossfunction', 'F'); % there are three possibilities: 'E', 'F' or 'I'
+% estim_options('lossfunction', 'F'); % there are three possibilities: 'E', 'F' or 'I'
 % 'E' is what we use in the collection now, but punishes overestimation but
 % does not punish under-estimation - we are studying the behaviors of 'F'
 % and 'I' in a more simple case - a 4 parameter model for growth and

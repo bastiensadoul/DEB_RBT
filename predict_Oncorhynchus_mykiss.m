@@ -3,7 +3,20 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   % unpack par, data, auxData
   cPar = parscomp_st(par); vars_pull(par); 
   vars_pull(cPar);  vars_pull(data);  vars_pull(auxData);
-     
+
+  
+  % customized filters to contrain a parameter - optional - delete if not
+%   needed
+  filterChecks = f_tW>1 || f_tW <0 || ...         % f contrained to not be larger than 1
+                 f_tWL>1 || f_tWL <0;   % 
+  
+  if filterChecks  
+    info = 0;
+    prdData = {};
+    return;
+  end  
+  
+  
 %% compute temperature correction factors
   TC_ah5  = tempcorr(temp.ah_5, T_ref, T_A);
   TC_ah   = tempcorr(temp.ah, T_ref, T_A);  
@@ -15,8 +28,8 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   TC_Tah  = tempcorr(Tah(:,1), T_ref, T_A);
   TC_tWde = tempcorr(temp.tWde, T_ref, T_A);
   TC_WwJO = tempcorr(temp.WwJO_2, T_ref, T_A);
-  TC_WLO5 = tempcorr(C2K(5), T_ref, T_A);
-  TC_WLO15 = tempcorr(C2K(15), T_ref, T_A);
+  TC_WJO = tempcorr(temp.WJO, T_ref, T_A);
+%   TC_WLO15 = tempcorr(C2K(15), T_ref, T_A);
   TC_150and124 = tempcorr(C2K(8.5), T_ref, T_A);
   
 %% zero -variate data  
@@ -194,33 +207,38 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   EL_2 =  spline(tL_2(:,1), [tWw_2(:,1) L] )./ del_M;
    
   
-%   % WLO
-% %   
-%     % LW_WLO
-   Ww_WLO = (WLO(:,1) * del_M).^3 * (1 + f_WLO * w); % g, wet mass
+% %   % WLO
+% % %   
+% %     % LW_WLO
+%    Ww_WLO = (WLO(:,1) * del_M).^3 * (1 + f_WLO * w); % g, wet mass
 
       % Oxygen consumtion   
-  [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f_WLO);
+  [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f);
   
   pars_p = [kap; kap_R; g; k_J; k_M; L_T; v; U_Hb; U_Hj; U_Hp]; % compose pars
   p_ref = p_Am * L_m^2; % J/d, max assimilation power at max size
 
-         % at 5C
-%   Lofpred= linspace(LJO5(:,2)-2, LJO15(:,2)+2,10);   % I initially wanted to have prediction for various length (e.g. 10 lengths between 9 and 13 cm) but gave me an error
-  Lofpred= WLO(1,1);                                   % Deal with them as univariate data
-  L = (Lofpred/ (1 + f_WLO * w)) .^ (1/3);  % cm, structural length
-  pACSJGRD = p_ref * scaled_power_j(L, f, pars_p, l_b, l_j, l_p);  % J/d, powers
-  J_M = - (n_M\n_O) * eta_O * pACSJGRD(:, [1 7 5])';  % mol/d: J_C, J_H, J_O, J_N in rows
-  EWLO5= - J_M(3,:)' * TC_WLO5 * 1e3;         % mmol O2/d, O2 consumption 
-   
-         % at 15C
-%   Lofpred= linspace(LJO5(:,2)-2, LJO15(:,2)+2,10);   % I initially wanted to have prediction for various length (e.g. 10 lengths between 9 and 13 cm) but gave me an error
-  Lofpred= WLO(2,1);                                   % Deal with them as univariate data
-  L = (Lofpred/ (1 + f_WLO * w)) .^ (1/3);  % cm, structural length
-  pACSJGRD = p_ref * scaled_power_j(L, f, pars_p, l_b, l_j, l_p);  % J/d, powers
-  J_M = - (n_M\n_O) * eta_O * pACSJGRD(:, [1 7 5])';  % mol/d: J_C, J_H, J_O, J_N in rows
-  EWLO15= - J_M(3,:)' * TC_WLO15 * 1e3;         % mmol O2/d, O2 consumption 
+%          % at 5C
+% %   Lofpred= linspace(LJO5(:,2)-2, LJO15(:,2)+2,10);   % I initially wanted to have prediction for various length (e.g. 10 lengths between 9 and 13 cm) but gave me an error
+%   Lofpred= WLO(1,1);                                   % Deal with them as univariate data
+%   L = (Lofpred/ (1 + f_WLO * w)) .^ (1/3);  % cm, structural length
 %   
+  L = forkLength.WJO * del_M ; % structural length
+ 
+ 
+  pACSJGRD = p_ref * scaled_power_j(L, f, pars_p, l_b, l_j, l_p);  % J/d, powers
+  J_M = - (n_M\n_O) * eta_O * pACSJGRD(:, [1 7 5])';  % mol/d: J_C, J_H, J_O, J_N in rows
+  EJO = - J_M(3,:)' .* TC_WJO * 1e3;         % mmol O2/d, O2 consumption 
+
+  %    
+%          % at 15C
+% %   Lofpred= linspace(LJO5(:,2)-2, LJO15(:,2)+2,10);   % I initially wanted to have prediction for various length (e.g. 10 lengths between 9 and 13 cm) but gave me an error
+%   Lofpred= WLO(2,1);                                   % Deal with them as univariate data
+%   L = (Lofpred/ (1 + f_WLO * w)) .^ (1/3);  % cm, structural length
+%   pACSJGRD = p_ref * scaled_power_j(L, f, pars_p, l_b, l_j, l_p);  % J/d, powers
+%   J_M = - (n_M\n_O) * eta_O * pACSJGRD(:, [1 7 5])';  % mol/d: J_C, J_H, J_O, J_N in rows
+%   EWLO15= - J_M(3,:)' * TC_WLO15 * 1e3;         % mmol O2/d, O2 consumption 
+% %   
 %   
   
   % DATA NOT PUBLISHED
@@ -249,9 +267,9 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   prdData.tW_gw150     = EW150;
   prdData.tW_gw124ini  = EW124ini;
   prdData.tW_gw124fin  = EW124fin;
-  prdData.WLO      = Ww_WLO;
-  prdData.LJO15      = EWLO15;
-  prdData.LJO5      = EWLO5;
+  prdData.WJO      = EJO;
+%   prdData.LJO15      = EWLO15;
+%   prdData.LJO5      = EWLO5;
 
   
 %% Subfunctions :

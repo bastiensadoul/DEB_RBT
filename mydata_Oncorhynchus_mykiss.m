@@ -89,7 +89,8 @@ data.Wi = 25400;   units.Wi = 'g';    label.Wi = 'ultimate wet weight';    bibke
 data.Ri = data.Wi * 2.5/ 365; units.Ri = '#/d'; label.Ri = 'maximum reprod rate'; bibkey.Ri = {'Wiki'};   
   temp.Ri = C2K(5); units.temp.Ri = 'K'; label.temp.Ri = 'temperature';
   comment.Ri = '2000 till 3000 eggs per kg';
-
+  
+  
 % uni-variate data
 % t-Ww data from YaniHisa2002 at T = 273 + 8.5
 % initial weight 1.54 g
@@ -345,32 +346,26 @@ temp.tL_2 = C2K(14); units.temp.WwL_2 = 'K' ;  label.temp.tL_2 = 'mean temperatu
 %  3 T C, temperature
 %  4 Swimming speed (0, 45% of the Ucrit and 75% of the Ucrit
 %  5 Oxygen consumption (umol/g/h)
-
-
 WLO = [...
 11.5    15.2	5	0	4.10689479
-11.3    18    15	0	5.65205184
+11.3    18      15	0	5.65205184
 12.2    20.6    5	45	4.98310919
 11.6    17.5    15	45	6.58636376
 11.4    16.8	5   75	6.66874162
 11.1    15.1    15	75	9.93660271
 ];
-WLO(:,5) = WLO(:,5) / 1000 *24 *1000;  % transform umol/g/h to mmol/kg/d
+[Y,I]=sort(WLO(:,1)); WLO=WLO(I,:); % sorts by increasing weight
+WLO(:,5) = 24 .*1e3 * WLO(:,5) .* WLO(:,2);  % umol/g/h to mmol/d
+data.WJO = [WLO(:, 2) WLO(:, 5)];
+units.WJO = {'g', 'mmol/d'}; label.WJO = {'wet weight'; 'oxygen consumption'}; bibkey.WJO = {'KieAls1998'};
+ comment.WJO = 'no current';
+temp.WJO = C2K(WLO(:,3)); units.temp.WJO = 'K' ;  label.temp.WJO = 'temperature' ; 
+forkLength.WJO = C2K(WLO(:,1)); units.forkLength.WJO = 'cm' ;  label.forkLength.WJO = 'fork length' ; 
 
-% data.LJO15 = WLO(2, [1 5]) ; units.LJO15 = {'CM', 'mmol/kg/d'}; label.LJO15  = {'fork length', 'O2 uptake'}; bibkey.LJO15 = {'KieAls1998'};
-LJO15 = WLO(2, 5);
-data.LJO15 = LJO15; label.LJO15 = 'Oxygen uptake at 11.3g and at 15 degrees'; bibkey.LJO15 = {'KieAls1998'};
-temp.LJO15 = C2K(5); units.temp.LJO15 = 'K' ;  label.temp.LJO15 = 'mean temperature' ; 
-comment.LJO15 = 'no current';
-
-% data.LJO5 = WLO(1, [1 5]) ; units.LJO5 = {'CM', 'mmol/kg/d'}; label.LJO5  = {'fork length', 'O2 uptake'}; bibkey.LJO5 = {'KieAls1998'};
-data.LJO5 = WLO(1, 5); label.LJO5 = 'Oxygen uptake at 11.5g and at 5 degrees'; bibkey.LJO5 = {'KieAls1998'};
-temp.LJO5 = C2K(5); units.temp.LJO5 = 'K' ;  label.temp.LJO5 = 'temperature' ; 
-comment.LJO5 = 'no current';
-
- 
-data.WLO = WLO(:,[1 2]) ; units.WLO = {'CM', 'g'}; label.WLO  = {'fork length', 'weight'}; bibkey.WLO = {'KieAls1998'};
-comment.WLO = 'They said fed to satiation but seem a bit light... --> created their own f';
+% 
+%  
+% data.WLO = WLO(:,[1 2]) ; units.WLO = {'cm', 'g'}; label.WLO  = {'fork length', 'weight'}; bibkey.WLO = {'KieAls1998'};
+% comment.WLO = 'They said fed to satiation but seem a bit light... --> created their own f';
 
 
 %------------------------------------------------------------------------------------------------
@@ -766,21 +761,21 @@ weights = setweights(data, []);
 % growth does something strange after 20 m post hatch, see discussion and paper
 % weights.LWw = weights.LWw * 0.01; 
 % weights.tW = weights.tW * 10; 
-weights.tWw = weights.tWw * 200; 
-weights.tL = weights.tL * 30; 
-weights.tWw(end-7:end) = weights.tWw(end-7:end) * 0; 
-weights.tL(end-7:end) = weights.tL(end-7:end) * 0; % 
-weights.Tah = weights.Tah * 60; % this is empirical, it just helped
-weights.tWde_E = weights.tWde_E * 200; % this is empirical, it just helped
-weights.tWde = weights.tWde * 200; % this is empirical, it just helped
-weights.Wi= weights.Wi * 80; % this is empirical, it just helped
-weights.Wd0= weights.Wd0 * 800; % this is empirical, it just helped
-weights.WLO = weights.WLO * 50;  % this is empirical, it just helped
-% weights.LJO5 = weights.LJO5 * 50;  % this is empirical, it just helped
-% weights.LJO15 = weights.LJO15 * 50;  % this is empirical, it just helped
-weights.tW_gw150= weights.tW_gw150 * 0; % Try without using non published data. this is empirical, it just helped
-weights.tW_gw124ini= weights.tW_gw124ini * 0; % Try without using non published data. this is empirical, it just helped
-weights.tW_gw124fin= weights.tW_gw124fin * 0; % Try without using non published data. this is empirical, it just helped
+% weights.tWw = weights.tWw * 200; 
+% weights.tL = weights.tL * 30; 
+% weights.tWw(end-7:end) = weights.tWw(end-7:end) * 0; 
+% weights.tL(end-7:end) = weights.tL(end-7:end) * 0; % 
+% weights.Tah = weights.Tah * 60; % this is empirical, it just helped
+% weights.tWde_E = weights.tWde_E * 200; % this is empirical, it just helped
+% weights.tWde = weights.tWde * 200; % this is empirical, it just helped
+% weights.Wi= weights.Wi * 80; % this is empirical, it just helped
+% weights.Wd0= weights.Wd0 * 800; % this is empirical, it just helped
+% weights.WLO = weights.WLO * 50;  % this is empirical, it just helped
+% % weights.LJO5 = weights.LJO5 * 50;  % this is empirical, it just helped
+% % weights.LJO15 = weights.LJO15 * 50;  % this is empirical, it just helped
+% weights.tW_gw150= weights.tW_gw150 * 0; % Try without using non published data. this is empirical, it just helped
+% weights.tW_gw124ini= weights.tW_gw124ini * 0; % Try without using non published data. this is empirical, it just helped
+% weights.tW_gw124fin= weights.tW_gw124fin * 0; % Try without using non published data. this is empirical, it just helped
 
 
 %% set pseudodata and respective weights
@@ -790,6 +785,7 @@ weights.psd.k_J = weights.psd.k_J * 50;
 
 %% pack auxData and txtData for output
 auxData.temp = temp;
+auxData.forkLength = forkLength;
 txtData.units = units;
 txtData.label = label;
 txtData.bibkey = bibkey;
