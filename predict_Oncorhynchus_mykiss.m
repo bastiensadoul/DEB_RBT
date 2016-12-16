@@ -29,6 +29,7 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   TC_tWde = tempcorr(temp.tWde, T_ref, T_A);
   TC_WwJO = tempcorr(temp.WwJO_2, T_ref, T_A);
   TC_WJO = tempcorr(temp.WJO, T_ref, T_A);
+  TC_Wie1985 = tempcorr(temp.Wie1985, T_ref, T_A);
 %   TC_WLO15 = tempcorr(C2K(15), T_ref, T_A);
   TC_150and124 = tempcorr(C2K(8.5), T_ref, T_A);
   
@@ -240,6 +241,24 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
 %   EWLO15= - J_M(3,:)' * TC_WLO15 * 1e3;         % mmol O2/d, O2 consumption 
 % %   
 %   
+
+
+%   % Wie1985
+% %   
+
+      % Oxygen consumtion   
+  [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f);
+  
+  pars_p = [kap; kap_R; g; k_J; k_M; L_T; v; U_Hb; U_Hj; U_Hp]; % compose pars
+  p_ref = p_Am * L_m^2; % J/d, max assimilation power at max size
+  
+  EL =  ( Wie1985(:,1) /(1 + f * w) ) .^ (1/3) ;  % estimated structural length from weigth
+
+  pACSJGRD = p_ref * scaled_power_j(EL, f, pars_p, l_b, l_j, l_p);  % J/d, powers
+  J_M = - (n_M\n_O) * eta_O * pACSJGRD(:, [1 7 5])';  % mol/d: J_C, J_H, J_O, J_N in rows
+  EJO_Wie1985 = - J_M(3,:)' .* TC_Wie1985 * 1e3;         % mmol O2/d, O2 consumption 
+
+
   
   % DATA NOT PUBLISHED
   % gw150
@@ -268,6 +287,7 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   prdData.tW_gw124ini  = EW124ini;
   prdData.tW_gw124fin  = EW124fin;
   prdData.WJO      = EJO;
+  prdData.Wie1985      = EJO_Wie1985;
 %   prdData.LJO15      = EWLO15;
 %   prdData.LJO5      = EWLO5;
 

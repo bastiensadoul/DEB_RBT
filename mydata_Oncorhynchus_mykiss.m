@@ -9,7 +9,7 @@ metaData.species    = 'Oncorhynchus_mykiss';
 metaData.species_en = 'Rainbow trout'; 
 metaData.T_typical  = C2K(15.5); % K, body temp
 metaData.data_0     = {'ah_T'; 'ab_T'; 'ap'; 'am'; 'Lb'; 'Lp'; 'Li'; 'Wd0'; 'Wdh'; 'Wdb'; 'Wwi'; 'Ri'};  % tags for different types of zero-variate data
-metaData.data_1     = {'L-Ww'; 't-Ww'; 't-L'; 'tWde'; 'tWde_E'; 'T-ah'; 'Ww-JO'; 'WLO'; 'tW150'; 'tW124ini'; 'tW124fin'}; % tags for different types of uni-variate data
+metaData.data_1     = {'L-Ww'; 't-Ww'; 't-L'; 'tWde'; 'tWde_E'; 'T-ah'; 'Ww-JO'; 'WLO'; 'Wie1985'; 'tW150'; 'tW124ini'; 'tW124fin'}; % tags for different types of uni-variate data
 
 metaData.COMPLETE = 2.4; % using criteria of LikaKear2011
 
@@ -313,7 +313,7 @@ WwJO_2 = [...
 292.367579	55.21555101;
 296.332276	54.88756234;
 300.906906	54.94902987];
-data.WwJO_2 = WwJO_2; units.WwJO_2 = {'g', 'mmol/kg/d'}; label.WwJO_2  = {'wet weight', 'O2 uptake'}; bibkey.WwJO_2 = {'McKenPed2007'};
+data.WwJO_2 = WwJO_2; units.WwJO_2 = {'g', 'mmol/d'}; label.WwJO_2  = {'wet weight', 'O2 uptake'}; bibkey.WwJO_2 = {'McKenPed2007'};
 comment.WwJO_2 = 'LSAF - large size at age family. Water flow of 0.55BL/s, probably at the 182g. At 239.9g food was withdrawn for 2 days.';
 temp.WwJO_2 = C2K(14); units.temp.WwJO_2 = 'K' ;  label.temp.WwJO_2 = 'mean temperature' ; 
 
@@ -362,10 +362,64 @@ units.WJO = {'g', 'mmol/d'}; label.WJO = {'wet weight'; 'oxygen consumption'}; b
 temp.WJO = C2K(WLO(:,3)); units.temp.WJO = 'K' ;  label.temp.WJO = 'temperature' ; 
 forkLength.WJO = C2K(WLO(:,1)); units.forkLength.WJO = 'cm' ;  label.forkLength.WJO = 'fork length' ; 
 
-% 
-%  
+
 % data.WLO = WLO(:,[1 2]) ; units.WLO = {'cm', 'g'}; label.WLO  = {'fork length', 'weight'}; bibkey.WLO = {'KieAls1998'};
 % comment.WLO = 'They said fed to satiation but seem a bit light... --> created their own f';
+
+
+% Wieser 1985
+% Colums of WLO:
+%  1 T C, temperature
+%  2 W g, wet weight
+%  3 O umol/h,  Oxygen consumption
+
+Wie1985=[...
+4	0.07411815		0.29960388
+4	0.07570116		0.24584609
+4	0.09082459		0.30265766
+4	0.09228082		0.25088331
+4	0.28830376		1.28400505
+4	0.28968824		1.72302612
+4	0.40204423		2.66487866
+4	0.83844506		2.59816420
+4	0.85591715		3.04041960
+4	0.99068562		2.50756105
+4	1.01043342		2.12238970
+4	1.60382871		2.36219106
+4	2.66622647		7.11478856
+4	2.7348432		8.56534279
+4	4.18332479		11.76698089
+4	4.43520878		13.71831449
+4	4.53190409		18.64541439
+4	7.40732736		21.20118267
+4	7.4091086		17.92774796
+12	0.07149162		0.58938284
+12	0.07288104		0.32865209
+12	0.09710472		1.00120501
+12	0.15387105		1.08926586
+12	0.15572133		1.36932418
+12	0.18599371		1.80633860
+12	0.23481131		2.11247119
+12	0.23486762		1.78471567
+12	0.64984618		4.79114518
+12	0.9625608		4.96740657
+12	0.98682057		3.92773573
+12	1.15678331		6.47429477
+12	1.16328923		9.40429751
+12	3.11377238		13.96525595
+12	3.14317395		18.82591149
+12	4.82204969		37.07129187
+12	4.82326097		31.06914016
+12	5.94481937		43.66841489
+12	7.16758909		32.60241238
+12	7.40366066		41.34829138];
+
+Wie1985(:,3) = 24 .*1e-3 * Wie1985(:,3);  % umol/g/h to mmol/d
+[Y,I]=sort(Wie1985(:,2)); Wie1985=Wie1985(I,:); % sorts by increasing weight
+data.Wie1985 = [Wie1985(:, 2) Wie1985(:, 3)];
+units.Wie1985 = {'g', 'mmol/d'}; label.Wie1985 = {'wet weight'; 'oxygen consumption'}; bibkey.Wie1985 = {'Wie1985'};
+comment.Wie1985 = 'data from log scales, --> maybe not very precise';
+temp.Wie1985 = C2K(Wie1985(:,1)); units.temp.Wie1985 = 'K' ;  label.temp.Wie1985 = 'temperature' ; 
 
 
 %------------------------------------------------------------------------------------------------
@@ -764,7 +818,7 @@ weights = setweights(data, []);
 % weights.tWw = weights.tWw * 200; 
 % weights.tL = weights.tL * 30; 
 % weights.tWw(end-7:end) = weights.tWw(end-7:end) * 0; 
-% weights.tL(end-7:end) = weights.tL(end-7:end) * 0; % 
+% weights.tL(end-7:end) = weights.tL(end-7:end) * 0;
 % weights.Tah = weights.Tah * 60; % this is empirical, it just helped
 % weights.tWde_E = weights.tWde_E * 200; % this is empirical, it just helped
 % weights.tWde = weights.tWde * 200; % this is empirical, it just helped
@@ -909,4 +963,14 @@ bibkey = 'KieAls1998'; type = 'Article'; bib = [ ...
 'volume = {201}, '...
 'number = {22},' ...
 'pages = {3123-3133}'];
+metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
+%
+bibkey = 'Wie1985'; type = 'Article'; bib = [ ...  
+'author = {Wieser}, ' ...
+'year = {1985}, ' ...
+'title = {Developmental and metabolic constraints of the scope for activity in young rainbow trout (Salmo Gairdneri)}, ' ... 
+'journal = {Journal of Experimental Biology}, ' ...
+'volume = {118}, '...
+'number = {1},' ...
+'pages = {133-142}'];
 metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
