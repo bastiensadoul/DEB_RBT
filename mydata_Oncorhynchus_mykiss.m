@@ -355,7 +355,7 @@ WLO = [...
 % 11.1    15.1    15	75	9.93660271
 ];
 [Y,I]=sort(WLO(:,1)); WLO=WLO(I,:); % sorts by increasing weight
-WLO(:,5) = 24 .*1e3 * WLO(:,5) .* WLO(:,2);  % umol/g/h to mmol/d
+WLO(:,5) = 24 .*1e-3 * WLO(:,5) .* WLO(:,2);  % umol/g/h to mmol/d
 data.WJO = [WLO(:, 2) WLO(:, 5)];
 units.WJO = {'g', 'mmol/d'}; label.WJO = {'wet weight'; 'oxygen consumption'}; bibkey.WJO = {'KieAls1998'};
  comment.WJO = 'no current';
