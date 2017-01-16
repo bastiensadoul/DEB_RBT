@@ -33,10 +33,14 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
 %   TC_WLO15 = tempcorr(C2K(15), T_ref, T_A);
   TC_150and124 = tempcorr(C2K(8.5), T_ref, T_A);
   
+% parameter vector for DEBtool:
+  pars_tj = [g; k; l_T; v_Hb; v_Hj; v_Hp];
+  pars_JO = [kap; kap_R; g; k_J; k_M; L_T; v; U_Hb; U_Hj; U_Hp]; % compose pars
+  p_ref = p_Am * L_m^2; % J/d, max assimilation power at max size
+
 %% zero -variate data  
 
   % life cycle
-  pars_tj = [g; k; l_T; v_Hb; v_Hj; v_Hp];
   [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B, info] = get_tj(pars_tj, f);
 
   % initial 
@@ -59,11 +63,7 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   aT_b  = t_b/ k_M/ TC_ah;            % d, age at birth of foetus at f and T
   Wdb   = d_V * L_b^3 * (1 + f * w);  % g, dry weight at birth at f 
      
-%   % puberty: this section is moved to after uni-variate data, since is works with f_tLW
-%   L_p = L_m * l_p;                  % cm, structural length at puberty at f
-%   Lw_p = L_p/ del_M;                % cm, total length at puberty at f
-%   aT_p = t_p/ k_M/ TC_ap;           % d, time since birth at puberty at f and T
-%   Ww_p = L_p^3 * (1 + f * w);       % g, wet weight at puberty at f
+  % puberty: this is moved to after uni-variate data, since is works with f_tLW
 
   % ultimate
   L_i = L_m * l_i;                  % cm, ultimate structural length at f
@@ -92,7 +92,7 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   prdData.Wi = Ww_i;
   prdData.Ri = RT_i;
 
-  %% uni-variate data
+  %% uni-variate data with f = 1
   
   % T-ah - Vels1987 - at f and T
   EaT_h =  aUL(2,1) ./ TC_Tah;   % d, age at hatch at f and T
@@ -122,6 +122,29 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   EWde_E =  EWde_E(2:end);
   EWde = EWde(2:end);     
   end
+  
+  % Oxygen consumtion   
+  
+  % KieAls1998
+  L = forkLength.WJO * del_M ; % structural length
+  pACSJGRD = p_ref * scaled_power_j(L, f, pars_JO, l_b, l_j, l_p);  % J/d, powers
+  J_M = - (n_M\n_O) * eta_O * pACSJGRD(:, [1 7 5])';  % mol/d: J_C, J_H, J_O, J_N in rows
+  EJO = - J_M(3,:)' .* TC_WJO * 1e3;         % mmol O2/d, O2 consumption 
+
+  % Wie1985   
+  L = (Wie1985(:,1) /(1 + f * w) ) .^ (1/3) ;  % estimated structural length from weigth
+  pACSJGRD = p_ref * scaled_power_j(L, f, pars_JO, l_b, l_j, l_p);  % J/d, powers
+  J_M = - (n_M\n_O) * eta_O * pACSJGRD(:, [1 7 5])';  % mol/d: J_C, J_H, J_O, J_N in rows
+  EJO_Wie1985 = - J_M(3,:)' .* TC_Wie1985 * 1e3;      % mmol O2/d, O2 consumption 
+
+  % pack to output:
+  prdData.Tah      = EaT_h;
+  prdData.tWde_E   = EWde_E;
+  prdData.tWde     = EWde; 
+  prdData.WJO      = EJO;
+  prdData.Wie1985  = EJO_Wie1985;
+
+   %% uni-variate data with other f 
   
   % t-Ww , YaniHisa2002
   [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f_tW);
@@ -158,14 +181,11 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   % McKenPed2007
   
   % length - weight - respiration at f and T
-  [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f);
-  pars_p = [kap; kap_R; g; k_J; k_M; L_T; v; U_Hb; U_Hj; U_Hp]; % compose pars
-  p_ref = p_Am * L_m^2; % J/d, max assimilation power at max size
- 
+  [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f); 
   % SSAF - small size at age family
   % Ww-JO
   L = (WwJO_1(:,1)/ (1 + f * w)) .^ (1/3);  % cm, structural length
-  pACSJGRD = p_ref * scaled_power_j(L, f, pars_p, l_b, l_j, l_p);  % J/d, powers
+  pACSJGRD = p_ref * scaled_power_j(L, f, pars_JO, l_b, l_j, l_p);  % J/d, powers
   J_M = - (n_M\n_O) * eta_O * pACSJGRD(:, [1 7 5])';  % mol/d: J_C, J_H, J_O, J_N in rows
   EWwJO_1 = - J_M(3,:)' * TC_WwJO * 1e3;         % mmol O2/d, O2 consumption 
   % t-Ww , and t-L
@@ -187,7 +207,7 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   
   % LSAF - small size at age family
   L = (WwJO_2(:,1)/ (1 + f * w)) .^ (1/3);  % cm, structural length
-  pACSJGRD = p_ref * scaled_power_j(L, f, pars_p, l_b, l_j, l_p);  % J/d, powers
+  pACSJGRD = p_ref * scaled_power_j(L, f, pars_JO, l_b, l_j, l_p);  % J/d, powers
   J_M = - (n_M\n_O) * eta_O * pACSJGRD(:, [1 7 5])';  % mol/d: J_C, J_H, J_O, J_N in rows
   EWwJO_2= - J_M(3,:)' * TC_WwJO * 1e3;         % mmol O2/d, O2 consumption 
   % t-Ww , and t-L
@@ -207,59 +227,6 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   EWw_2 = L.^3 * (1 + f * w);
   EL_2 =  spline(tL_2(:,1), [tWw_2(:,1) L] )./ del_M;
    
-  
-% %   % WLO
-% % %   
-% %     % LW_WLO
-%    Ww_WLO = (WLO(:,1) * del_M).^3 * (1 + f_WLO * w); % g, wet mass
-
-      % Oxygen consumtion   
-  [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f);
-  
-  pars_p = [kap; kap_R; g; k_J; k_M; L_T; v; U_Hb; U_Hj; U_Hp]; % compose pars
-  p_ref = p_Am * L_m^2; % J/d, max assimilation power at max size
-
-%          % at 5C
-% %   Lofpred= linspace(LJO5(:,2)-2, LJO15(:,2)+2,10);   % I initially wanted to have prediction for various length (e.g. 10 lengths between 9 and 13 cm) but gave me an error
-%   Lofpred= WLO(1,1);                                   % Deal with them as univariate data
-%   L = (Lofpred/ (1 + f_WLO * w)) .^ (1/3);  % cm, structural length
-%   
-  L = forkLength.WJO * del_M ; % structural length
- 
- 
-  pACSJGRD = p_ref * scaled_power_j(L, f, pars_p, l_b, l_j, l_p);  % J/d, powers
-  J_M = - (n_M\n_O) * eta_O * pACSJGRD(:, [1 7 5])';  % mol/d: J_C, J_H, J_O, J_N in rows
-  EJO = - J_M(3,:)' .* TC_WJO * 1e3;         % mmol O2/d, O2 consumption 
-
-  %    
-%          % at 15C
-% %   Lofpred= linspace(LJO5(:,2)-2, LJO15(:,2)+2,10);   % I initially wanted to have prediction for various length (e.g. 10 lengths between 9 and 13 cm) but gave me an error
-%   Lofpred= WLO(2,1);                                   % Deal with them as univariate data
-%   L = (Lofpred/ (1 + f_WLO * w)) .^ (1/3);  % cm, structural length
-%   pACSJGRD = p_ref * scaled_power_j(L, f, pars_p, l_b, l_j, l_p);  % J/d, powers
-%   J_M = - (n_M\n_O) * eta_O * pACSJGRD(:, [1 7 5])';  % mol/d: J_C, J_H, J_O, J_N in rows
-%   EWLO15= - J_M(3,:)' * TC_WLO15 * 1e3;         % mmol O2/d, O2 consumption 
-% %   
-%   
-
-
-%   % Wie1985
-% %   
-
-      % Oxygen consumtion   
-  [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f);
-  
-  pars_p = [kap; kap_R; g; k_J; k_M; L_T; v; U_Hb; U_Hj; U_Hp]; % compose pars
-  p_ref = p_Am * L_m^2; % J/d, max assimilation power at max size
-  
-  EL =  ( Wie1985(:,1) /(1 + f * w) ) .^ (1/3) ;  % estimated structural length from weigth
-
-  pACSJGRD = p_ref * scaled_power_j(EL, f, pars_p, l_b, l_j, l_p);  % J/d, powers
-  J_M = - (n_M\n_O) * eta_O * pACSJGRD(:, [1 7 5])';  % mol/d: J_C, J_H, J_O, J_N in rows
-  EJO_Wie1985 = - J_M(3,:)' .* TC_Wie1985 * 1e3;         % mmol O2/d, O2 consumption 
-
-
-  
   % DATA NOT PUBLISHED
   % gw150
   [EW150, EL150]  = predict_WL(f_150, TC_150and124, tW_gw150(:,1), par, cPar);
@@ -271,9 +238,6 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   prdData.LWw      = EW_LWw;
   prdData.tL       = EL;
   prdData.tWw      = EWw;
-  prdData.Tah      = EaT_h;
-  prdData.tWde_E   = EWde_E;
-  prdData.tWde     = EWde; 
   prdData.WwJO_1   = EWwJO_1; 
   prdData.tWw_1    = EWw_1; 
   prdData.tL_1     = EL_1;     
@@ -286,12 +250,7 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   prdData.tW_gw150     = EW150;
   prdData.tW_gw124ini  = EW124ini;
   prdData.tW_gw124fin  = EW124fin;
-  prdData.WJO      = EJO;
-  prdData.Wie1985      = EJO_Wie1985;
-%   prdData.LJO15      = EWLO15;
-%   prdData.LJO5      = EWLO5;
 
-  
 %% Subfunctions :
   
 function [EW, EL] = predict_WL(f, TC, timeSinceHatch, p, c)                    

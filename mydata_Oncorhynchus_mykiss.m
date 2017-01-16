@@ -353,26 +353,20 @@ WLO = [...
 % 11.6    17.5    15	45	6.58636376
 % 11.4    16.8	5   75	6.66874162
 % 11.1    15.1    15	75	9.93660271
-];
+]; % the data with current are commented
 [Y,I]=sort(WLO(:,1)); WLO=WLO(I,:); % sorts by increasing weight
 WLO(:,5) = 24 .*1e-3 * WLO(:,5) .* WLO(:,2);  % umol/g/h to mmol/d
 data.WJO = [WLO(:, 2) WLO(:, 5)];
 units.WJO = {'g', 'mmol/d'}; label.WJO = {'wet weight'; 'oxygen consumption'}; bibkey.WJO = {'KieAls1998'};
- comment.WJO = 'no current';
+ comment.WJO = 'We only use the no current data. The author state said fed to satiation but organisms seem a bit light.';
 temp.WJO = C2K(WLO(:,3)); units.temp.WJO = 'K' ;  label.temp.WJO = 'temperature' ; 
 forkLength.WJO = C2K(WLO(:,1)); units.forkLength.WJO = 'cm' ;  label.forkLength.WJO = 'fork length' ; 
-
-
-% data.WLO = WLO(:,[1 2]) ; units.WLO = {'cm', 'g'}; label.WLO  = {'fork length', 'weight'}; bibkey.WLO = {'KieAls1998'};
-% comment.WLO = 'They said fed to satiation but seem a bit light... --> created their own f';
-
 
 % Wieser 1985
 % Colums of WLO:
 %  1 T C, temperature
 %  2 W g, wet weight
 %  3 O umol/h,  Oxygen consumption
-
 Wie1985=[...
 4	0.07411815		0.29960388
 4	0.07570116		0.24584609
@@ -414,7 +408,7 @@ Wie1985=[...
 12	7.16758909		32.60241238
 12	7.40366066		41.34829138];
 
-Wie1985(:,3) = 24 .*1e-3 * Wie1985(:,3);  % umol/g/h to mmol/d
+Wie1985(:,3) = 24 .*1e-3 * Wie1985(:,3);  % umol/h to mmol/d
 [Y,I]=sort(Wie1985(:,2)); Wie1985=Wie1985(I,:); % sorts by increasing weight
 data.Wie1985 = [Wie1985(:, 2) Wie1985(:, 3)];
 units.Wie1985 = {'g', 'mmol/d'}; label.Wie1985 = {'wet weight'; 'oxygen consumption'}; bibkey.Wie1985 = {'Wie1985'};
@@ -797,8 +791,6 @@ auxData.t0.tW_gw124fin  = 'dpb';
 % data.tW_ind = tLW_ind(:,[1 3]);
 % units.tW_ind = {'d', 'g'};  label.tW_ind = {'age since fertilization', 'weight'};  bibkey.tW_ind = {'individual data'};
 %  temp.tW_ind = C2K(8.5); units.temp.tW_ind = 'K'; label.temp.tW_ind = 'temperature';
-
-
 
 
 % %% Grouped plots

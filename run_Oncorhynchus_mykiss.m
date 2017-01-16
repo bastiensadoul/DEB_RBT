@@ -6,14 +6,9 @@ pets = {'Oncorhynchus_mykiss'};
 estim_options('default'); % runs estimation, uses nmregr method and filter
 estim_options('max_step_number',50000);  % set options for parameter estimation
 estim_options('max_fun_evals',5e3);    % set options for parameter estimation
-estim_options('lossfunction', 'F'); % there are three possibilities: 'E', 'F' or 'I'
-% 'E' is what we use in the collection now, but punishes overestimation but
-% does not punish under-estimation - we are studying the behaviors of 'F'
-% and 'I' in a more simple case - a 4 parameter model for growth and
-% reproduction -
-% meanwhile we can be free to empirically shift between the different loss
-% fucntions ... whatevers help to come to a global minimum and not get stuck in an unattractive local minimum he he :-)
- 
+% estim_options('loss_function', 'F'); % there are three possibilities: 'E', 'F' or 'I'
+% http://www.debtheory.org/wiki/index.php?title=Estimation_options
+
 % 'pars_init_method': 0 - get initial estimates from automatized computation (default)
 %                     1 - read initial estimates from .mat file 
 %                     2 - read initial estimates from pars_init file 
@@ -26,9 +21,6 @@ estim_options('lossfunction', 'F'); % there are three possibilities: 'E', 'F' or
 estim_options('pars_init_method', 2);
 estim_options('results_output', 0);
 estim_options('method', 'no');
-
-% estim_options('filter', 0); % we no longer have all of the model parameters from the 'abj' model, so it is best to put this to zero
-
 estim_pars;          % run estimation
 
 %mat2pars_init('Oncorhynchus_mykiss')
