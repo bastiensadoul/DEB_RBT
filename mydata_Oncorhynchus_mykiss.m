@@ -354,13 +354,14 @@ WLO = [...
 % 11.4    16.8	5   75	6.66874162
 % 11.1    15.1    15	75	9.93660271
 ]; % the data with current are commented
-[Y,I]=sort(WLO(:,1)); WLO=WLO(I,:); % sorts by increasing weight
+[Y,I]=sort(WLO(:,1)); WLO=WLO(I,:); % sorts by increasing length
+%[Y,I]=sort(WLO(:,2)); WLO=WLO(I,:); % sorts by increasing weight
 WLO(:,5) = 24 .*1e-3 * WLO(:,5) .* WLO(:,2);  % umol/g/h to mmol/d
 data.WJO = [WLO(:, 2) WLO(:, 5)];
 units.WJO = {'g', 'mmol/d'}; label.WJO = {'wet weight'; 'oxygen consumption'}; bibkey.WJO = {'KieAls1998'};
  comment.WJO = 'We only use the no current data. The author state said fed to satiation but organisms seem a bit light.';
 temp.WJO = C2K(WLO(:,3)); units.temp.WJO = 'K' ;  label.temp.WJO = 'temperature' ; 
-forkLength.WJO = C2K(WLO(:,1)); units.forkLength.WJO = 'cm' ;  label.forkLength.WJO = 'fork length' ; 
+forkLength.WJO = WLO(:,1); units.forkLength.WJO = 'cm' ;  label.forkLength.WJO = 'fork length' ; 
 
 % Wieser 1985
 % Colums of WLO:
@@ -809,19 +810,19 @@ weights = setweights(data, []);
 % weights.tW = weights.tW * 10; 
 % weights.tWw = weights.tWw * 200; 
 % weights.tL = weights.tL * 30; 
-% weights.tWw(end-7:end) = weights.tWw(end-7:end) * 0; 
-% weights.tL(end-7:end) = weights.tL(end-7:end) * 0;
+weights.tWw(end-7:end) = weights.tWw(end-7:end) * 0; 
+weights.tL(end-7:end) = weights.tL(end-7:end) * 0;
 % weights.Tah = weights.Tah * 60; % this is empirical, it just helped
 % weights.tWde_E = weights.tWde_E * 200; % this is empirical, it just helped
 % weights.tWde = weights.tWde * 200; % this is empirical, it just helped
 % weights.Wi= weights.Wi * 80; % this is empirical, it just helped
 % weights.Wd0= weights.Wd0 * 800; % this is empirical, it just helped
-% weights.WLO = weights.WLO * 50;  % this is empirical, it just helped
+% % weights.WJO = weights.WJO * 50;  % this is empirical, it just helped
 % % weights.LJO5 = weights.LJO5 * 50;  % this is empirical, it just helped
 % % weights.LJO15 = weights.LJO15 * 50;  % this is empirical, it just helped
-% weights.tW_gw150= weights.tW_gw150 * 0; % Try without using non published data. this is empirical, it just helped
-% weights.tW_gw124ini= weights.tW_gw124ini * 0; % Try without using non published data. this is empirical, it just helped
-% weights.tW_gw124fin= weights.tW_gw124fin * 0; % Try without using non published data. this is empirical, it just helped
+weights.tW_gw150= weights.tW_gw150 * 0; % Try without using non published data. this is empirical, it just helped
+weights.tW_gw124ini= weights.tW_gw124ini * 0; % Try without using non published data. this is empirical, it just helped
+weights.tW_gw124fin= weights.tW_gw124fin * 0; % Try without using non published data. this is empirical, it just helped
 
 
 %% set pseudodata and respective weights

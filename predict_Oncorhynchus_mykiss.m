@@ -123,16 +123,17 @@ function [prdData, info] = predict_Oncorhynchus_mykiss(par, data, auxData)
   EWde = EWde(2:end);     
   end
   
-  % Oxygen consumtion   
+  % Oxygen consumption   
   
   % KieAls1998
   L = forkLength.WJO * del_M ; % structural length
+  %L = (WJO(:,1) /(1 + f * w) ) .^ (1/3) ;  % estimated structural length from weights
   pACSJGRD = p_ref * scaled_power_j(L, f, pars_JO, l_b, l_j, l_p);  % J/d, powers
   J_M = - (n_M\n_O) * eta_O * pACSJGRD(:, [1 7 5])';  % mol/d: J_C, J_H, J_O, J_N in rows
   EJO = - J_M(3,:)' .* TC_WJO * 1e3;         % mmol O2/d, O2 consumption 
 
   % Wie1985   
-  L = (Wie1985(:,1) /(1 + f * w) ) .^ (1/3) ;  % estimated structural length from weigth
+  L = (Wie1985(:,1) /(1 + f * w) ) .^ (1/3) ;  % estimated structural length from weights
   pACSJGRD = p_ref * scaled_power_j(L, f, pars_JO, l_b, l_j, l_p);  % J/d, powers
   J_M = - (n_M\n_O) * eta_O * pACSJGRD(:, [1 7 5])';  % mol/d: J_C, J_H, J_O, J_N in rows
   EJO_Wie1985 = - J_M(3,:)' .* TC_Wie1985 * 1e3;      % mmol O2/d, O2 consumption 
