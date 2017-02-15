@@ -812,6 +812,7 @@ weights = setweights(data, []);
 % weights.tL = weights.tL * 30; 
 weights.tWw(end-7:end) = weights.tWw(end-7:end) * 0; 
 weights.tL(end-7:end) = weights.tL(end-7:end) * 0;
+weights.tWw_2 = weights.tWw_2 * 0; % because, McKenPed2007 is with fish in current (0.55 BL/s)
 % weights.Tah = weights.Tah * 60; % this is empirical, it just helped
 % weights.tWde_E = weights.tWde_E * 200; % this is empirical, it just helped
 % weights.tWde = weights.tWde * 200; % this is empirical, it just helped
