@@ -34,18 +34,18 @@ tW_gw150=[...
 %  412.0      187.9166667      0.9113221      189.1250000      0.9414283      191.7567568      0.7958161
 ];
 
-tW_gw150(:,1)=tW_gw150(:,1)+64;         % to put in dph
+tW_gw150(:,1)=tW_gw150(:,1)+64;         % to put in dpf
 data.tW_gw150A = tW_gw150(:,[1 2]);
 data.tW_gw150B = tW_gw150(:,[1 4]);
 data.tW_gw150C = tW_gw150(:,[1 6]);
 
-units.tW_gw150A = {'d', 'g'};  label.tW_gw150A = {'age since hatch', 'wet weight'};  bibkey.tW_gw150A = {'gw150A'};
-units.tW_gw150B = {'d', 'g'};  label.tW_gw150B = {'age since hatch', 'wet weight'};  bibkey.tW_gw150B = {'gw150B'};
-units.tW_gw150C = {'d', 'g'};  label.tW_gw150C = {'age since hatch', 'wet weight'};  bibkey.tW_gw150C = {'gw150C'};
+units.tW_gw150A = {'d', 'g'};  label.tW_gw150A = {'age since fertilization', 'wet weight'};  bibkey.tW_gw150A = {'gw150A'};
+units.tW_gw150B = {'d', 'g'};  label.tW_gw150B = {'age since fertilization', 'wet weight'};  bibkey.tW_gw150B = {'gw150B'};
+units.tW_gw150C = {'d', 'g'};  label.tW_gw150C = {'age since fertilization', 'wet weight'};  bibkey.tW_gw150C = {'gw150C'};
 
-auxData.t0.tW_gw150A  = 'dph';
-auxData.t0.tW_gw150B  = 'dph';
-auxData.t0.tW_gw150C  = 'dph';
+auxData.t0.tW_gw150A  = 'dpf';
+auxData.t0.tW_gw150B  = 'dpf';
+auxData.t0.tW_gw150C  = 'dpf';
 
  % Our data for control (study gw124b)
 %  days from first feeding (don't know the dpf...)
@@ -72,18 +72,18 @@ tW_gw124ini=[...
 %   327                 NaN        0.8741462                 NaN        0.8315408                 NaN        0.8936575
 ];
 
-tW_gw124ini(:,1)=tW_gw124ini(:,1)+42;         % to put in dph
+tW_gw124ini(:,1)=tW_gw124ini(:,1)+64;         % to put in dpf (Unknown, but based on gw150)
 data.tW_gw124iniA = tW_gw124ini(1:14,[1 2]);
 data.tW_gw124iniB = tW_gw124ini(1:14,[1 4]);
 data.tW_gw124iniC = tW_gw124ini(1:14,[1 6]);
 
-units.tW_gw124iniA = {'d', 'g'};  label.tW_gw124iniA = {'age since first hatch', 'wet weight'};  bibkey.tW_gw124iniA = {'gw124iniA'};
-units.tW_gw124iniB = {'d', 'g'};  label.tW_gw124iniB = {'age since first hatch', 'wet weight'};  bibkey.tW_gw124iniB = {'gw124iniB'};
-units.tW_gw124iniC = {'d', 'g'};  label.tW_gw124iniC = {'age since first hatch', 'wet weight'};  bibkey.tW_gw124iniC = {'gw124iniC'};
+units.tW_gw124iniA = {'d', 'g'};  label.tW_gw124iniA = {'age since fertilization', 'wet weight'};  bibkey.tW_gw124iniA = {'gw124iniA'};
+units.tW_gw124iniB = {'d', 'g'};  label.tW_gw124iniB = {'age since fertilization', 'wet weight'};  bibkey.tW_gw124iniB = {'gw124iniB'};
+units.tW_gw124iniC = {'d', 'g'};  label.tW_gw124iniC = {'age since fertilization', 'wet weight'};  bibkey.tW_gw124iniC = {'gw124iniC'};
 
-auxData.t0.tW_gw124iniA  = 'dph';
-auxData.t0.tW_gw124iniB  = 'dph';
-auxData.t0.tW_gw124iniC  = 'dph';
+auxData.t0.tW_gw124iniA  = 'dpf';
+auxData.t0.tW_gw124iniB  = 'dpf';
+auxData.t0.tW_gw124iniC  = 'dpf';
 
 % Our data for control (study gw124b)
 %  1  t days from first feeding (don't know the dpf)
@@ -110,11 +110,11 @@ tW_gw124fin=[...
 %    1013.5 2118.02326 0.8011318
 ];
 
-tW_gw124fin(:,1)=tW_gw124fin(:,1)+42;         % to put in dph
+tW_gw124fin(:,1)=tW_gw124fin(:,1)+64;         % to put in dpf (Unknown, but based on gw150)
 data.tW_gw124fin = tW_gw124fin(:,[1 2]);
-units.tW_gw124fin = {'d', 'g'};  label.tW_gw124fin = {'age since first hatch', 'wet weight'};  bibkey.tW_gw124fin = {'gw124fin'};
+units.tW_gw124fin = {'d', 'g'};  label.tW_gw124fin = {'age since fertilization', 'wet weight'};  bibkey.tW_gw124fin = {'gw124fin'};
  
-auxData.t0.tW_gw124fin  = 'dph';
+auxData.t0.tW_gw124fin  = 'dpf';
 
 % Our data, weight and length individually
 % 1 is day post fertilization
@@ -380,14 +380,14 @@ tLW_ind=[...
 % 
 tLW_ind(:,2) = tLW_ind(:,2)/10;   % transform in cm 
 
-tLW_ind(:,1)=tLW_ind(:,1)+42;         % to put in dph
+tLW_ind(:,1)=tLW_ind(:,1);        % already in dpf
 
 data.tL_ind = tLW_ind(:,[1 2]);
-units.tL_ind = {'d', 'cm'};  label.tL_ind = {'age since hatch', 'total length'};  bibkey.tL_ind = {'individual data'};
+units.tL_ind = {'d', 'cm'};  label.tL_ind = {'age since fertilization', 'total length'};  bibkey.tL_ind = {'individual data'};
  temp.tL_ind = C2K(8.5); units.temp.tL_ind = 'K'; label.temp.tL_ind = 'temperature';
 
 data.tW_ind = tLW_ind(:,[1 3]);
-units.tW_ind = {'d', 'g'};  label.tW_ind = {'age since hatch', 'weight'};  bibkey.tW_ind = {'individual data'};
+units.tW_ind = {'d', 'g'};  label.tW_ind = {'age since fertilization', 'weight'};  bibkey.tW_ind = {'individual data'};
  temp.tW_ind = C2K(8.5); units.temp.tW_ind = 'K'; label.temp.tW_ind = 'temperature';
  
 data.WL_ind = tLW_ind(:,[2 3]);
@@ -498,14 +498,14 @@ auxData.t0.tW_gw150C_BPA30  = 'dpf';
 %  column names:  date	weight.C55_C8_B15	surv.C55_C8_B15	weight.C61_C14_B15	surv.C61_C14_B15	weight.C67_C20_B15	surv.C67_C20_B15
 
 tW_gw124_BPA100=[...
-0   0.1118056	1	0.1045455	1	0.09874214	1
+0   0.1118056	1           0.1045455	1           0.09874214	1
 13	0.1415929	0.8055556	0.1472603	0.9675325	0.1527027	0.9496855
-34	0.36375	0.6558505	0.3403101	0.9277709	0.3379845	0.8919344
-59	1	0.6394543	0.9576271	0.9205788	0.93706897	0.8711917
-76	1.7794118	0.6394543	1.6940678	0.9205788	1.675	0.8711917
+34	0.36375     0.6558505	0.3403101	0.9277709	0.3379845	0.8919344
+59	1           0.6394543	0.9576271	0.9205788	0.93706897	0.8711917
+76	1.7794118	0.6394543	1.6940678	0.9205788	1.675       0.8711917
 97	3.2735294	0.6394543	3.0466102	0.9205788	3.05172414	0.8711917
 118	5.5555556	0.6300505	5.3982301	0.9127773	5.3539823	0.8711917
-139	9.0322581	0.6200497	8.4513274	0.9127773	8.125	0.8634821
+139	9.0322581	0.6200497	8.4513274	0.9127773	8.125       0.8634821
 160	14.7580645	0.6200497	14.3243243	0.896622	13.48214286	0.8634821
 181	22.0338983	0.6200497	21.588785	0.8885443	20.63636364	0.8634821
 202	32.7118644	0.6200497	32.3364486	0.8885443	30.77272727	0.8634821
@@ -514,7 +514,7 @@ tW_gw124_BPA100=[...
 286	100.3389831	0.6200497	105.5714286	0.871936	95.9047619	0.8242329
 ];
 
-tW_gw124_BPA100(:,1)=tW_gw124_BPA100(:,1)+64;         % to put in dpf             !!!!!!!!!!!!!!!!!!!!!!!!!!!!    not sure....
+tW_gw124_BPA100(:,1)=tW_gw124_BPA100(:,1)+64;          % to put in dpf (Unknown, but based on gw150)
 
 data.tW_gw124A_BPA100 = tW_gw124_BPA100(:,[1 2]);
 data.tW_gw124B_BPA100 = tW_gw124_BPA100(:,[1 4]);
@@ -524,9 +524,9 @@ units.tW_gw124A_BPA100 = {'d', 'g'};  label.tW_gw124A_BPA100 = {'age since ferti
 units.tW_gw124B_BPA100 = {'d', 'g'};  label.tW_gw124B_BPA100 = {'age since fertilization', 'wet weight'};  bibkey.tW_gw124B_BPA100 = {'gw124B-BPA100'};
 units.tW_gw124C_BPA100 = {'d', 'g'};  label.tW_gw124C_BPA100 = {'age since fertilization', 'wet weight'};  bibkey.tW_gw124C_BPA100 = {'gw124C-BPA100'};
 
-auxData.t0.tW_gw124A_BPA100  = 'dpb';
-auxData.t0.tW_gw124B_BPA100 = 'dpb';
-auxData.t0.tW_gw124C_BPA100  = 'dpb';
+auxData.t0.tW_gw124A_BPA100  = 'dpf';
+auxData.t0.tW_gw124B_BPA100 = 'dpf';
+auxData.t0.tW_gw124C_BPA100  = 'dpf';
 
 % Our data for BPA100 end (study gw124)
 %  days from first feeding (64dpf)
@@ -555,13 +555,13 @@ tW_gw124_BPA100end=[...
 ];
 
 
-tW_gw124_BPA100end(:,1)=tW_gw124_BPA100end(:,1)+64;         % to put in dpf             !!!!!!!!!!!!!!!!!!!!!!!!!!!!    not sure....
+tW_gw124_BPA100end(:,1)=tW_gw124_BPA100end(:,1)+64;          % to put in dpf (Unknown, but based on gw150)
 
 data.tW_gw124_BPA100end = tW_gw124_BPA100end(:,[1 2]);
 
 units.tW_gw124_BPA100end = {'d', 'g'};  label.tW_gw124_BPA100end = {'age since fertilization', 'wet weight'};  bibkey.tW_gw124_BPA100end = {'gw124-BPA100end'};
 
-auxData.t0.tW_gw124_BPA100end  = 'dpb';
+auxData.t0.tW_gw124_BPA100end  = 'dpf';
 
 
 % Our data for BPA03 (study gw124)
@@ -606,7 +606,7 @@ tW_gw124_BPA03=[...
 % 1019.5	2318.890454	0.7386722
 ];
 
-tW_gw124_BPA03(:,1)=tW_gw124_BPA03(:,1)+64;         % to put in dpf             !!!!!!!!!!!!!!!!!!!!!!!!!!!!    not sure....
+tW_gw124_BPA03(:,1)=tW_gw124_BPA03(:,1)+64;         % to put in dpf (Unknown, but based on gw150)
 
 data.tW_gw124_BPA03 = tW_gw124_BPA03(:,[1 2]);
 
@@ -614,7 +614,7 @@ units.tW_gw124_BPA03 = {'d', 'g'};  label.tW_gw124_BPA03 = {'age since fertiliza
 
 temp.tW_gw124_BPA03 = C2K(8.5); units.temp.tW_gw124_BPA03 = 'K'; label.temp.tW_gw124_BPA03 = 'temperature';
 
-auxData.t0.tW_gw124_BPA03  = 'dpb';
+auxData.t0.tW_gw124_BPA03  = 'dpf';
 
 
 % Our data for BPA3 (study gw124)
@@ -659,13 +659,13 @@ tW_gw124_BPA3=[...
 % 1019.5	2218.67711	0.8075197
 ];
 
-tW_gw124_BPA3(:,1)=tW_gw124_BPA3(:,1)+64;         % to put in dpf             !!!!!!!!!!!!!!!!!!!!!!!!!!!!    not sure....
+tW_gw124_BPA3(:,1)=tW_gw124_BPA3(:,1)+64;         % to put in dpf (Unknown, but based on gw150)
 
 data.tW_gw124_BPA3 = tW_gw124_BPA3(:,[1 2]);
 
 units.tW_gw124_BPA3 = {'d', 'g'};  label.tW_gw124_BPA3 = {'age since fertilization', 'wet weight'};  bibkey.tW_gw124_BPA3 = {'gw124-BPA3'};
 
-auxData.t0.tW_gw124_BPA3  = 'dpb';
+auxData.t0.tW_gw124_BPA3  = 'dpf';
 
 
 % Our data for BPA30 (study gw124)
@@ -679,12 +679,12 @@ tW_gw124_BPA30=[...
 0	0.09906832	1
 13	0.1511785	0.9534161
 34	0.3774545	0.9245248
-59	1.06654	0.9178009
-76	1.94981	0.9178009
+59	1.06654     0.9178009
+76	1.94981     0.9178009
 97	3.451923	0.9073317
 118	5.885827	0.9073317
 139	8.924303	0.8966152
-160	14.2	0.893043
+160	14.2        0.893043
 181	21.98347	0.893043
 202	31.59751	0.8893528
 223	40.46025	0.8819723
@@ -692,7 +692,7 @@ tW_gw124_BPA30=[...
 286	87.48918	0.8524502
 298.5	101.1	0.8450696
 327	128.9667	0.8338021
-375	209.094	0.8282434
+375	209.094     0.8282434
 431	330.6376	0.8282434
 488	478.3893	0.8282434
 552	714.9329	0.8282434
@@ -710,13 +710,13 @@ tW_gw124_BPA30=[...
 % 1019.5	2192.46	0.7890697
 ];
 
-tW_gw124_BPA30(:,1)=tW_gw124_BPA30(:,1)+64;         % to put in dpf             !!!!!!!!!!!!!!!!!!!!!!!!!!!!    not sure....
+tW_gw124_BPA30(:,1)=tW_gw124_BPA30(:,1)+64;         % to put in dpf (Unknown, but based on gw150)
 
 data.tW_gw124_BPA30 = tW_gw124_BPA30(:,[1 2]);
 
 units.tW_gw124_BPA30 = {'d', 'g'};  label.tW_gw124_BPA30 = {'age since fertilization', 'wet weight'};  bibkey.tW_gw124_BPA30 = {'gw124-BPA30'};
 
-auxData.t0.tW_gw124_BPA30  = 'dpb';
+auxData.t0.tW_gw124_BPA30  = 'dpf';
 
 % Our data for BPA300 (study gw124)
 %  days from first feeding (64dpf)
@@ -760,13 +760,13 @@ tW_gw124_BPA300=[...
 % 1019.5	2534.053	0.6126269
 ];
 
-tW_gw124_BPA300(:,1)=tW_gw124_BPA300(:,1)+64;         % to put in dpf             !!!!!!!!!!!!!!!!!!!!!!!!!!!!    not sure....
+tW_gw124_BPA300(:,1)=tW_gw124_BPA300(:,1)+64;          % to put in dpf (Unknown, but based on gw150)
 
 data.tW_gw124_BPA300 = tW_gw124_BPA300(:,[1 2]);
 
 units.tW_gw124_BPA300 = {'d', 'g'};  label.tW_gw124_BPA300 = {'age since fertilization', 'wet weight'};  bibkey.tW_gw124_BPA300 = {'gw124-BPA300'};
 
-auxData.t0.tW_gw124_BPA300  = 'dpb';
+auxData.t0.tW_gw124_BPA300  = 'dpf';
 
 
 %% set weights for all real data
