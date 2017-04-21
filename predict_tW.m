@@ -1,11 +1,9 @@
 function [prdData, info] = predict_tW(par, data, auxData)                    
 
-global string 
-
 cPar  = parscomp_st(par); 
 vars_pull(par); vars_pull(cPar); vars_pull(data); vars_pull(auxData);
 
-TC = tempcorr(T, T_ref, T_A);
+TC = tempcorr(T, T_ref, T_A); % -, TC temperature correction
 
 age = data.tW(:,1);
 if age(1) > 0
@@ -13,7 +11,7 @@ if age(1) > 0
 else
     ageIn = age;
 end
-[~, LEH] =  ode23s(@dget_LEH, ageIn, [LEH0; 0; 0; 0],[],f, TC, par, cPar, treatment); 
+[~, LEH] =  ode23(@dget_LEH, ageIn, [LEH0; 0; 0; 0],[],f, TC, par, cPar, treatment); 
 if age(1) > 0
     LEH(1,:) = [];
 end
@@ -70,9 +68,9 @@ function dLEH = dget_LEH(t, LEH, f, TC, p, c, treatment)
   
       case 'E_G'         
       E_G_Q = p.E_G * p.delta; % J/d/cm^3, p_M of exposed organism
-      E_G_t = max(p.E_G, E_G_Q + (p.E_G - E_G_Q)/ p.t_f * t);
+      E_G_t = max(p.E_G, E_G_Q + 0.4*(p.E_G - E_G_Q)/ p.t_f * t);
       p.E_G = E_G_t; % overwrite control value
-      fprintf('E_G_t = %3.1f \n',E_G_t);
+     
   end
 
   % Growth rate and mobilization rate:

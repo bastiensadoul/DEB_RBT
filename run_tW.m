@@ -7,7 +7,6 @@ clear all; close all; clc
 load('results_Oncorhynchus_mykiss.mat') % load parameter values of the control -
 c = parscomp_st(par);  vars_pull(c); vars_pull(par)
 
-
 par.f        = 0.76;
 pars_UE0      = [V_Hb; g; k_J; k_M; v]; % compose parameter vector
 U_E0          = initial_scaled_reserve(par.f, pars_UE0); % d.cm^2, initial scaled reserve, f= 1
@@ -18,7 +17,7 @@ auxData.T     = C2K(8.5); % K, kelvin
 
 %% contols
 auxData.treatment = 'control';
-data.tW = linspace(0,420,100)'; % = data.tW_gw150A(:,1);
+data.tW = linspace(0,600,100)'; % = data.tW_gw150A(:,1);
 prdData = predict_tW(par, data, auxData);
 
 figure(1)
@@ -100,7 +99,7 @@ set(gca,'Fontsize',12);
 %% increase or decrease p_M values
 auxData.treatment = 'p_M'; % p_M is modified
 par.t_f      = 200; % day, dpf when when parameter reaches normal value again
-par.delta    = 10; % factor by wich the parameter is modified at start from BPA
+par.delta    = 50; % factor by wich the parameter is modified at start from BPA
 
 pD = predict_tW(par, data, auxData); % linear change in parameter value from 0 to t_f
 diff = (pD.tW - prdData.tW)/100;
@@ -126,7 +125,7 @@ xlabel('age, dpf'); ylabel('change in p_M'); set(gca,'Fontsize',12);
  %% increase costs for growth:
  % this can only increase
 auxData.treatment = 'E_G';
-par.t_f      = 200; % day, dpf when when parameter reaches normal value again
+par.t_f      = 130; % day, dpf when when parameter reaches normal value again
 par.delta    = 5; % factor by wich the parameter is modified at start from BPA
 
 pD = predict_tW(par, data, auxData); % linear change in parameter value from 0 to t_f
@@ -135,12 +134,16 @@ diff = (pD.tW - prdData.tW)/100;
 figure(1)
 plot(t,pD.tW,'g','linewidth',2,'linestyle','--' )
 
+% ylim([0 0.5])
+% xlim([0 75])
+
 E_G_Q = E_G * par.delta; % J/d/cm^3, p_M at start at T
 E_G_t = max(E_G, E_G_Q +(E_G - E_G_Q)/ par.t_f * t); % how E_G changes
 
 figure(4)
 plot(data.tW, diff,'g');
 xlabel('age, dpf'); ylabel('diff to control curve, [E_G]'); set(gca,'Fontsize',12); 
+% xlim([0 75])
 
 figure(5)
 plot(t, E_G_t,'g')
