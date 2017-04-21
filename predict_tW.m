@@ -68,7 +68,7 @@ function dLEH = dget_LEH(t, LEH, f, TC, p, c, treatment)
   
       case 'E_G'         
       E_G_Q = p.E_G * p.delta; % J/d/cm^3, p_M of exposed organism
-      E_G_t = max(p.E_G, E_G_Q + 0.4*(p.E_G - E_G_Q)/ p.t_f * t);
+      E_G_t = max(p.E_G, E_G_Q + (p.E_G - E_G_Q)/ p.t_f * t);
       p.E_G = E_G_t; % overwrite control value
      
   end
