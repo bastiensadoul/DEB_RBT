@@ -102,7 +102,7 @@ par.t_f      = 200; % day, dpf when when parameter reaches normal value again
 par.delta    = 50; % factor by wich the parameter is modified at start from BPA
 
 pD = predict_tW(par, data, auxData); % linear change in parameter value from 0 to t_f
-diff = (pD.tW - prdData.tW)/100;
+diff = (pD.tW - prdData.tW)./pD.tW * 100;
 
 figure(1)
 plot(t,pD.tW,'r','linewidth',2,'linestyle','--' )
@@ -125,11 +125,11 @@ xlabel('age, dpf'); ylabel('change in p_M'); set(gca,'Fontsize',12);
  %% increase costs for growth:
  % this can only increase
 auxData.treatment = 'E_G';
-par.t_f      = 130; % day, dpf when when parameter reaches normal value again
+par.t_f      = 42; % day, dpf when when parameter reaches normal value again
 par.delta    = 5; % factor by wich the parameter is modified at start from BPA
 
 pD = predict_tW(par, data, auxData); % linear change in parameter value from 0 to t_f
-diff = (pD.tW - prdData.tW)/100;
+diff = (pD.tW - prdData.tW)./pD.tW * 100;
 
 figure(1)
 plot(t,pD.tW,'g','linewidth',2,'linestyle','--' )
