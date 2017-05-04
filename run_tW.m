@@ -66,7 +66,7 @@ plot(t,pD.tW,'g','linewidth',2,'linestyle','--' )
 % xlim([0 75])
 
 E_G_Q = E_G * par.delta; % J/d/cm^3, p_M at start at T
-E_G_t = max(E_G, E_G_Q +(E_G - E_G_Q)/ par.t_f * t); % how E_G changes
+E_G_t = min(E_G, E_G_Q +(E_G - E_G_Q)/ par.t_f * t); % how E_G changes
 
 figure(4)
 plot(d.tW, diff,'g');

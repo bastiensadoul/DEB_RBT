@@ -1,5 +1,15 @@
 %% This script estimates functional response for each control dataset 
 % the results are saved in .mat files
+% The first seven datasets in mydata_BPA  are control
+% we use petregr_f and estimate f for each data set separately taking all
+% of the other parameters as given.
+% see inside the code for the format in which the predictions and the f
+% values are saved.
+% prdData.mat can be used as input for the R script to study the way RE
+% varies with time
+% RE can also be compute with relevant DEBtool function (not yet done here)
+% graphs are not saved automatically so either code needs to be extended
+% else they can be saved manually
 
 clear all; clc; close all;
 

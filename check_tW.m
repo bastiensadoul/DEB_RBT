@@ -1,21 +1,35 @@
-%% Effects of a parameter change on growth and the energy budget
+%% This script checks that predict_tW works !
+% the output of predict_tW is compared with the results of using von Bert.
+% growth at constant food -
+
+% three circles on the plot represent: hatch, birth and metamorphosis
+% respectively
+
+% this scrip can be useful to look at how 'f' impacts the timing of
+% metamorphosis - the period during metabolic acceleration is rather
+% crucial and will have 
 
 clear all; close all; clc
 
 
-% [data, auxData, txtData, weights] = mydata_BPA; % load the data matrixes of the control
-load('results_Oncorhynchus_mykiss.mat') % load parameter values of the control -
+load('results_Oncorhynchus_mykiss.mat') % load parameter values of the blank taken from AmP
+% re-initialise the value of f:
+f     = 0.7;
+par.f = f;
+auxData.temp.tW = C2K(8.5); % set temperature 
 c = parscomp_st(par);  vars_pull(c); vars_pull(par)
 
-par.f        = 0.76;
+% initial conditions -
+pars_UE0          = [V_Hb; g; k_J; k_M; v]; % compose parameter vector
+[U_E0, Lb, info]  = initial_scaled_reserve(f, pars_UE0); % d.cm^2, initial scaled reserve, f= 1
 
 
-%% contols
-auxData.pMoA = 'control';
-auxData.temp.tW = C2K(8.5);
+% output of predict_tW:
+auxData.pMoA = 'control'; % no parameter modification
+
 TC = tempcorr(auxData.temp.tW, T_ref, T_A);
 
-d.tW = linspace(0,600,100)'; % = data.tW_gw150A(:,1);
+d.tW = linspace(0,150,100)'; % = data.tW_gw150A(:,1);
 prdData = predict_tW(par, d, auxData);
 
 figure(1)
@@ -25,25 +39,25 @@ hold on;
 %% growth with von Bert:
 % checks the exactitude of the dyanmic ODE in run_tW - notice here that
 % the ab etc are computed using the maternel effect rule
-f = par.f;
+
 pars_tj = [g; k; l_T; v_Hb; v_Hj; v_Hp];   
       
 % Calculate Parameters
 [U_H, aUL] = ode45(@dget_aul, [0; U_Hh/TC; U_Hb/TC], [0; U_E0/TC; 1e-10], [], kap, v * TC, k_J * TC, g, L_m);
 [t_j, t_p, t_b, l_j, l_p, l_b, l_i, rho_j, rho_B] = get_tj(pars_tj, f);
-aT_h   = aUL(2,1); % d, age at hatch at f and T_ref
-E_h = aUL(2,2) * p_Am * TC; % E, energy in reserve at f 
+aT_h = aUL(2,1); % d, age at hatch at f and T_ref
+E_h  = aUL(2,2) * p_Am * TC; % E, energy in reserve at f 
 L_h  =  aUL(2,3); % E, energy in reserve at f 
 Ww_h = L_h^3 + w_E/ mu_E/ d_E * E_h; % g, wet weight at hatch
-kT_M  = k_M * TC; 
+kT_M = k_M * TC; 
 rT_j = rho_j * kT_M; % 1/d, von Bert, exponential growth rate between first feeding and end of V1-morph period
 rT_B = rho_B * kT_M; % 1/d, von Bert, exponential growth rate after V1-morph period
-L_b = l_b * L_m; L_j = l_j * L_m; L_i = l_i * c.L_m;     % cm, length at birth, metamorphosis, ultimate
-L_p = l_p * L_m;
-aT_b  = t_b/ kT_M; aT_j = t_j/ kT_M;  aT_p = t_p/ kT_M;     % d, age at birth, metamorphosis, puberty at T
+L_b  = l_b * L_m; L_j = l_j * L_m; L_i = l_i * c.L_m;     % cm, length at birth, metamorphosis, ultimate
+L_p  = l_p * L_m;
+aT_b = t_b/ kT_M; aT_j = t_j/ kT_M;  aT_p = t_p/ kT_M;     % d, age at birth, metamorphosis, puberty at T
 Ww_b = L_b^3 * (1 + w * f); Ww_j = L_j^3 * (1 + w * f); Ww_p = L_p^3 * (1 + w * f);  % g, wet weight at birth, metamorphosis, puberty
 
-t = data.tW(:,1); % d, age since fertilization
+t = d.tW(:,1); % d, age since fertilization
 t_0b = t(t < aT_b,1);    % ages during the embryo period
 t_bj = t(t >= aT_b & t < aT_j,1);    % selects times during V1-morph period
 t_ji = t(t >= aT_j,1);                % selects times after metamorphosis
@@ -91,57 +105,3 @@ xlabel('age, dpf'); ylabel('wet weight, g');
 set(gca,'Fontsize',12); 
 
 
-%% increase or decrease p_M values
-auxData.pMoA = 'p_M'; % p_M is modified
-par.t_f      = 200; % day, dpf when when parameter reaches normal value again
-par.delta    = 50; % factor by wich the parameter is modified at start from BPA
-
-pD = predict_tW(par, data, auxData); % linear change in parameter value from 0 to t_f
-diff = (pD.tW - prdData.tW)./pD.tW * 100;
-
-figure(1)
-plot(t,pD.tW,'r','linewidth',2,'linestyle','--' )
-
-pT_M = p_M * TC; % J/cm^3/d, vol linked som maintenance at T      
-pT_M_Q = pT_M * par.delta; % J/d/cm^3, p_M at start at T
-    if pT_M_Q < pT_M
-    pT_M_t = min(pT_M, pT_M_Q +(pT_M - pT_M_Q)/ par.t_f * t);
-    else
-    pT_M_t = max(pT_M, pT_M_Q +(pT_M - pT_M_Q)/ par.t_f * t);
-    end 
-figure(2); hold on;
-plot(data.tW, diff,'r');
-xlim([64 t(end)])
-xlabel('age, dpf'); ylabel('diff to control curve, [p_M]'); set(gca,'Fontsize',12); 
-figure(3); hold on;
-plot(t, pT_M_t,'r')
-xlabel('age, dpf'); ylabel('change in p_M'); set(gca,'Fontsize',12); 
-  
- %% increase costs for growth:
- % this can only increase
-auxData.pMoA = 'E_G';
-par.t_f      = 42; % day, dpf when when parameter reaches normal value again
-par.delta    = 5; % factor by wich the parameter is modified at start from BPA
-
-pD = predict_tW(par, data, auxData); % linear change in parameter value from 0 to t_f
-diff = (pD.tW - prdData.tW)./pD.tW * 100;
-
-figure(1)
-plot(t,pD.tW,'g','linewidth',2,'linestyle','--' )
-
-% ylim([0 0.5])
-% xlim([0 75])
-
-E_G_Q = E_G * par.delta; % J/d/cm^3, p_M at start at T
-E_G_t = max(E_G, E_G_Q +(E_G - E_G_Q)/ par.t_f * t); % how E_G changes
-
-figure(4)
-plot(data.tW, diff,'g');
-xlabel('age, dpf'); ylabel('diff to control curve, [E_G]'); set(gca,'Fontsize',12); 
-% xlim([0 75])
-
-figure(5)
-plot(t, E_G_t,'g')
-xlabel('age, dpf'); ylabel('change in [E_G]'); set(gca,'Fontsize',12); 
-  
-  

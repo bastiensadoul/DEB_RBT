@@ -2,12 +2,11 @@
 % starrlight sugustine & bastien sadoul
 % last modified 2017/05/04
 % computes growth as function of age and allows parameter to be modified
-% according to physiological mode of action pMoA
+% according to physiological mode of action pMoA -
+% the pMoA is a string that is a field in the auxData structure 
 
 function [prdData, info] = predict_tW(par, data, auxData)                    
 
-% [nm, nst] = fieldnmnst_st(data); % cell array of string with fieldnames of data
-% data.tW = data.(nm{1}); %ovewrite the name of the datafield
 
 cPar  = parscomp_st(par); 
 vars_pull(par); vars_pull(cPar); vars_pull(data); vars_pull(auxData);
@@ -19,7 +18,6 @@ pars_UE0          = [V_Hb; g; k_J; k_M; v]; % compose parameter vector
 [U_E0, Lb, info]  = initial_scaled_reserve(f, pars_UE0); % d.cm^2, initial scaled reserve, f= 1
 E0            = U_E0 * p_Am; % J, initial energy in the egg
 LEH0  = [1e-5; E0; 0]; % 3-1 vector [J, cm, J] with initial conditions
- 
 
 age = data.tW(:,1);
 if age(1) > 0
@@ -84,7 +82,7 @@ function dLEH = dget_LEH(t, LEH, f, TC, p, c, pMoA)
   
       case 'E_G'         
       E_G_Q = p.E_G * p.delta; % J/d/cm^3, p_M of exposed organism
-      E_G_t = max(p.E_G, E_G_Q + (p.E_G - E_G_Q)/ p.t_f * t);
+      E_G_t = min(p.E_G, E_G_Q + (p.E_G - E_G_Q)/ p.t_f * t);
       p.E_G = E_G_t; % overwrite control value         
           
      
