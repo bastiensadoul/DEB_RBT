@@ -27,10 +27,10 @@ plot(data.tW_gw150A(:,1), data.tW_gw150A(:,2), 'ro','markersize',8,'markerfaceco
 %% increase or decrease p_M values
 auxData.pMoA = 'p_M'; % p_M is modified
 par.t_f      = 200; % day, dpf when when parameter reaches normal value again
-par.delta    = 50; % factor by wich the parameter is modified at start from BPA
+par.delta    = 2; % factor by wich the parameter is modified at start from BPA
 
 pD = predict_tW(par, d, auxData); % linear change in parameter value from 0 to t_f
-diff = (controlData.tW - pD.tW)./controlData.tW;
+diff = (pD.tW-controlData.tW)./controlData.tW;
 
 figure(1)
 plot(t,pD.tW,'r','linewidth',2,'linestyle','--' )
@@ -53,11 +53,11 @@ xlabel('age, dpf'); ylabel('change in p_M'); set(gca,'Fontsize',12);
  %% increase costs for growth:
  % this can only increase
 auxData.pMoA = 'E_G';
-par.t_f      = 42; % day, dpf when when parameter reaches normal value again
-par.delta    = 5; % factor by wich the parameter is modified at start from BPA
+par.t_f      = 200; % day, dpf when when parameter reaches normal value again
+par.delta    = 1.1; % factor by wich the parameter is modified at start from BPA
 
 pD = predict_tW(par, d, auxData); % linear change in parameter value from 0 to t_f
-diff = (controlData.tW - pD.tW)./controlData.tW;
+diff = (pD.tW-controlData.tW)./controlData.tW;
 
 figure(1)
 plot(t,pD.tW,'g','linewidth',2,'linestyle','--' )
