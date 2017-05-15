@@ -27,7 +27,7 @@ par.free.f = 1;
 
 % parameters of the estimation
 estim_options('default'); % runs estimation, uses nmregr method and filter
-estim_options('max_step_number',100);  % set options for parameter estimation
+estim_options('max_step_number',1e3);  % set options for parameter estimation
 estim_options('max_fun_evals',5e3);    % set options for parameter estimation
 estim = 1;
 
