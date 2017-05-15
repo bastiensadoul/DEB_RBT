@@ -27,7 +27,7 @@ plot(data.tW_gw150A(:,1), data.tW_gw150A(:,2), 'ro','markersize',8,'markerfaceco
 %% increase or decrease p_M values
 auxData.pMoA = 'p_M'; % p_M is modified
 par.t_f      = 200; % day, dpf when when parameter reaches normal value again
-par.delta    = 2; % factor by wich the parameter is modified at start from BPA
+par.delta    = 5; % factor by wich the parameter is modified at start from BPA
 
 pD = predict_tW(par, d, auxData); % linear change in parameter value from 0 to t_f
 diff = (pD.tW-controlData.tW)./controlData.tW;
@@ -54,7 +54,7 @@ xlabel('age, dpf'); ylabel('change in p_M'); set(gca,'Fontsize',12);
  % this can only increase
 auxData.pMoA = 'E_G';
 par.t_f      = 200; % day, dpf when when parameter reaches normal value again
-par.delta    = 1.1; % factor by wich the parameter is modified at start from BPA
+par.delta    = 5; % factor by wich the parameter is modified at start from BPA
 
 pD = predict_tW(par, d, auxData); % linear change in parameter value from 0 to t_f
 diff = (pD.tW-controlData.tW)./controlData.tW;
