@@ -13,6 +13,13 @@ pMoA = 'control';
 
 f = 0.7;
 
+
+
+% Print to txt
+ fileID = fopen([pMoA,'.txt'],'w');
+ fprintf(fileID,'dpf\tr\tE\tv\tdL\tL\tE_G\tkap\tp_M\tpC\tp_M\tkap_G\n');
+ 
+
 % initial conditions -
 pars_UE0          = [V_Hb; g; k_J; k_M; v]; % compose parameter vector
 [U_E0, Lb, info]  = initial_scaled_reserve(f, pars_UE0); % d.cm^2, initial scaled reserve, f= 1
@@ -21,6 +28,9 @@ LEH0  = [1e-5; E0; 0]; % 3-1 vector [J, cm, J] with initial conditions
 
 age = linspace(0,400,100)';
 [~, LEH] =  ode23s(@dget_LEH, age, [LEH0; 0; 0; 0],[],f, TC, par, cPar, pMoA); 
+
+% Close txt file
+fclose(fileID);
 
 % the three zeros are for N, Lb, and Lj (see inside the ODE subfunction)
 
@@ -79,4 +89,3 @@ ylim([0 1.2])
 subplot(224)
 plot(age, EW,'r')
 ylabel('wet weight, g')
-

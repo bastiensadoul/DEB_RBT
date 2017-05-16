@@ -10,7 +10,7 @@ function dLEH = dget_LEH(t, LEH, f, TC, p, c, pMoA)
 
  
  %  Shape correction function:
- % are numberical inaccuracies a problem ? (sta 16/04/17)
+ % are numerical inaccuracies a problem ? (sta 16/04/17)
   if E_H < p.E_Hb
       s_M = 1;
   elseif E_H < p.E_Hj && E_H >= p.E_Hb
@@ -65,6 +65,12 @@ function dLEH = dget_LEH(t, LEH, f, TC, p, c, pMoA)
   dL   =  L * r/ 3;
   dLj  =  dL * (E_H <= p.E_Hj); % extract Lj dynamically
   dLb  =  dL * (E_H <= p.E_Hb); % to extract Lb dynamically with changing parameter
+  
+   
+  % Print in txt
+  fileID = fopen([pMoA,'.txt'],'a');
+  fprintf(fileID, [num2str(t),'\t',num2str(L),'\t',num2str(r),'\t',num2str(E),'\t', num2str(p.v), '\t', num2str(dL), '\t', num2str(p.E_G),'\t', num2str(p.kap),'\t', num2str(p.p_M),'\t',num2str(pC),'\t',num2str(c.kap_G),'\n']);
+  fclose(fileID);
   
   % Pack output 
   dLEH = [dL; dE; dE_H; dE_R; dLb; dLj]; 
