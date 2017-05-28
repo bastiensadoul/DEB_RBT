@@ -1,7 +1,7 @@
 
 clear all; close all; clc
 load('results_Oncorhynchus_mykiss.mat') % load parameter values of the blank taken from AmP
-parscomp_st(par);
+parcomp=parscomp_st(par);
 
 % f and T
 f=1;
@@ -14,36 +14,44 @@ Lm = par.z ;           % cm
 % calculate p_Am
 p_Am = Lm * par.p_M/ par.kap ;       % J/d/cm2
 
-% Initial conditions
+% Initial V, Lb and Lj
 V0=0.001;
-E0=879;                   %%%%%%%%%%%%%%%%%%%%%%%%%%%%?????????????????????
-%E0 = f*p_Am/(par.v*V0) ; 
-EVEhEr0=[E0 ; V0 ; 0 ; 0 ];
+Lbini = 0 ;                         % Lb is used only after Eh>Ehb in ode
+Ljini = 0 ;                         % Lj is used only after Eh>Ehj in ode
+
+% Calculate E0
+f_mom = 1 ;                          % we assume that the mother had f=1
+pars_UE0          = [parcomp.V_Hb; parcomp.g; par.k_J; parcomp.k_M; par.v]; % compose parameter vector
+[U_E0, Lb, info]  = initial_scaled_reserve(f_mom, pars_UE0); % d.cm^2, initial scaled reserve, f= 1
+E0                = U_E0 * p_Am; % J, initial energy in the egg
+
+EVEhErLbLj0=[E0 ; V0 ; 0 ; 0 ; Lbini ; Ljini ];
 
 % Run ode on given time period
-timeframe=linspace(0, 900, 100);
+timeframe=linspace(0, 900, 1000);
 calcpar.p_Am=p_Am;
 
-[~, E_V_Eh_Er] = ode45(@dget_dE_dV_dEh_dEr, timeframe, EVEhEr0, [], f, par, calcpar, TC);
+[~, E_V_Eh_Er_Lb_Lj] = ode23s(@dget_dE_dV_dEh_dEr_dLb_dLj, timeframe, EVEhErLbLj0, [], f, par, calcpar, TC);
 
-E=E_V_Eh_Er(:,1);
-V=E_V_Eh_Er(:,2);
-Eh=E_V_Eh_Er(:,3);
-Er=E_V_Eh_Er(:,4);
+E=E_V_Eh_Er_Lb_Lj(:,1);
+V=E_V_Eh_Er_Lb_Lj(:,2);
+Eh=E_V_Eh_Er_Lb_Lj(:,3);
+Er=E_V_Eh_Er_Lb_Lj(:,4);
+Lb=E_V_Eh_Er_Lb_Lj(:,5);
+Lj=E_V_Eh_Er_Lb_Lj(:,6);
 
 L=V.^(1/3)/par.del_M;
 
-% Calculate Lb and Lj
 
 
 % Get length from L and Lm.
 l=L*Lm ;
 
 % Get dry weight Structure + Reserve + Reproduction
-Wd = par.d_V * V + (ans.w_E/par.mu_E) * E + (ans.w_E/par.mu_E) * Er;   % w_E and mu_E are in add_chem. w_E/mu_E is in g/J
+Wd = par.d_V * V + (parcomp.w_E/par.mu_E) * E /par.d_E + (parcomp.w_E/par.mu_E) * Er / par.d_E;   % w_E and mu_E are in add_chem. w_E/mu_E is in g/J
 
 % Get wet weight
-Ww = Wd / 0.2  ;  %%%%%%%?????????????????????????????????????????????????
+Ww = Wd / par.d_V  ;  %%%%%%%?????????????????????????????????????????????????
 
 % Plot
 
@@ -69,7 +77,7 @@ ylabel('Eh, J');
 
 figure(6)
 plot(timeframe, Ww, 'b','linewidth',3);
-ylabel('weight, g');
+ylabel('Wet weight, g');
 
 %%%%%%%%% Add data points
 % tW_gw150=[...
@@ -104,70 +112,89 @@ ylabel('weight, g');
 %%%%%%%%% DIFFERENTIAL EXPRESSIONS for Reserve (E), structural volume,
 %%%%%%%%% maturity and reproduction
 
-function dE_dV_dEh_dEr = dget_dE_dV_dEh_dEr(t, EVEhEr, f, par, calcpar, TC)
+function dE_dV_dEh_dEr_dLb_dLj = dget_dE_dV_dEh_dEr_dLb_dLj(t, EVEhErdLbdLj, f, par, calcpar, TC)
 
-%%%%% Initial variables
-E=EVEhEr(1);
-V=EVEhEr(2);
-Eh=EVEhEr(3);
-Er=EVEhEr(4);
-
-%%%%% To take into acount the V1-morph phase    ??????????????????????????
-if Eh < par.E_Hb
-  s_M = 1;
-elseif Eh < par.E_Hj && Eh >= par.E_Hb
-  s_M = V^(1/3)/par.Lb;                 
-else
-  s_M = par.Lj/par.Lb;        %%%%%%%%%%%%%%%%% Pourquoi on booste p_Am, et p_M (s_M > 1) ?
-end
+    %%%%% Initial variables
+    E=EVEhErdLbdLj(1);
+    V=EVEhErdLbdLj(2);
+    Eh=EVEhErdLbdLj(3);
+    Er=EVEhErdLbdLj(4);
+    Lb=EVEhErdLbdLj(5);
+    Lj=EVEhErdLbdLj(6);
 
 
-%%%%% Correction by temperature
-p_TAm = calcpar.p_Am * TC * s_M;
-p_TM = par.p_M * TC * s_M;
-vT = par.v * TC * s_M;
+    %%%%% To take into acount the V1-morph phase    ??????????????????????????
+    if Eh < par.E_Hb
+      s_M = 1;         % It is Lb/Lb
+    elseif Eh < par.E_Hj && Eh >= par.E_Hb
+      s_M = V^(1/3)/Lb;                 
+    else
+      s_M = Lj/Lb;       
+    end
 
 
-%%%%% What is entering: nothing before birth
-if (Eh >= par.E_Hb)
-    pA = f*p_TAm*V^(2/3);
-else
-    pA=0 ;
-end
+    %%%%% Correction by temperature
+    p_TAm = calcpar.p_Am * TC * s_M;
+    p_TM = par.p_M * TC * s_M;
+    vT = par.v * TC * s_M;
 
-%%%%% What is going to somatic maintenance
-pS = p_TM*V;
-%pS = p_TM*V + p_TT*V^(2/3);   % from the book ???  don't understand!
 
-%%%%% What is going out of reserve : [p_C], J/d (2.12, Kooijman 2010)
-pC = E*(par.E_G*vT*V^(2/3)+pS)/(par.kap*E+par.E_G*V);      
+    %%%%% What is entering: nothing before birth
+    if (Eh >= par.E_Hb)
+        pA = f*p_TAm*V^(2/3);
+    else
+        pA=0 ;
+    end
+    print(pA);
 
-%%%%% What is going towards structure
-pG = par.kap*pC - pS;
+    %%%%% What is going to somatic maintenance
+    pS = p_TM*V;
+    %pS = p_TM*V + p_TT*V^(2/3);   % from the book ???  don't understand!
 
-%%%%% Increase of Volume
-dV = pG / par.E_G;    % or called r 
+    %%%%% What is going out of reserve : [p_C], J/d (2.12, Kooijman 2010)
+    pC = E*(par.E_G*vT*V^(2/3)+pS)/(par.kap*E+par.E_G*V);      
 
-%%%%% What is going to maturity maintenance
-pJ = par.k_J * Eh;
+    %%%%% What is going towards structure
+    pG = par.kap*pC - pS;
 
-%%%%% What is going to maturity / repro
-pR = (1-par.kap) * pC - pJ;
+    %%%%% Increase of Volume
+    dV = pG / par.E_G;    % or called r 
 
-%%%%% Increase of maturity till E_Hp after in reproduction
-if Eh < par.E_Hp
-    dEh = pR;
-    dEr=0;
-else 
-    dEh=0;
-    dEr = pR;
-end
+    %%%%% What is going to maturity maintenance
+    pJ = par.k_J * Eh;
+
+    %%%%% What is going to maturity / repro
+    pR = (1-par.kap) * pC - pJ;
+
+    %%%%% Increase of maturity till E_Hp after in reproduction
+    if Eh < par.E_Hp
+        dEh = pR;
+        dEr=0;
+    else 
+        dEh=0;
+        dEr = pR;
+    end
+
+    %%%%% Increase of Lb and Lj
+    dL=dV.^(1/3)/par.del_M;
+
+    if Eh < par.E_Hb
+      dLb = dL ;
+    else
+      dLb=0;
+    end
     
-%%%%% dE
-dE=pA-pC ;   % J/d
+    if Eh < par.E_Hj
+      dLj = dL;                 
+    else
+      dLj = 0;
+    end
 
-%%%%%%%%%%%%%%% Pack output 
-dE_dV_dEh_dEr = [dE; dV; dEh; dEr]; 
+    %%%%% dE
+    dE=pA-pC ;   % J/d
+
+    %%%%%%%%%%%%%%% Pack output 
+    dE_dV_dEh_dEr_dLb_dLj = [dE; dV; dEh; dEr; dLb; dLj]; 
 
 end
 

@@ -9,7 +9,7 @@ vars_pull(par); vars_pull(cPar);
 
 TC = tempcorr(C2K(8.5), T_ref, T_A); % -, TC temperature correction
 
-pMoA = 'control';
+pMoA = 'p_M';
 
 f = 0.7;
 
@@ -89,3 +89,11 @@ ylim([0 1.2])
 subplot(224)
 plot(age, EW,'r')
 ylabel('wet weight, g')
+
+figure (3)
+subplot(121)
+plot(age, Lj,'r')
+ylabel('Lj, cm')
+subplot(122)
+plot(age, Lb,'r')
+ylabel('Lb, cm')
