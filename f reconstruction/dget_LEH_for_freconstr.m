@@ -1,5 +1,5 @@
 
-function dLEH = dget_LEH_for_reconstr(t, LEH, tyf, typM, TC, p, c)
+function dLEH = dget_LEH_for_freconstr(t, LEH, tyf, TC, p, c)
 % pMoA: physiological mode of action
   
   L = LEH(1);     % cm, structural length
@@ -9,23 +9,12 @@ function dLEH = dget_LEH_for_reconstr(t, LEH, tyf, typM, TC, p, c)
   Lb = LEH(5);    % cm, length
   Lj = LEH(6);    % cm, length
   
-  % Get f at time t by extrapolating from tyf
-  f=0.6;
-%   if t<64 
-%       f=1;
-%   else
-%       f = interp1(tyf(:,1),tyf(:,2),t,'pchip');
-%   end
-  
-
-  % Get p_M at time t by extrapolating from typM
-  %pM=382;
-  if t<=0
-      p_M=typM(1,2);
+  %f=0,6;
+  if t<64 
+      f=1;
   else
-      p_M = interp1(typM(:,1),typM(:,2),t,'pchip');
+      f = interp1(tyf(:,1),tyf(:,2),t,'pchip');
   end
- 
  
  %  Shape correction function:
  % are numerical inaccuracies a problem ? (sta 16/04/17)

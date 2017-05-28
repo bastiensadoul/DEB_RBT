@@ -1,4 +1,4 @@
-function [par, metaPar, txtPar] = pars_init_reconstruction(metaData)
+function [par, metaPar, txtPar] = pars_init_freconstruction(metaData)
 
 global tf ;
 

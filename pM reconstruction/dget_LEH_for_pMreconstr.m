@@ -1,5 +1,5 @@
 
-function dLEH = dget_LEH_for_reconstr(t, LEH, tyf, typM, TC, p, c)
+function dLEH = dget_LEH_for_pMreconstr(t, LEH, tyf, typM, TC, p, c)
 % pMoA: physiological mode of action
   
   L = LEH(1);     % cm, structural length

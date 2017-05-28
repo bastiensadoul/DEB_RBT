@@ -34,7 +34,7 @@ pets = {'pMreconstruction'};
 % 1-n vector with the knot-abscissa for the functional response trajectory
 % that we are trying to reconstruct on the basis of growth data
 
-tpM = round(linspace(64,600,6)'); % choose the interval between knots which are estimated
+tpM = round(linspace(64,450,6)'); % choose the interval between knots which are estimated
 
 
 %   'pars_init_method':
@@ -51,7 +51,7 @@ estim_options('max_fun_evals',5e3);   % don't change this
 
 estim_options('pars_init_method', 2); 
 estim_options('results_output', 1); % 1, saves parameters into results_reconstruction
-estim_options('method', 'nm'); % set no if you don't want to estimate
+estim_options('method', 'no'); % set no if you don't want to estimate
 
 % % KEEP THESE COMMENTED IF YOU ARE NOT DOING CONTINUATIONS FROM THE
 % RESULT.MAT FILE

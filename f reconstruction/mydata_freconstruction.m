@@ -1,4 +1,4 @@
-function [data, auxData, metaData, txtData, weights] = mydata_reconstruction
+function [data, auxData, metaData, txtData, weights] = mydata_freconstruction
 
 %% set metadata
 metaData.phylum     = 'Chordata'; 

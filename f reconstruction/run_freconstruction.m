@@ -5,7 +5,7 @@
 clear all; close all; clc
 
 global pets tf
-pets = {'reconstruction'};
+pets = {'freconstruction'};
 
 % 1-n vector with the knot-abscissa for the functional response trajectory
 % that we are trying to reconstruct on the basis of growth data
@@ -44,7 +44,7 @@ estim_pars;
 
 clear par ;
 %%%%%%% Start with parameters from the results
-load('results_reconstruction.mat');
+load('results_freconstruction.mat');
 [data, auxData, metaData, txtData, weights] = mydata_reconstruction
 
 %%%%%%% New predictions
@@ -70,7 +70,7 @@ tyf = [tf yf];
 
 % predict 
 time = data.tW_gw150A(:,1);
-[~, LEH] =  ode23s(@dget_LEH_for_reconstr, time, [LEH0; 0; 0; 0],[],tyf, TC, par, cPar); 
+[~, LEH] =  ode23s(@dget_LEH_for_freconstr, time, [LEH0; 0; 0; 0],[],tyf, TC, par, cPar);
 EW = LEH(:,1).^3 + w_E/ mu_E * LEH(:,2)/ d_E; % g, wet weight
 
 diff= (EW-data.tW_gw150A(:,2))./data.tW_gw150A(:,2)*100;
@@ -91,8 +91,8 @@ ylabel('Diff');
 % prepare 2-n matrix with the first colum the knot-abscissa and the second
 % column the knot-coordinates. The knot coordinates are the parameters
 % which were estimated. 
-% Use the results which were saved in results_reconstruction.mat
-load('results_reconstruction.mat') ; 
+% Use the results which were saved in results_freconstruction.mat
+load('results_freconstruction.mat') ;
 vars_pull(par); 
 tyfs = [tf, spline(tf, tyf)]; % smoothed trajectory - this version gives problems
 figure()
@@ -107,6 +107,6 @@ set(gca,'fontsize',14)
 
 % figure(6)
 % 
-% [prdData, info] = predict_reconstruction(par, data, auxData);
+% [prdData, info] = predict_freconstruction(par, data, auxData);
 % plot(data.timescale, prdData.timescale,'b')
 
