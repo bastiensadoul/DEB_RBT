@@ -51,7 +51,7 @@ estim_options('max_fun_evals',5e3);   % don't change this
 
 estim_options('pars_init_method', 2); 
 estim_options('results_output', 1); % 1, saves parameters into results_reconstruction
-estim_options('method', 'no'); % set no if you don't want to estimate
+estim_options('method', 'nm'); % set no if you don't want to estimate
 
 % % KEEP THESE COMMENTED IF YOU ARE NOT DOING CONTINUATIONS FROM THE
 % RESULT.MAT FILE

@@ -73,14 +73,21 @@ time = data.tW_gw150A(:,1);
 [~, LEH] =  ode23s(@dget_LEH_for_freconstr, time, [LEH0; 0; 0; 0],[],tyf, TC, par, cPar);
 EW = LEH(:,1).^3 + w_E/ mu_E * LEH(:,2)/ d_E; % g, wet weight
 
-diff= (EW-data.tW_gw150A(:,2))./data.tW_gw150A(:,2)*100;
+diffA= (EW-data.tW_gw150A(:,2))./data.tW_gw150A(:,2)*100;
+diffB= (EW-data.tW_gw150B(:,2))./data.tW_gw150B(:,2)*100;
+diffC= (EW-data.tW_gw150C(:,2))./data.tW_gw150C(:,2)*100;
+
 
 figure()
 plot(time, EW, 'g', 'linewidth',2); hold on
 plot(time, data.tW_gw150A(:,2),'bs','markersize',10,'markerfacecolor','b');
+plot(time, data.tW_gw150B(:,2),'bs','markersize',10,'markerfacecolor','g');
+plot(time, data.tW_gw150C(:,2),'bs','markersize',10,'markerfacecolor','r');
 
 figure()
-plot(time, diff, 'g', 'linewidth',2);
+plot(time, diffA, 'b', 'linewidth',2); hold on
+plot(time, diffB, 'g', 'linewidth',2); hold on
+plot(time, diffC, 'g', 'linewidth',2);
 ylabel('Diff');
 
 

@@ -8,7 +8,7 @@ metaData.family     = 'Salmonidae';
 metaData.species    = 'Oncorhynchus_mykiss'; 
 metaData.species_en = 'Rainbow trout'; 
 
-metaData.author   = {'Bastien Sadoul'};    
+metaData.author   = {'Starrlight Augustine', 'Bastien Sadoul'};    
 
 
 %% set data
