@@ -10,7 +10,8 @@ pets = {'freconstruction'};
 % 1-n vector with the knot-abscissa for the functional response trajectory
 % that we are trying to reconstruct on the basis of growth data
 
-tf = round(linspace(64,600,6)'); % choose the interval between knots which are estimated
+% tf = round(linspace(64,600,6)'); % choose the interval between knots which are estimated
+tf = [64; 70; 80; 90; 100; 110; 150; 200; 250; 300; 350; 400; 421];
 
 
 %   'pars_init_method':
@@ -29,13 +30,19 @@ estim_options('pars_init_method', 2);
 estim_options('results_output', 1); % 1, saves parameters into results_reconstruction
 estim_options('method', 'nm'); % set no if you don't want to estimate
 
-% % KEEP THESE COMMENTED IF YOU ARE NOT DOING CONTINUATIONS FROM THE
+% KEEP THESE COMMENTED IF YOU ARE NOT DOING CONTINUATIONS FROM THE
 % RESULT.MAT FILE
-% estim_pars; close all;
-% estim_pars; close all;
-% estim_pars; close all;
-% estim_pars; close all;
-% estim_pars; close all;
+estim_pars; close all;
+estim_options('pars_init_method', 1); 
+estim_pars; close all;
+estim_pars; close all;
+estim_pars; close all;
+estim_pars; close all;
+estim_pars; close all;
+estim_pars; close all;
+estim_pars; close all;
+estim_pars; close all;
+estim_options('max_step_number',5e4); % change to 5e3 for the last round
 estim_pars; 
 
 %-------------------------------------------------------------------------
