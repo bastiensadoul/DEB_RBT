@@ -1,5 +1,8 @@
-%% This script estimates functional response for each control dataset 
-% the results are saved in .mat files
+%% run_funique_all
+% Starrlight & Bastien May 289 2017
+% This script estimates functional response for each dataset
+% the results are saved in prdData_funique_all.mat and
+% f_prdData_funique_all.mat
 % The first seven datasets in mydata_BPA  are control
 % we use petregr_f and estimate f for each data set separately taking all
 % of the other parameters as given.
@@ -7,11 +10,11 @@
 % values are saved.
 % prdData.mat can be used as input for the R script to study the way RE
 % varies with time
-% RE can also be compute with relevant DEBtool function (not yet done here)
-% graphs are not saved automatically so either code needs to be extended
-% else they can be saved manually
+% RE ïs computed as function of time and plotted 
 
 clear all; clc; close all;
+
+global study % the initial egg sized depends on whether it is the 150 or the 124 experiments
 
 % metaData needed to automatically generate chemical parameters from
 % pars_init_Oncorhynchus_mykiss - which are the parameters from the blank
@@ -19,10 +22,10 @@ clear all; clc; close all;
 metaData.phylum     = 'Chordata';   
 metaData.class      = 'Actinopterygii'; 
 [data, auxData, txtData, weights] = mydata_BPA;
-[par, metaPar, txtPar] = pars_init_Oncorhynchus_mykiss(metaData);
+[par, metaPar, txtPar] = pars_init_funiqueall(metaData);
 
-% initialise f value
-par.f = 1; 
+% initialise f value for each tank
+par.f = 0.7; 
 par.free.f = 1;
 
 % parameters of the estimation
@@ -50,9 +53,16 @@ newAuxData.pMoA = 'control'; % choose physiological mode of action
 
         newData.tW = data.(nm{j});
         newWeights.tW = weights.(nm{j});
-
+       
+        if (strfind(nm{j}, '150') > 0)
+            study = 'e150';             
+        else
+            study = 'e124';
+        end
+        
         if estim
         [newPar, info, nsteps] = petregr_f('predict_tW', par, newData, newAuxData, newWeights, filterNm); % WLS estimate parameters using overwrite
+        %[newPar, info, nsteps] = petregr_f('predict_tW', newPar, newData, newAuxData, newWeights, filterNm); % WLS estimate parameters using overwrite
         else
         newPar = par;
         end
@@ -78,29 +88,40 @@ newAuxData.pMoA = 'control'; % choose physiological mode of action
 
     end
 
-        save('prdData', 'prdData');       
-        save('f_prdData', 'f');
+        save('prdData_funique_all', 'prdData');       
+        save('f_prdData_funique_all', 'f');
 
         
- % Diff
-
-%%%%%%% Start with parameters from the results
-
-load('results_Oncorhynchus_mykiss.mat');
-cPar = parscomp_st(par); vars_pull(par); 
-vars_pull(cPar);  vars_pull(data);  vars_pull(auxData);
+ % Relative difference between data and model as function of time
+ % red: 150, cyan 124, dashed lines are exposed individuals
 
 figure()
 
 for j = 1:nst % replace with nst if you want to run with all data - otherwise I put 7 here because the first four fields are for the controls
-
+        if (strfind(nm{j}, '150') > 0)
+            color = 'red';
+             if (strfind(nm{j}, 'BPA') > 0)
+                 linestyle = '--';
+             else
+                 linestyle = '-';
+             end
+        else
+            color = 'cyan';
+            if (strfind(nm{j}, 'BPA') > 0)
+                 linestyle = '--';
+                 else
+                 linestyle = '-';
+            end
+        end
     EWw = prdData.(nm{j})(:,2);
     diff= (EWw-data.(nm{j})(:,2))./data.(nm{j})(:,2)*100;
-    plot(data.(nm{j})(:,1), diff)
+    plot(data.(nm{j})(:,1), diff,'color',color,'linewidth',2,'linestyle',linestyle)
     hold on    
 end
-    legend(nm)
-
+legend(nm)
+xlabel('d, time since fertilization')
+ylabel('-, relative difference between model and data')
+set(gca,'Fontsize',12);
 
 % Bargraph for f by condition?
 

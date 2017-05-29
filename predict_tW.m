@@ -7,6 +7,7 @@
 
 function [prdData, info] = predict_tW(par, data, auxData)                    
 
+global study
 
 cPar  = parscomp_st(par); 
 vars_pull(par); vars_pull(cPar); vars_pull(data); vars_pull(auxData);
@@ -21,8 +22,13 @@ end
 
 
 % initial conditions -
+% if study==150
+%     e=e150;
+% else
+%     e=e124;
+% end
 pars_UE0          = [V_Hb; g; k_J; k_M; v]; % compose parameter vector
-[U_E0, Lb, info]  = initial_scaled_reserve(f, pars_UE0); % d.cm^2, initial scaled reserve, f= 1
+[U_E0, Lb, info]  = initial_scaled_reserve(par.(study), pars_UE0); % d.cm^2, initial scaled reserve, f= 1
 E0            = U_E0 * p_Am; % J, initial energy in the egg
 LEH0  = [1e-5; E0; 0]; % 3-1 vector [J, cm, J] with initial conditions
 
