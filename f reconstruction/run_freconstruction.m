@@ -27,32 +27,32 @@ estim_options('max_step_number',5e2); % change to 5e3 for the last round
 estim_options('max_fun_evals',5e3);   % don't change this
 
 estim_options('pars_init_method', 2); 
-estim_options('results_output', 1); % 1, saves parameters into results_reconstruction
-estim_options('method', 'nm'); % set no if you don't want to estimate
+estim_options('results_output', 0); % 1, saves parameters into results_reconstruction
+estim_options('method', 'no'); % set no if you don't want to estimate
 
 % KEEP THESE COMMENTED IF YOU ARE NOT DOING CONTINUATIONS FROM THE
 % RESULT.MAT FILE
-estim_pars; close all;
-estim_options('pars_init_method', 1); 
-estim_pars; close all;
-estim_pars; close all;
-estim_pars; close all;
-estim_pars; close all;
-estim_pars; close all;
-estim_pars; close all;
-estim_pars; close all;
-estim_pars; close all;
-estim_options('max_step_number',5e4); % change to 5e3 for the last round
-estim_pars; 
+estim_pars; %close all;
+% estim_options('pars_init_method', 1); 
+% estim_pars; close all;
+% estim_pars; close all;
+% estim_pars; close all;
+% estim_pars; close all;
+% estim_pars; close all;
+% estim_pars; close all;
+% estim_pars; close all;
+% estim_pars; close all;
+% estim_options('max_step_number',5e4); % change to 5e3 for the last round
+% estim_pars; 
 
 %-------------------------------------------------------------------------
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Make additional plots here :
 %-------------------------------------------------------------------------
-
+%%
 clear par ;
 %%%%%%% Start with parameters from the results
 load('results_freconstruction.mat');
-[data, auxData, metaData, txtData, weights] = mydata_reconstruction
+[data, auxData, metaData, txtData, weights] = mydata_freconstruction;
 
 %%%%%%% New predictions
 

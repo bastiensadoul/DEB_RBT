@@ -1,4 +1,7 @@
-function dLEH = dget_LEH(t, LEH, f, TC, p, c, pMoA)
+function dLEH = dget_LEH(t, LEH, tyf, TC, p, c, pMod, pMoA)
+
+% pMod is tyf or typM
+
 % pMoA: physiological mode of action
   
   L = LEH(1);     % cm, structural length
@@ -9,6 +12,12 @@ function dLEH = dget_LEH(t, LEH, f, TC, p, c, pMoA)
   Lj = LEH(6);    % cm, length
 
  
+ if size(tyf,1) > 1
+        f = interp1(tyf(:,1),tyf(:,2),t,'pchip');
+ else
+     f = tyf;
+ end
+  
  %  Shape correction function:
  % are numerical inaccuracies a problem ? (sta 16/04/17)
   if E_H < p.E_Hb
@@ -19,7 +28,30 @@ function dLEH = dget_LEH(t, LEH, f, TC, p, c, pMoA)
       s_M = Lj/ Lb;
   end
   
-  %  Shape correction function applies to surface-area specific
+  
+  switch pMoA
+      
+      case 'p_M'
+%         p_M_Q = p.p_M * p.delta; % J/d/cm^3, p_M at start at T
+%             if p_M_Q < p.p_M
+%             p_M_t = min(p.p_M, p_M_Q + (p.p_M - p_M_Q)/ p.t_f * t);
+%             else
+%             p_M_t = max(p.p_M, p_M_Q + (p.p_M - p_M_Q)/ p.t_f * t);
+%             end
+%        p.p_M = p_M_t;
+
+     p.p_M = interp1(pMod(:,1),pMod(:,2),t,'pchip');
+
+
+%       case 'E_G'         
+%       E_G_Q = p.E_G * p.delta; % J/d/cm^3, p_M of exposed organism
+%       E_G_t = min(p.E_G, E_G_Q + (p.E_G - E_G_Q)/ p.t_f * t);
+%       p.E_G = E_G_t; % overwrite control value         
+          
+     
+  end
+
+    %  Shape correction function applies to surface-area specific
   %  assimilation and energy conductance:
   % pA = 0 before birth E_H = E_Hb
   % all parameters with time in dimension need to be temp corrected
@@ -27,26 +59,9 @@ function dLEH = dget_LEH(t, LEH, f, TC, p, c, pMoA)
   c.p_Am = c.p_Am * s_M * TC;
   p.p_M  = p.p_M * TC;
   p.k_J  = p.k_J * TC;
-  
-  switch pMoA
-      
-      case 'p_M'
-        p_M_Q = p.p_M * p.delta; % J/d/cm^3, p_M at start at T
-            if p_M_Q < p.p_M
-            p_M_t = min(p.p_M, p_M_Q + (p.p_M - p_M_Q)/ p.t_f * t);
-            else
-            p_M_t = max(p.p_M, p_M_Q + (p.p_M - p_M_Q)/ p.t_f * t);
-            end
-       p.p_M = p_M_t;
-  
-      case 'E_G'         
-      E_G_Q = p.E_G * p.delta; % J/d/cm^3, p_M of exposed organism
-      E_G_t = min(p.E_G, E_G_Q + (p.E_G - E_G_Q)/ p.t_f * t);
-      p.E_G = E_G_t; % overwrite control value         
-          
-     
-  end
 
+  
+  
   % Growth rate and mobilization rate:
   pA  = f * c.p_Am * L^2 * (E_H >= p.E_Hb); % J/cm^2/d, maximum surface area-specific assimilation rate
   L2  = L * L; L3 = L2 * L; L4 = L3 * L;
@@ -63,14 +78,14 @@ function dLEH = dget_LEH(t, LEH, f, TC, p, c, pMoA)
 %   dN   =  p.kap_R * dE_R/ E0; % #/d, cum reproductive output
   dE   =  pA - pC * L3;
   dL   =  L * r/ 3;
-  dLj  =  dL * (E_H <= p.E_Hj); % extract Lj dynamically
-  dLb  =  dL * (E_H <= p.E_Hb); % to extract Lb dynamically with changing parameter
+  dLj  =  max(0,dL * (E_H <= p.E_Hj)); % extract Lj dynamically
+  dLb  =  max(0,dL * (E_H <= p.E_Hb)); % to extract Lb dynamically with changing parameter
   
    
-  % Print in txt
-  fileID = fopen([pMoA,'.txt'],'a');
-  fprintf(fileID, [num2str(t),'\t',num2str(L),'\t',num2str(r),'\t',num2str(E),'\t', num2str(p.v), '\t', num2str(dL), '\t', num2str(p.E_G),'\t', num2str(p.kap),'\t', num2str(p.p_M),'\t',num2str(pC),'\t',num2str(c.kap_G),'\n']);
-  fclose(fileID);
-  
+%   % Print in txt
+%   fileID = fopen([pMoA,'.txt'],'a');
+%   fprintf(fileID, [num2str(t),'\t',num2str(L),'\t',num2str(r),'\t',num2str(E),'\t', num2str(p.v), '\t', num2str(dL), '\t', num2str(p.E_G),'\t', num2str(p.kap),'\t', num2str(p.p_M),'\t',num2str(pC),'\t',num2str(c.kap_G),'\n']);
+%   fclose(fileID);
+%   
   % Pack output 
   dLEH = [dL; dE; dE_H; dE_R; dLb; dLj]; 

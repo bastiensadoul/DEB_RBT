@@ -1,4 +1,8 @@
-function [par, metaPar, txtPar] = pars_init_Oncorhynchus_mykiss(metaData)
+%% pars init file which generates n parameters for 'f' based on 1-n tf vector passed as global and defined in run_freconstruction
+
+function [par, metaPar, txtPar] = pars_init_freconstruction(metaData)
+
+global tf
 
 metaPar.model = 'abj'; 
 
@@ -29,9 +33,20 @@ par.T_A = 10923.9752;  free.T_A   = 0;   units.T_A = 'K';          label.T_A = '
 par.del_M = 0.10137;  free.del_M = 0;   units.del_M = '-';        label.del_M = 'shape coef (forked length)'; 
 par.del_M2 = 0.087621;  free.del_M2 = 0;   units.del_M2 = '-';       label.del_M2 = 'shape coef, LW  '; 
 par.f = 1;            free.f     = 0;   units.f = '-';            label.f = 'scaled functional response for 0-var data'; 
-par.f_tW1 = 1;        free.f_tW1 = 0;   units.f_tW1 = '-';        label.f_tW1 = 'scld. fctl. res.  DaviKenn2014 (first part of experiment)'; 
-par.f_tW2 = 1;        free.f_tW2 = 0;   units.f_tW2 = '-';        label.f_tW2 = 'scld. fctl. res.  DaviKenn2014 (second part of experiment)'; 
-par.f_tW3 = 0.4597;   free.f_tW3 = 0;   units.f_tW3 = '-';        label.f_tW3 = 'scld. fctl. res. YaniHisa2002'; 
+
+%% reconstructed f values
+% this code automatically generates knot-coordinates for each knot abscissa
+% collected in tf.
+% tf is a 1-n vector which is passes as a global and which defined in run_reconstruction
+for i = 1:length(tf)
+   fieldName     = ['f_',num2str(tf(i))];
+% ------- MODIFY starting values here -------------------------------------   
+par.(fieldName)   = 0.7; % same starting value for all
+% -------------------------------------------------------------------------   
+free.(fieldName)  = 1;  % all the knot coordinates are estimated as free parameters
+units.(fieldName) = '-';            
+label.(fieldName) = ['scaled functional response for ', num2str(tf(i))]; 
+end
 
 %% set chemical parameters from Kooy2010 
 [par, units, label, free] = addchem(par, units, label, free, metaData.phylum, metaData.class);

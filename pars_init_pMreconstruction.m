@@ -1,4 +1,6 @@
-function [par, metaPar, txtPar] = pars_init_Oncorhynchus_mykiss(metaData)
+function [par, metaPar, txtPar] = pars_init_pMreconstruction(metaData)
+
+global tpM
 
 metaPar.model = 'abj'; 
 
@@ -27,11 +29,25 @@ par.s_G = 10;         free.s_G   = 0;   units.s_G = '-';          label.s_G = 'G
 par.E_Hh = 1.650e+01; free.E_Hh  = 0;   units.E_Hh = 'J';         label.E_Hh = 'maturity at hatch'; 
 par.T_A = 10923.9752;  free.T_A   = 0;   units.T_A = 'K';          label.T_A = 'Arrhenius temp'; 
 par.del_M = 0.10137;  free.del_M = 0;   units.del_M = '-';        label.del_M = 'shape coef (forked length)'; 
-par.del_M2 = 0.087621;  free.del_M2 = 0;   units.del_M2 = '-';       label.del_M2 = 'shape coef, LW  '; 
 par.f = 1;            free.f     = 0;   units.f = '-';            label.f = 'scaled functional response for 0-var data'; 
-par.f_tW1 = 1;        free.f_tW1 = 0;   units.f_tW1 = '-';        label.f_tW1 = 'scld. fctl. res.  DaviKenn2014 (first part of experiment)'; 
-par.f_tW2 = 1;        free.f_tW2 = 0;   units.f_tW2 = '-';        label.f_tW2 = 'scld. fctl. res.  DaviKenn2014 (second part of experiment)'; 
-par.f_tW3 = 0.4597;   free.f_tW3 = 0;   units.f_tW3 = '-';        label.f_tW3 = 'scld. fctl. res. YaniHisa2002'; 
+
+% [data, auxData, txtData, weights] = mydata_BPA
+% for tank = 1:length(fieldnames(data))
+%     tanknames=fieldnames(data);
+%     tankname=char(tanknames(tank));
+    for i = 1:length(tpM)
+%        fieldName     = ['pM_', tankname, '_', num2str(tpM(i))];
+        fieldName     = ['pM_','_', num2str(tpM(i))];
+    % ------- MODIFY starting values here -------------------------------------   
+        par.(fieldName)   = 363; % same starting value for all
+        % -------------------------------------------------------------------------   
+        free.(fieldName)  = 1;  % all the knot coordinates are estimated as free parameters
+        units.(fieldName) = 'J/V/d';            
+%         label.(fieldName) = ['pM for ', 'pM_', tankname, '_', num2str(tpM(i))]; 
+          label.(fieldName) = ['pM for ', 'pM_', '_', num2str(tpM(i))]; 
+
+    end
+% end
 
 %% set chemical parameters from Kooy2010 
 [par, units, label, free] = addchem(par, units, label, free, metaData.phylum, metaData.class);

@@ -40,12 +40,25 @@ filterNm = 'filter_abj';
           print_filterflag(flag);  
     end
 
- 
+ % Get names and number of tanks
 [nm, nst] = fieldnmnst_st(data); % cell array of string with fieldnames of data
 
 newAuxData.temp = auxData.temp;
-newAuxData.pMoA = 'control'; % choose physiological mode of action
-       
+newAuxData.pMoA = 'p_M'; % choose physiological mode of action
+newAuxData.pmod(:,1) = round(linspace(64,450,6)'); % choose the interval between knots which are estimated
+
+newAuxData.pmod(:,2) = zeros(length(tpM),1); % create empty vector with knot-coordinates for the f values
+    for i = 1:length(tpM)
+    filterChecks = ( eval(['pM_', tankname, '_', num2str(tpM(i)),' < 0']));   
+      if filterChecks 
+          info = 0;
+          prdData = {};
+          return;
+      end
+    eval(['ypM(i) = pM_',tankname, '_', num2str(tpM(i)),';'])
+    end
+
+
     for j = 1:7 % replace with nst if you want to run with all data - otherwise I put 7 here because the first four fields are for the controls
 
         newData.tW = data.(nm{j});
@@ -80,3 +93,24 @@ newAuxData.pMoA = 'control'; % choose physiological mode of action
 
         save('prdData', 'prdData');       
         save('f_prdData', 'f');
+
+        
+ % Diff
+
+%%%%%%% Start with parameters from the results
+
+load('results_Oncorhynchus_mykiss.mat');
+cPar = parscomp_st(par); vars_pull(par); 
+vars_pull(cPar);  vars_pull(data);  vars_pull(auxData);
+
+figure()
+for j = 1:7 % replace with nst if you want to run with all data - otherwise I put 7 here because the first four fields are for the controls
+
+    EWw = prdData.(nm{j})(:,2);
+    diff= (EWw-data.(nm{j})(:,2))./data.(nm{j})(:,2)*100;
+    plot(data.(nm{j})(:,1), diff)
+    hold on
+    
+end
+ 
+ 

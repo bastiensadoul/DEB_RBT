@@ -38,8 +38,8 @@ par.f = 1;            free.f     = 0;   units.f = '-';            label.f = 'sca
 % collected in tpM.
 % tpM is a 1-n vector which is passes as a global and which defined in run_reconstruction
 
-[data, auxData, metaData, txtData, weights] = mydata_pMreconstruction();
-
+% [data, auxData, metaData, txtData, weights] = mydata_pMreconstruction();
+% [data, auxData, txtData, weights] = mydata_BPA
 for tank = 1:length(fieldnames(data))
     tanknames=fieldnames(data);
     tankname=char(tanknames(tank));
