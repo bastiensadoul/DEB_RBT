@@ -23,8 +23,8 @@ par.E_Hp = 3.881e+06; free.E_Hp  = 0;   units.E_Hp = 'J';         label.E_Hp = '
 par.h_a = 3.004e-24;  free.h_a   = 0;   units.h_a = '1/d^2';      label.h_a = 'Weibull aging acceleration'; 
 par.s_G = 10;         free.s_G   = 0;   units.s_G = '-';          label.s_G = 'Gompertz stress coefficient'; 
 
-par.e150 = 0.7;  free.e150   = 0;   units.e150 = '-';        label.e150 = 'Scaled functional response of the mother at spawning for study gw150'; 
-par.e124 = 0.6;  free.e124   = 0;   units.e124 = '-';        label.e124 = 'Scaled functional response of the mother at spawning for study gw124'; 
+par.e150 = 0.69;  free.e150   = 0;   units.e150 = '-';        label.e150 = 'Scaled functional response of the mother at spawning for study gw150'; 
+par.e124 = 0.64;  free.e124   = 0;   units.e124 = '-';        label.e124 = 'Scaled functional response of the mother at spawning for study gw124'; 
 
 %% other parameters 
 par.E_Hh = 1.650e+01; free.E_Hh  = 0;   units.E_Hh = 'J';         label.E_Hh = 'maturity at hatch'; 

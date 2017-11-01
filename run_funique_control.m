@@ -19,9 +19,9 @@ metaData.class      = 'Actinopterygii';
 [data, auxData, txtData, weights] = mydata_BPA;
 [par, metaPar, txtPar] = pars_init_funiqueall(metaData);
 load f_prdData_funique_all % load f estimated for all of the tanks
-f_150 = mean([f.tW_gw150A,f.tW_gw150B,f.tW_gw150C]); % mean value for the 150 experiments
-f_124 = mean([f.tW_gw124iniA,f.tW_gw124iniB,f.tW_gw124iniC]); % mean value for the 150 experiments
-f_124fin = f.tW_gw124fin; % mean value for the 150 experiments
+f_150 = mean([f.tW_gw150A, f.tW_gw150B, f.tW_gw150C]); % mean value for the 150 experiments
+f_124 = mean([f.tW_gw124iniA, f.tW_gw124iniB, f.tW_gw124iniC]); % mean value for the 150 experiments
+f_124fin = f.tW_gw124fin; % value for the 124fin
  
    
  % Get names and number of tanks
@@ -64,7 +64,7 @@ newAuxData.pMoA = 'control'; % choose physiological mode of action
         prdData.(nm{j})(:,3) = newData.tW(:,2);
 
     end
-        save('prdData_funique_control', 'prdData');       
+   save('prdData_funique_control', 'prdData');       
  
           
  % Relative difference between data and model as function of time

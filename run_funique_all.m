@@ -49,8 +49,7 @@ filterNm = 'filter_abj';
 newAuxData.temp = auxData.temp;
 newAuxData.pMoA = 'control'; % choose physiological mode of action
        
-    for j = 1:7 % replace with nst if you want to run with all data - otherwise I put 7 here because the first four fields are for the controls
-
+    for j = 1:7 % replace with nst if you want to run with all data - otherwise put 7 to do controls only
         newData.tW = data.(nm{j});
         newWeights.tW = weights.(nm{j});
        
@@ -96,7 +95,7 @@ newAuxData.pMoA = 'control'; % choose physiological mode of action
 
 figure()
 
-for j = 1:7 % replace with nst if you want to run with all data - otherwise I put 7 here because the first four fields are for the controls
+for j = 1:7 % replace with nst if you want to run with all data - otherwise put 7 to do only controls
         if (strfind(nm{j}, '150') > 0)
             color = 'red';
              if (strfind(nm{j}, 'BPA') > 0)
@@ -117,7 +116,7 @@ for j = 1:7 % replace with nst if you want to run with all data - otherwise I pu
     plot(data.(nm{j})(:,1), diff,'color',color,'linewidth',2,'linestyle',linestyle)
     hold on    
 end
-legend(nm)
+legend(nm{1:7})
 xlabel('d, time since fertilization')
 ylabel('-, relative difference between model and data')
 set(gca,'Fontsize',12);

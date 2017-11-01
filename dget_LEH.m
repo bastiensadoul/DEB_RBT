@@ -1,6 +1,4 @@
-function dLEH = dget_LEH(t, LEH, tyf, TC, p, c, pMod, pMoA)
-
-% pMod is tyf or typM
+function dLEH = dget_LEH(t, LEH, f, TC, p, c, pMoA)
 
 % pMoA: physiological mode of action
   
@@ -10,13 +8,6 @@ function dLEH = dget_LEH(t, LEH, tyf, TC, p, c, pMod, pMoA)
   %E_R = LEH(4);    % #/d, cum reproductive output
   Lb = LEH(5);    % cm, length
   Lj = LEH(6);    % cm, length
-
- 
- if size(tyf,1) > 1
-        f = interp1(tyf(:,1),tyf(:,2),t,'pchip');
- else
-     f = tyf;
- end
   
  %  Shape correction function:
  % are numerical inaccuracies a problem ? (sta 16/04/17)
