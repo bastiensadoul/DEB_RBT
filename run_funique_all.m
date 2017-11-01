@@ -49,7 +49,7 @@ filterNm = 'filter_abj';
 newAuxData.temp = auxData.temp;
 newAuxData.pMoA = 'control'; % choose physiological mode of action
        
-    for j = 1:nst % replace with nst if you want to run with all data - otherwise I put 7 here because the first four fields are for the controls
+    for j = 1:7 % replace with nst if you want to run with all data - otherwise I put 7 here because the first four fields are for the controls
 
         newData.tW = data.(nm{j});
         newWeights.tW = weights.(nm{j});
@@ -62,7 +62,6 @@ newAuxData.pMoA = 'control'; % choose physiological mode of action
         
         if estim
         [newPar, info, nsteps] = petregr_f('predict_tW', par, newData, newAuxData, newWeights, filterNm); % WLS estimate parameters using overwrite
-        %[newPar, info, nsteps] = petregr_f('predict_tW', newPar, newData, newAuxData, newWeights, filterNm); % WLS estimate parameters using overwrite
         else
         newPar = par;
         end
@@ -97,7 +96,7 @@ newAuxData.pMoA = 'control'; % choose physiological mode of action
 
 figure()
 
-for j = 1:nst % replace with nst if you want to run with all data - otherwise I put 7 here because the first four fields are for the controls
+for j = 1:7 % replace with nst if you want to run with all data - otherwise I put 7 here because the first four fields are for the controls
         if (strfind(nm{j}, '150') > 0)
             color = 'red';
              if (strfind(nm{j}, 'BPA') > 0)

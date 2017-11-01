@@ -32,15 +32,15 @@ function dLEH = dget_LEH(t, LEH, tyf, TC, p, c, pMod, pMoA)
   switch pMoA
       
       case 'p_M'
-%         p_M_Q = p.p_M * p.delta; % J/d/cm^3, p_M at start at T
-%             if p_M_Q < p.p_M
-%             p_M_t = min(p.p_M, p_M_Q + (p.p_M - p_M_Q)/ p.t_f * t);
-%             else
-%             p_M_t = max(p.p_M, p_M_Q + (p.p_M - p_M_Q)/ p.t_f * t);
-%             end
-%        p.p_M = p_M_t;
+        p_M_Q = p.p_M * p.delta; % J/d/cm^3, p_M at start at T
+            if p_M_Q < p.p_M
+            p_M_t = min(p.p_M, p_M_Q + (p.p_M - p_M_Q)/ p.t_f * t);
+            else
+            p_M_t = max(p.p_M, p_M_Q + (p.p_M - p_M_Q)/ p.t_f * t);
+            end
+       p.p_M = p_M_t;
 
-     p.p_M = interp1(pMod(:,1),pMod(:,2),t,'pchip');
+%      p.p_M = interp1(pMod(:,1),pMod(:,2),t,'pchip');
 
 
 %       case 'E_G'         
@@ -89,3 +89,9 @@ function dLEH = dget_LEH(t, LEH, tyf, TC, p, c, pMod, pMoA)
 %   
   % Pack output 
   dLEH = [dL; dE; dE_H; dE_R; dLb; dLj]; 
+  
+  
+end
+
+
+  

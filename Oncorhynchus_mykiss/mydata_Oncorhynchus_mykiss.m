@@ -9,9 +9,9 @@ metaData.species    = 'Oncorhynchus_mykiss';
 metaData.species_en = 'Rainbow trout'; 
 metaData.T_typical  = C2K(15.5); % K, body temp
 metaData.data_0     = {'ah_T'; 'ab_T'; 'ap'; 'am'; 'Lb'; 'Lp'; 'Li'; 'Wd0'; 'Wdh'; 'Wdb'; 'Wwi'; 'Ri'};  % tags for different types of zero-variate data
-metaData.data_1     = {'L-Ww'; 't-Ww'; 't-L'; 'tWde'; 'tWde_E'; 'T-ah'; 'Ww-JO'; 'WLO'; 'Wie1985'; 'tW150'; 'tW124ini'; 'tW124fin'}; % tags for different types of uni-variate data
+metaData.data_1     = {'t-Ww_f'; 't-L_f'; 't-Wde'; 't-Wde_E'; 'T-ah'; 'Ww-JO'}; % tags for different types of uni-variate data
 
-metaData.COMPLETE = 2.4; % using criteria of LikaKear2011
+metaData.COMPLETE = 3.5; % using criteria of LikaKear2011
 
 metaData.author   = {'Bas Kooijman'};        
 metaData.date_subm = [2014 09 26];                           
@@ -21,7 +21,7 @@ metaData.address  = {'VU University Amsterdam'};
 metaData.author_mod_1   = {'Starrlight Augustine'};        
 metaData.date_mod_1 = [2016 01 26];                           
 metaData.email_mod_1    = {'starrlight.augustine@akvaplan.niva.no'};                 
-metaData.address_mod_1  = {'akvaplan-niva'};
+metaData.address_mod_1  = {'Akvaplan-niva'};
 
 metaData.author_mod_2   = {'Bastien Sadoul';'Starrlight Augustine' };        
 metaData.date_mod_2 = [2016 02 01];                           
@@ -29,19 +29,25 @@ metaData.email_mod_2    = {'bastien.sadoul@hotmail.fr';'starrlight.augustine@akv
 metaData.address_mod_2  = {'University of Calgary';'akvaplan-niva'};
 
 metaData.author_mod_3   = {'Bas Kooijman'};        
-metaData.date_mod_3 = [2016 04 07];                           
+metaData.date_mod_3     = [2016 04 07];                           
 metaData.email_mod_3    = {'bas.kooijman@vu.nl'};                 
 metaData.address_mod_3  = {'VU University Amsterdam'};
 
-metaData.author_mod_4   = {'Bastien Sadoul';'Starrlight Augustine' };       
-metaData.date_mod_4 = [2017 05 27];                           
+metaData.author_mod_4   = {'Bastien Sadoul';'Starrlight Augustine'};       
+metaData.date_mod_4     = [2017 05 27];                           
 metaData.email_mod_4    = {'bastien.sadoul@hotmail.fr';'sta@akvaplan.niva.no'};                 
 metaData.address_mod_4  = {'University of Calgary';'Akvaplan-niva'};
 % we added respiration data and re-did parameter estimation
 
+metaData.author_mod_5   = {'Elke Zimmer';'Starrlight Augustine'};       
+metaData.date_mod_5     = [2017 10 30];                           
+metaData.email_mod_5    = {'Elke.Zimmer@ibacon.com';'sta@akvaplan.niva.no'};                 
+metaData.address_mod_5  = {'Ibacon';'Akvaplan-niva'};
+% we added weight and length against time under starvation.
+
 metaData.curator     = {'Bas Kooijman'};
 metaData.email_cur   = {'bas.kooijman@vu.nl'}; 
-metaData.date_acc    = [2017 05 27]; 
+metaData.date_acc    = [2017 10 30]; 
 
 %% set data
 % zero-variate data
@@ -62,7 +68,7 @@ comment.Wdb = 'large eggs, 10 deg C, Table 2, wet weight times percent dry matte
     data.ap =28 + (20 * 30); units.ap = 'd';    label.ap = 'age at puberty';         bibkey.ap = 'DaviKenn2014';
  temp.ap = C2K(13); units.temp.ap = 'K'; label.temp.ap = 'temperature';
  comment.ap = 'GSI assessment indicated that rapid egg growth started at 20 Mo post hatch, and we assume that it takes about 28 d to hatch according to Vels1987';
-data.am = 11*365;  units.am = 'd';    label.am = 'life span';              bibkey.am = {'fishbase'};   
+data.am = 11*365;  units.am = 'd';    label.am = 'life span';              bibkey.am = 'fishbase';   
   temp.am = C2K(5); units.temp.am = 'K'; label.temp.am = 'temperature';
 data.Lp = 54;      units.Lp = 'cm';   label.Lp = 'forked length at puberty'; bibkey.Lp = 'DaviKenn2014';
 data.Wp = 3.5 * 1e3;   units.Wp = 'g';    label.Wp = 'wet weight at puberty';    bibkey.Wp = 'DaviKenn2014';
@@ -75,19 +81,20 @@ data.Ri = data.Wi * 2.5/ 365; units.Ri = '#/d'; label.Ri = 'maximum reprod rate'
   
 % uni-variate data
 
-% L_Ww data
-data.LW = [... % length (cm), wet weight (g)
-5.859	2.310; 9.567	9.342; 12.167	14.040; 12.552	43.337
-12.889	7.340; 13.178	29.876; 13.756	32.171; 14.334	38.968
-16.597	61.652; 24.928	170.345; 25.217	111.830; 27.095	195.273
-27.769	251.609; 27.817	213.339; 28.780	224.668; 28.925	179.651
-29.888	260.774; 30.610	323.867; 30.658	449.950; 31.332	368.949
-32.055	308.216; 32.681	317.268; 33.355	362.347; 35.136	484.057
-37.207	504.475; 37.400	738.636; 39.326	612.701; 40.722	716.371
-42.119	824.543; 42.648	705.258; 43.274	813.373; 43.467	887.684
-43.660	1009.274; 45.345	1173.753; 46.116	1009.459; 48.138	1095.164; 49.920	1376.723];
-units.LW = {'cm', 'g'};  label.LW = {'length', 'wet weight'};  bibkey.LW = {'ChenSnow2015', 'BudyThie2002',  'StraStut1997',  'WeatGill1981'};
-comment.LW = 'Compiled from 4 publications';
+% This LW data was removed in mod_5 - 
+% % L_Ww data
+% data.LW = [... % length (cm), wet weight (g)
+% 5.859	2.310; 9.567	9.342; 12.167	14.040; 12.552	43.337
+% 12.889	7.340; 13.178	29.876; 13.756	32.171; 14.334	38.968
+% 16.597	61.652; 24.928	170.345; 25.217	111.830; 27.095	195.273
+% 27.769	251.609; 27.817	213.339; 28.780	224.668; 28.925	179.651
+% 29.888	260.774; 30.610	323.867; 30.658	449.950; 31.332	368.949
+% 32.055	308.216; 32.681	317.268; 33.355	362.347; 35.136	484.057
+% 37.207	504.475; 37.400	738.636; 39.326	612.701; 40.722	716.371
+% 42.119	824.543; 42.648	705.258; 43.274	813.373; 43.467	887.684
+% 43.660	1009.274; 45.345	1173.753; 46.116	1009.459; 48.138	1095.164; 49.920	1376.723];
+% units.LW = {'cm', 'g'};  label.LW = {'length', 'wet weight'};  bibkey.LW = {'ChenSnow2015', 'BudyThie2002',  'StraStut1997',  'WeatGill1981'};
+% comment.LW = 'Compiled from 4 publications';
 
 % T-ab data from Velsen 1987
 % given as the 50% value
@@ -116,14 +123,14 @@ tWdY=[...
 90	230.55	0];
 data.tWde = tWdY(:,[1 2]); % yolk-free embryo dry mass, mg 
 units.tWde = {'d','mg'} ; label.tWde = {'time since fertilization', 'yolk-free dry weight'};
-bibkey.tWde ={'NinnStev2006'};
-comment.tWde ={'Table 1, pp 1878, chorionated'};
+bibkey.tWde = 'NinnStev2006';
+comment.tWde = 'Table 1, pp 1878, chorionated';
 temp.tWde = C2K(10); units.temp.tWde = 'K'; label.temp.tWde = 'temperature'; 
 
 data.tWde_E = tWdY(:,[1 3]); % yolk dry mass, mg 
 units.tWde_E = {'d','mg'} ; label.tWde_E = {'time since fertilization', 'yolk dry weight'};
-bibkey.tWde_E ={'NinnStev2006'};
-comment.tWde_E ={'Table 1, pp 1878, chorionated'};
+bibkey.tWde_E = 'NinnStev2006';
+comment.tWde_E = 'Table 1, pp 1878, chorionated';
 temp.tWde_E = C2K(10); units.temp.tWde_E = 'K'; label.temp.tWde_E = 'temperature'; 
 
 % DaviKenn2014
@@ -192,7 +199,7 @@ data.tW3 = [... % time (d), wet weight (g)
 154.725	20.335];
 units.tW3 = {'d', 'g'};  label.tW3 = {'time', 'wet weight'};  bibkey.tW3 = {'YaniHisa2002'};
  temp.tW3 = C2K(8.5); units.temp.tW3 = 'K'; label.temp.tW3 = 'temperature';
-auxData.W0.tW3 = 1.471;  units.W0.tW3 = 'g';  label.W0.tW3 = 'wet weight at t = 0'; 
+W0.tW3 = 1.471;  units.W0.tW3 = 'g';  label.W0.tW3 = 'wet weight at t = 0'; 
 
 %  1 days post fertization, 
 %  2 W g, wet weight
@@ -220,10 +227,9 @@ WLO = [...
 % 11.1    15.1    15	75	9.93660271
 ]; % the data with current are commented
 [Y,I]=sort(WLO(:,1)); WLO=WLO(I,:); % sorts by increasing length
-%[Y,I]=sort(WLO(:,2)); WLO=WLO(I,:); % sorts by increasing weight
 WLO(:,5) = 24 .*1e-3 * WLO(:,5) .* WLO(:,2);  % umol/g/h to mmol/d
 data.WJO = [WLO(:, 2) WLO(:, 5)];
-units.WJO = {'g', 'mmol/d'}; label.WJO = {'wet weight'; 'oxygen consumption'}; bibkey.WJO = {'KieAls1998'};
+units.WJO = {'g', 'mmol/d'}; label.WJO = {'wet weight'; 'O_2 consumption'}; bibkey.WJO = {'KieAls1998'};
  comment.WJO = 'We only use the no current data. The author state said fed to satiation but organisms seem a bit light.';
 temp.WJO = C2K(WLO(:,3)); units.temp.WJO = 'K' ;  label.temp.WJO = 'temperature' ; 
 forkLength.WJO = WLO(:,1); units.forkLength.WJO = 'cm' ;  label.forkLength.WJO = 'fork length' ; 
@@ -273,23 +279,208 @@ Wie1985=[...
 12	5.94481937		43.66841489
 12	7.16758909		32.60241238
 12	7.40366066		41.34829138];
-
 Wie1985(:,3) = 24 .*1e-3 * Wie1985(:,3);  % umol/h to mmol/d
 [Y,I]=sort(Wie1985(:,2)); Wie1985=Wie1985(I,:); % sorts by increasing weight
 data.Wie1985 = [Wie1985(:, 2) Wie1985(:, 3)];
-units.Wie1985 = {'g', 'mmol/d'}; label.Wie1985 = {'wet weight'; 'oxygen consumption'}; bibkey.Wie1985 = {'Wie1985'};
+units.Wie1985 = {'g', 'mmol/d'}; label.Wie1985 = {'wet weight'; 'O_2 consumption'}; bibkey.Wie1985 = {'Wie1985'};
 comment.Wie1985 = 'data from log scales, --> maybe not very precise';
 temp.Wie1985 = C2K(Wie1985(:,1)); units.temp.Wie1985 = 'K' ;  label.temp.Wie1985 = 'temperature' ; 
-% temp.tW_ind = 'K'; label.temp.tW_ind = 'temperature';
+
+%% STARVATION DATA added in mod_5
+%% univar 6 - LaufWood1996
+tJO =[... time(days)	M O2 [µmol*g^-1*h^-1]
+0.0	6.09
+0.4	7.43
+1.0	9.07
+1.4	7.90
+2.1	7.20
+3.0	4.74
+3.4	6.50
+4.2	7.79
+5.0	7.84
+6.1	7.08
+6.9	6.67
+7.3	5.50
+8.1	5.74
+9.3	6.21
+10.0	5.33
+11.3	6.79
+12.3	5.33
+13.0	5.27
+14.4	4.57];
+% MO2 is calculated using the initial body weight
+tJO(:,2) = 24 .*1e-3 * tJO(:,2) .* 4.5;  % umol/g/h to mmol/d
+data.u6_tJO =tJO;
+units.u6_tJO = {'d', 'mmol/d'};  label.u6_tJO = {'time', 'O_2 consumption'}; bibkey.u6_tJO = {'LaufWood1996'};
+temp.u6_tJO  = C2K(15); units.temp.u6_tJO  = 'K'; label.temp.u6_tJO = 'temperature';
+
+W0.u6_tJO = 4.5; units.W0.u6_tJO = 'g';  label.W0.u6_tJO = 'length at t = 0';
+L0.u6_tJO = 7; units.L0.u6_tJO = 'cm';  label.L0.u6_tJO = 'length at t = 0'; 
+% which initial size? Guess from Figure 1?
+% around 7 - 9 cm?
+
+data.u6_tW =[... % time (days), weight(g)
+    0 4.5
+    14.4 3.8];
+units.u6_tW = {'d', 'g'};  label.u6_tW = {'time', 'wet weight  '};  bibkey.u6_tW = {'LaufWood1996'};
+
+%% univar 12 - SumpBail1991 ========================================= 
+
+%  Experiment 2 - TINY FISH
+%Figure 4	 starved fish	fed fish 	 starved fish	fed fish 
+%time [weeks] - body weight starv [g] - body weight fed [g]	- body (fork) length starv [cm] - starv body (fork) length fed [cm]
+t_wwll = [...
+0	25.80	25.07	12.21	11.91
+1	27.20	27.73	12.73	12.42
+2	26.00	33.33	12.95	13.36
+4	24.60	44.47	12.85	14.66];
+
+% tL data control
+data.u12_tL1 = [... % Time (days), fork length (cm)
+t_wwll(:,1) * 7, t_wwll(:,5)];
+units.u12_tL1 = {'d', 'cm'};  label.u12_tL1 = {'time', 'fork length'};  bibkey.u12_tL1 = {'SumpBail1991'};
+comment.u12.tL1 = 'T was in between 11.5 and 16.5°C. ';
+temp.u12_tL1 = C2K((11.5 + 16.5)/2); units.temp.u12_tL1 = 'K'; label.temp.u12_tL1= 'temperature';
+
+% tL data starv
+data.u12_tL2 = [... % Time (days), fork length (cm)
+t_wwll(:,1)*7, t_wwll(:,4)];
+units.u12_tL2 = {'d', 'cm'};  label.u12_tL2 = {'time', 'fork length'};  bibkey.u12_tL2 = {'SumpBail1991'};
+comment.u12.tL2 = 'T was in between 11.5 and 16.5°C. ';
+temp.u12_tL2 = C2K((11.5 + 16.5)/2); units.temp.u12_tL2 = 'K'; label.temp.u12_tL2 = 'temperature';
+
+% tW data control
+data.u12_tW1 = [... % Time (days), weight (g)
+t_wwll(:,1)*7, t_wwll(:,3)];
+units.u12_tW1 = {'d', 'g'};  label.u12_tW1 = {'time', 'weight'};  bibkey.u12_tW1 = {'SumpBail1991'};
+W0.u12_tW1 = 25; units.W0.u12_tW1= 'g';  label.W0.u12_tW1 = 'wet weight at t = 0';
+L0.u12_tW1 = 12; units.L0.u12_tW1= 'cm';  label.L0.u12_tW1 = 'length at t = 0';
+comment.u12.tW1 = 'T was in between 11.5 and 16.5°C. ';
+temp.u12_tW1 = C2K((11.5 + 16.5)/2); units.temp.u12_tW1 = 'K'; label.temp.u12_tW1 = 'temperature';
 
 
-% %% Grouped plots
-% set1 = {'WwJO_1','WwJO_2'}; comment1 = {'O2 uptake SSAF, LSAF'};
-% set2 = {'tWw_1','tWw_2'}; comment2 = {'wet weight SSAF, LSAF'};
-% set3 = {'tL_1','tL_2'}; comment3 = {'fork length SSAF, LSAF'};
-% %set4 = {'LJO5','LJO15'}; comment4 = {'O2 uptake 5 and 15C'};
-% metaData.grp.sets = {set1, set2, set3}; metaData.grp.comment = {comment1, comment2, comment3};
-% %metaData.grp.sets = {set1, set2, set3, set4}; metaData.grp.comment = {comment1, comment2, comment3, comment4};
+% tW data starv
+data.u12_tW2 = [... % Time (days), weight (g)
+t_wwll(:,1)*7, t_wwll(:,2)];
+units.u12_tW2= {'d', 'g'};  label.u12_tW2 = {'time', 'weight'};  bibkey.u12_tW2 = {'SumpBail1991'};
+comment.u12.tW2 = 'T was in between 11.5 and 16.5°C. ';
+temp.u12_tW2 = C2K((11.5 + 16.5)/2); units.temp.u12_tW2 = 'K'; label.temp.u12_tW2 = 'temperature';
+
+%% univar 13 - WeatGill1980 ===================================================== 
+% fingerlings were all fed for 2 weeks ad libitum before the experiment started 
+% CHECK WEATHERLY FOR MORE STARVATION DATA - % DRY WEIGHT
+% control weight
+data.u13_tW_B= [... %  weeks, weight in g
+0	10.74
+2	13.28
+4	18.34
+6	28.65
+8	33.71
+10	39.83
+12	48.73
+14	58.86
+16	64.98];
+data.u13_tW_B(:,1) = data.u13_tW_B(:,1) * 7; % convert weeks in days
+units.u13_tW_B = {'d', 'g'};  label.u13_tW_B = {'time', 'weight'};  bibkey.u13_tW_B = {'WeatGill1980'};
+ temp.u13_tW_B  = C2K(12); units.temp.u13_tW_B = 'K'; label.temp.u13_tW_B = 'temperature';
+W0.u13_tW_B = 10.74;  units.W0.u13_tW_B = 'g';  label.W0.u13_tW_B = 'wet weight at t = 0'; 
+L0.u13_tW_B = 9.5;  units.L0.u13_tW_B = 'cm';  label.L0.u13_tW_B = 'mean length at t = 0'; 
+comment.u13_tW_B = '';
+% 3 % of dry body weight daily - group C
+data.u13_tW_C = [... %  weeks, weight in g
+0	10.74
+2	8.91
+4	9.78
+6	11.35
+8	12.93
+10	14.32
+12	15.37
+14	16.94
+16	17.82
+18	21.31
+20	28.12
+22	35.11
+24	45.94
+26	56.94
+28	71.97];
+data.u13_tW_C(:,1) = data.u13_tW_C(:,1) * 7; % convert weeks in days
+units.u13_tW_C = {'d', 'g'};  label.u13_tW_C = {'time', 'weight'};  bibkey.u13_tW_C = {'WeatGill1980'};
+
+ % starved for 3 weeks then fed ad libitum
+data.u13_tW_D = [... %  weeks, weight in g
+0	10.74 % add initial weight from table to have at least 2 entries in t
+2	7.16
+3	7.34
+4	9.43
+6	14.50
+8	20.09
+10	25.50
+12	32.31
+14	38.08
+16	53.28
+18	60.61];
+data.u13_tW_D(:,1) = data.u13_tW_D(:,1) * 7; % convert weeks in days
+units.u13_tW_D = {'d', 'g'};  label.u13_tW_D = {'time', 'weight'};  bibkey.u13_tW_D = {'WeatGill1980'};
+ 
+ % starved for 13 weeks then fed ad libitum
+data.u13_tW_E = [... %  weeks, weight in g
+0	10.74
+2	6.99
+4	6.81
+6	6.64
+8	5.94
+10	5.76
+12	5.59
+13	5.24
+14	7.16
+16	9.96
+18	15.72
+20	22.18
+22	30.92
+24	41.05
+26	50.13
+28	63.93];
+data.u13_tW_E(:,1) = data.u13_tW_E(:,1) * 7; % convert weeks in days
+units.u13_tW_E = {'d', 'g'};  label.u13_tW_E = {'time', 'weight'};  bibkey.u13_tW_E = {'WeatGill1980'};
+
+% length data
+data.u13_tL_B = [... % days, length (cm)
+    0 9.5 
+    112 16.6]; 
+units.u13_tL_B= {'d', 'cm'};  label.u13_tL_B = {'time', 'length'};  bibkey.u13_tL_B = {'WeatGill1980'};
+%
+data.u13_tL_C = [... % days, length (cm)
+    0 9.5 
+    111 11.1
+    112 11.1
+    196 16.9]; 
+units.u13_tL_C= {'d', 'cm'};  label.u13_tL_C = {'time', 'length'};  bibkey.u13_tL_C = {'WeatGill1980'};
+
+data.u13_tL_D = [... % days, length (cm)
+    0 9.5 
+    20 8.5
+    21 8.5
+    126 16]; 
+units.u13_tL_D= {'d', 'cm'};  label.u13_tL_D = {'time', 'length'};  bibkey.u13_tL_D = {'WeatGill1980'};
+%
+data.u13_tL_E = [... % days, length (cm)
+    0 9.5 
+    90 8.7
+    91 8.7
+    196 16.2]; 
+units.u13_tL_E= {'d', 'cm'};  label.u13_tL_E = {'time', 'length'};  bibkey.u13_tL_E = {'WeatGill1980'};
+
+%% Grouped plots
+set1 = {'u13_tW_B', 'u13_tW_C', 'u13_tW_D','u13_tW_E'}; comment1 = {'Weatherly et al 1981';'control fed, 3% fed'}; % univar 13
+% set2 = {'u13_tW_D','u13_tW_E'}; comment2 = {'Weatherly et al 1981';'3 weeks starved, 13 weeks starved'}; % univar 13
+set2 = {'u13_tL_B','u13_tL_C','u13_tL_D','u13_tL_E'}; comment2 = {'Weatherly et al 1981'}; % univar 13
+
+set3 = {'u12_tW1','u12_tW2'}; comment3 = {'Sumpter';'control, starved after one week'}; % univar 12
+set4 = {'u12_tL1','u12_tL2'}; comment4 = {'Sumpter';'control, starved after one week'}; % univar 12
+
+metaData.grp.sets = {set1, set2, set3, set4};
+metaData.grp.comment = {comment1, comment2, comment3, comment4};
+
 
 %% set weights for all real data
 weights = setweights(data, []);
@@ -297,20 +488,32 @@ weights = setweights(data, []);
 weights.Tah = weights.Tah * 20; 
 weights.tW1 = weights.tW1 * 10; 
 weights.tL1 = weights.tL1 * 10; 
-% growth does something strange after 20 months post hatch, see discussion and paper
+
+% DaviKenn2014: growth does something strange after 20 months post hatch, see discussion and paper
 weights.tW2(end-7:end) = weights.tW2(end-7:end) * 0; 
 weights.tL2(end-7:end) = weights.tL2(end-7:end) * 0;
+
 
 %% set pseudodata and respective weights
 [data, units, label, weights] = addpseudodata(data, units, label, weights);
 
 %% pack auxData and txtData for output
 auxData.temp = temp;
+auxData.L0 = L0; 
+auxData.W0 = W0; 
+
 auxData.forkLength = forkLength;
 txtData.units = units;
 txtData.label = label;
 txtData.bibkey = bibkey;
 txtData.comment = comment;
+   
+%% Discussion
+D1 = 'fish base says that females mature after 3 years and males after 2. However there is no reference to back this up. DaviKlemm2014 observed that rapid egg growth occured after 20 months post hatch, so we assume that this coincided with puberty';
+D2 = 'mod_4: previous versions included weight and respiration as function of time for two extreme phenotypic families (large and small size and maturity respectively), from McKenPed2007. These families have different parameters and might be used to make specific entries for those families. ';
+D3 = 'mod_5: removed the length-weight relationship that was compiled from four studies. Included starvation data.';
+D4 = 'mod_5: we assume that during starvation structure is degraded to cover somatic maintance';
+metaData.discussion = struct('D1',D1, 'D2', D2, 'D3', D3);
 
 %% Facts
 F1 = 'Many subspecies exist, e.g. O. m. irideus  (coastal rainbow trout), O. m. gairdneri (Columbia River redband trout)';
@@ -320,15 +523,7 @@ metaData.bibkey.F2 = 'YaniHisa2002';
 F3 = 'Able to spawn several times, each time separated by months';
 metaData.bibkey.F3 = 'Wiki';
 metaData.facts = struct('F1',F1,'F2',F2,'F3',F3);
-      
-%% Discussion
-D1 = 'fish base says that females mature after 3 years and males after 2. However there is no reference to back this up. DaviKlemm2014 observed that rapid egg growth occured after 20 months post hatch, so we assume that this coincided with puberty';
-D2 = 'we did a lot of empirical adjustments to the weights which needs further study.';
-D3 = 'In mod_3, I removed del_M2 and extra filters; put extra weight on psd.k_J (because the used value was 0.1 * the standard one) and included psd.f_tWL = 1 to prevent that it becomes too high';
-D4 = 'previous versions included weight and respiration as function of time for two extreme phenotypic families (large and small size and maturity respectively), from McKenPed2007. These families have different parameters and so should be used to make specific entries for those families. ';
-metaData.discussion = struct('D1',D1, 'D2', D2, 'D3', D3, 'D4', D4);
-
-%% References
+ 
 %% References
 bibkey = 'Wiki'; type = 'Misc'; bib = ...
 'howpublished = {\url{https://en.wikipedia.org/wiki/Oncorhynchus_mykiss}}';  
@@ -355,31 +550,31 @@ metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
 bibkey = 'fishbase'; type = 'Misc'; bib = ...
 'howpublished = {\url{http://www.fishbase.org/summary/239}}';  
 metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-% 
-bibkey = 'ChenSnow2015'; type = 'Misc'; bib = [...
-'author = {Chen, Z. and Snow, M. and Lawrence, C. S. and Church, A. R. and Narum, S. R. and Devlin R. H. and Farrell, A.P.}, ' ...
-'year = {2015}, ' ...
-'title = {Selection for upper thermal tolerance in rainbow trout (Oncorhynchus mykiss Walbaum)}, ' ... 
-'journal = {The Journal of Experimental Biology}, ' ...
-'volume = {218}, '...
-'pages = {803--812}'];
-metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
- %   
-bibkey = 'BudyThie2002'; type = 'Report'; bib = [...
-'author = {Budy, P. and Thiede, G. P. and Haddix, T.}, ' ...
-'year = {2002}, ' ...
-'title = {Rainbow trout growth and survival in Flaming Gorge Reservoir}, ' ...
-'institution = {Project XIV Sport Fisheries Research (USU) Annual Report}'];
-metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-% 
-bibkey = 'StraStut1997'; type = 'Misc'; bib = [...
-'author = {Straus, D. L. and Stuthridge, T. R. and Anderson, S. M. and Gifford, J. S.}, ' ...
-'year = {1997}, ' ...
-'title = {Acute toxicity of dehydroabietic acid to rainbow trout: Manipulation of biotransformation}, ' ... 
-'journal = {Australasian Journal of Ecotoxicology}, ' ...
-'volume = {3}, '...
-'pages = {131--139}'];
-metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
+% % 
+% bibkey = 'ChenSnow2015'; type = 'Misc'; bib = [...
+% 'author = {Chen, Z. and Snow, M. and Lawrence, C. S. and Church, A. R. and Narum, S. R. and Devlin R. H. and Farrell, A.P.}, ' ...
+% 'year = {2015}, ' ...
+% 'title = {Selection for upper thermal tolerance in rainbow trout (Oncorhynchus mykiss Walbaum)}, ' ... 
+% 'journal = {The Journal of Experimental Biology}, ' ...
+% 'volume = {218}, '...
+% 'pages = {803--812}'];
+% metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
+%  %   
+% bibkey = 'BudyThie2002'; type = 'Report'; bib = [...
+% 'author = {Budy, P. and Thiede, G. P. and Haddix, T.}, ' ...
+% 'year = {2002}, ' ...
+% 'title = {Rainbow trout growth and survival in Flaming Gorge Reservoir}, ' ...
+% 'institution = {Project XIV Sport Fisheries Research (USU) Annual Report}'];
+% metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
+% % 
+% bibkey = 'StraStut1997'; type = 'Misc'; bib = [...
+% 'author = {Straus, D. L. and Stuthridge, T. R. and Anderson, S. M. and Gifford, J. S.}, ' ...
+% 'year = {1997}, ' ...
+% 'title = {Acute toxicity of dehydroabietic acid to rainbow trout: Manipulation of biotransformation}, ' ... 
+% 'journal = {Australasian Journal of Ecotoxicology}, ' ...
+% 'volume = {3}, '...
+% 'pages = {131--139}'];
+% metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
 % 
 bibkey = 'WeatGill1981'; type = 'Misc'; bib = [...
 'author = {Weatherly, A. H. and Gill, H. S.}, ' ...
@@ -456,117 +651,31 @@ bibkey = 'TylePott1996'; type = 'Article'; bib = [ ...
 'pages = {8-15}'];
 metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
 
+bibkey = 'LaufWood1996'; type = 'Article'; bib = [ ...  
+'author = {R. F. Lauff, C. M. Wood}, ' ...
+'year = {1996}, ' ...
+'title = {Respiratory gas exchange, nitrogenous waste excretion, and fuel usage during starvation in juvenile rainbow trout, Oncorhynchus mykiss}, ' ... 
+'journal = {J Comp Physiol B}, ' ...
+'volume = {165}, '...
+'pages = {542-551}'];
+metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
 
-% bibkey = 'Wiki'; type = 'Misc'; bib = ...
-% 'howpublished = {\url{https://en.wikipedia.org/wiki/Rainbow_trout}';  
-% metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-% %
-% bibkey = 'Kooy2010'; type = 'Book'; bib = [ ...  % used in setting of chemical parameters and pseudodata
-% 'author = {Kooijman, S.A.L.M.}, ' ...
-% 'year = {2010}, ' ...
-% 'title  = {Dynamic Energy Budget theory for metabolic organisation}, ' ...
-% 'publisher = {Cambridge Univ. Press, Cambridge}, ' ...
-% 'pages = {Table 4.2 (page 150), 8.1 (page 300)}, ' ...
-% 'howpublished = {\url{http://www.bio.vu.nl/thb/research/bib/Kooy2010.html}'];
-% metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-% %
-% bibkey = 'YaniHisa2002'; type = 'Article'; bib = [ ...  
-% 'author = {T. Yanik, S. A. Hisar and C. Bölükbas}, ' ...
-% 'year = {2002}, ' ...
-% 'title = {EARLY DEVELOPMENT AND GROWTH OF ARCTIC CHARR (SALVELINUS ALPINUS) AND RAINBOW TROUT (ONCORHYNCHUS MYKISS) AT A LOW WATER TEMPERATURE.}, ' ... 
-% 'journal = {The Israeli Journal of Aquaculture – Bamidgeh}, ' ...
-% 'volume = {54(2)}, '...
-% 'pages = {73}'];
-% metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-% %
-% bibkey = 'fishbase'; type = 'Misc'; bib = ...
-% 'howpublished = {\url{http://www.fishbase.org/summary/239}';  
-% metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-% % 
-% bibkey = 'ChenSnow2015'; type = 'Misc'; bib = [...
-% 'author = {Chen, Z., Snow, M., Lawrence, C.S., Church, A.R., Narum, S.R., Devlin R.H., Farrell, A.P}, ' ...
-% 'year = {2015}, ' ...
-% 'title = {Selection for upper thermal tolerance in rainbow trout (Oncorhynchus mykiss Walbaum)}, ' ... 
-% 'journal = {The Journal of Experimental Biology}, ' ...
-% 'volume = {218}, '...
-% 'pages = {803 - 812}'];
-% metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-%  %   
-% bibkey = 'BudyThie2002'; type = 'Misc'; bib = [...
-% 'author = { Budy, P., Thiede, G.P., Haddix, T}, ' ...
-% 'year = {2002}, ' ...
-% 'title = { Rainbow trout growth and survival in Flaming Gorge Reservoir. Project XIV Sport Fisheries Research (USU) Annual Report}'];
-% metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-% % 
-% bibkey = 'StraStut1997'; type = 'Misc'; bib = [...
-% 'author = {Straus, D.L., Stuthridge, T.R., Anderson, S.M., Gifford, J.S.}, ' ...
-% 'year = {1997}, ' ...
-% 'title = {Acute toxicity of dehydroabietic acid to rainbow trout: Manipulation of biotransformation.}, ' ... 
-% 'journal = {Australasian Journal of Ecotoxicology}, ' ...
-% 'volume = {3}, '...
-% 'pages = {131 - 139}'];
-% metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-% % 
-% bibkey = 'WeatGill1981'; type = 'Misc'; bib = [...
-% 'author = {Weatherly, A.H., Gill, H.S.}, ' ...
-% 'year = {1981}, ' ...
-% 'title = {Recovery growth following periods of restricted rations and starvation in rainbow trout Salmo gairdneri Richardson}, ' ... 
-% 'journal = {J. Fish Biol.}, ' ...
-% 'volume = {18}, '...
-% 'pages = {195 - 208}'];
-% metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-% % 
-% bibkey = 'FromRasm1991'; type = 'Misc'; bib = [...
-% 'author = {From, J., Rasmussen, G.}, ' ...
-% 'year = {1991}, ' ...
-% 'title = {Growth of rainbow trout, Oncorhynchus mykiss (Walbaum, 1792) related to egg size and temperature}, ' ... 
-% 'journal = {Dana}, ' ...
-% 'volume = {9}, '...
-% 'pages = {31 - 38}'];
-% metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-% %
-% bibkey = 'Vels1987'; type = 'Book'; bib = [ ...  
-% 'author = {F. P. J. Velsen}, ' ...
-% 'year = {1987}, ' ...
-% 'title = {Temperature and Incubation in Pacific Salmon and Rainbow Trout: Compilation of Data on Median Hatching Time, Mortality and Embryonic Staging}, '];
-% metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-% %
-% bibkey = 'DaviKenn2014'; type = 'Article'; bib = [ ...  
-% 'author = {J. W. Davidson, P. B. Kenney, M. Manor, C. M. Good, G. M. Weber, A. Aussanasuwannakul, P. J. Turk, C. Welsh, S. T. Summerfelt}, ' ...
-% 'year = {2014}, ' ...
-% 'title = {Growth performance, fillet quality, and reproductive maturity of Rainbow Trout (Oncorhynchus mykiss) cultured to 5 kilograms within freshwater recirculating systems}, ' ... 
-% 'journal = {Journal of Aquaculture Research and Development}, ' ...
-% 'volume = {5}, '...
-% 'number = {4},' ...
-% 'pages = {}'];
-% metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-% %
-% bibkey = 'NinnStev2006'; type = 'Article'; bib = [ ...  
-% 'author = {Ninness, Marcie M. and  Stevens, E. Don and Wright, Patricia A.}, ' ...
-% 'year = {2006}, ' ...
-% 'title = {Removal of the chorion before hatching results in increased movement and accelerated growth in rainbow trout (Oncorhynchus mykiss) embryos}, ' ... 
-% 'journal = {Journal of Experimental Biology}, ' ...
-% 'volume = {209}, '...
-% 'number = {10},' ...
-% 'pages = {1874-1882}'];
-% metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-% %
-% bibkey = 'KieAls1998'; type = 'Article'; bib = [ ...  
-% 'author = {Kieffer, Alsop and  Wood}, ' ...
-% 'year = {1998}, ' ...
-% 'title = {A respirometric analysis of fuel use during aerobic swimming at different temperatures in rainbow trout (Oncorhynchus mykiss)}, ' ... 
-% 'journal = {Journal of Experimental Biology}, ' ...
-% 'volume = {201}, '...
-% 'number = {22},' ...
-% 'pages = {3123-3133}'];
-% metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
-% %
-% bibkey = 'Wie1985'; type = 'Article'; bib = [ ...  
-% 'author = {Wieser}, ' ...
-% 'year = {1985}, ' ...
-% 'title = {Developmental and metabolic constraints of the scope for activity in young rainbow trout (Salmo Gairdneri)}, ' ... 
-% 'journal = {Journal of Experimental Biology}, ' ...
-% 'volume = {118}, '...
-% 'number = {1},' ...
-% 'pages = {133-142}'];
-% metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
+bibkey = 'SumpBail1991'; type = 'Article'; bib = [ ...  
+'author = {J. P. SUMPTER, P. Y. LE BAIL,  A. D. PICKERING, T. G. POTTINGER, J.F. CARRAGHER}, ' ...
+'year = {1991}, ' ...
+'title = {The Effect of Starvation on Growth and Plasma Growth Hormone Concentrations of Rainbow Trout, Oncorhynchus mykiss}, ' ... 
+'journal = {GENERAL AND COMPARATIVE ENDOCRINOLOGY}, ' ...
+'volume = {83}, '...
+'pages = {94-102}'];
+metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
+
+bibkey = 'WeatGill1980'; type = 'Article'; bib = [ ...  
+'author = {A. H. WEATHERLEY AND H. S. GILL}, ' ...
+'year = {1981}, ' ...
+'title = {Recovery growth following periods of restricted rations and starvation in rainbow trout Salmo gairdneri Richardson}, ' ... 
+'journal = {J. Fish Biol.}, ' ...
+'volume = {18}, '...
+'pages = {195-208}'];
+metaData.biblist.(bibkey) = ['''@', type, '{', bibkey, ', ' bib, '}'';'];
+
+

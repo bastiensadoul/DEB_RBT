@@ -31,7 +31,7 @@ f_124fin = f.tW_gw124fin; % mean value for the 150 experiments
 newAuxData.temp = auxData.temp;
 newAuxData.pMoA = 'control'; % choose physiological mode of action
        
-    for j = 1:nst % replace with nst if you want to run with all data - otherwise I put 7 here because the first four fields are for the controls    
+    for j = 1:7 % replace with nst if you want to run with all data - otherwise put 7 to only estimate for control
         if (strfind(nm{j}, '150') > 0)
             study = 'e150';   
             par.f = f_150;
