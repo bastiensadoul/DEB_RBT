@@ -15,6 +15,14 @@ debODE_ABJ <- function(t, LEH, parms){
     Lb     =   LEH[5]
     Lj     =   LEH[6]
     
+    ##-----------------------------------------
+    #------- First feeding occurs at 64dpf -----
+    ##-----------------------------------------
+    
+    if (t<64) {
+      f=0
+    } else {f=f}
+    
     ##-----------------------------------------  
     # ---- calculation of the shape coefficient
     ##-----------------------------------------
@@ -24,21 +32,33 @@ debODE_ABJ <- function(t, LEH, parms){
       } else { 
           if (H < E.Hj){                                     
             s_M = L/ Lb
+            # s_M = L/ 0.214616314    # Lb = 0.214616314 for cont
             } else{
               s_M = Lj/ Lb
+             # s_M = 0.561039757/ 0.214616314     # Lj = 0.561039757 for cont and f=0.8
               }
         }
 
     ##-----------------------------------------  
+    # ---- If pM varies over time
+    ##-----------------------------------------
+    if (length(p.M)>1) {
+      pM = approx(c(floor(t),floor(t)+1), 
+                  c(p.M[p.M$time==floor(t), 2], p.M[p.M$time==(floor(t)+1), 2]), xout=t)$y
+    } else {pM = p.M}
+    
+    
+    
+    ##-----------------------------------------  
     # ---- Correction of p_Am and v by s_M
     ##-----------------------------------------
     
-    v = v*s_M             
+    v = v*s_M
     p_Am = p_Am*s_M
     
     
     ##-----------------------------------------  
-    # ---- Correction of p_Am and v by TC
+    # ---- Correction of pM, kJ, p_Am and v by TC
     ##-----------------------------------------
     
     TC = exp(((T.A)/(T.ref))-((T.A)/(TempC+273.15)))    # Arrhenius correction coeff
@@ -46,6 +66,8 @@ debODE_ABJ <- function(t, LEH, parms){
     v = v*TC               
     p_Am = p_Am*TC
     
+    pM = pM*TC               
+    k.J = k.J*TC
     
     ##-----------------------------------------  
     # ---- Growth rate and mobilization rate
@@ -57,12 +79,6 @@ debODE_ABJ <- function(t, LEH, parms){
     } else {
       pA=0
       }
-    
-    # If p.M varies accross time
-    if (length(p.M)>1) {
-      pM = approx(c(floor(t),floor(t)+1), 
-                  c(p.M[p.M$time==floor(t), 2], p.M[p.M$time==(floor(t)+1), 2]), xout=t)$y
-    } else {pM = p.M}
     
     # Mobilization rate (Out of reserves),  J/cm^3
     pC = E/(L^3) * (E.G * v / L + pM) / (kap * E / (L^3) + E.G)      # eq 2.12 book

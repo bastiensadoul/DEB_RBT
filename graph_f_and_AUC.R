@@ -1,7 +1,12 @@
-library("R.matlab")
-
-dir="/Users/Bastien/Documents/DEB_RBT/"
+rm(list=ls())
+cat("\014")  # To clear the console
+dir=dirname(rstudioapi::getActiveDocumentContext()$path)     # gets the name of the directory of the active script (works only in R studio)
 setwd(dir)
+
+library("R.matlab")
+library("reshape2")
+
+
 
 ################ Specify types of data
 prd="funique_control"
@@ -13,11 +18,10 @@ fres=readMat("f_prdData_funique_all.mat")$f[,,1]
 #fres=readMat(paste("f_prdData_", prd, ".mat", sep=""))$f[,,1]
 fres=data.frame(tank=names(fres), f=matrix(unlist(fres), nrow=length(fres), byrow=T))
 
-library(reshape2)
 fres$tk=colsplit(fres$tank,pattern="\\.", c("tw", "tk", "condition"))[, 2]
 fres$condition=colsplit(fres$tank,pattern="\\.", c("tw", "tk", "condition"))[, 3]
 
-fres[fres$condition=="", "condition"]="BPA0"
+fres$condition="BPA0"
 fres$study=substr(fres$tk, 1, 5)
 fres[fres$tank %in% c("tW.gw124fin", "tW.gw124.BPA100end"), "study"]="gw124end"
 
