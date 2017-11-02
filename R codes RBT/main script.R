@@ -1,7 +1,10 @@
 rm(list=ls())
-dir=dirname(rstudioapi::getActiveDocumentContext()$path)     # gets the name of the directory of the current script (works only in R studio)
+cat("\014")  # To clear the console
+dir=dirname(rstudioapi::getActiveDocumentContext()$path)     # gets the name of the directory of the active script (works only in R studio)
 
 library(akima)
+library(R.matlab)
+library(deSolve)
 
 
 #########################################################################################################
@@ -21,17 +24,47 @@ LEH[4] = 0     # E_R
 LEH[5] = 0     # Lb, we don't know yet. Will be determined by the ode (when L reaches E_Hb)
 LEH[6] = 0     # Lj, we don't know yet. Will be determined by the ode (when L reaches E_Hj)
 
-#### ------------------------------------
-# ---- Forcing variables
-#### ------------------------------------
-
-f = 0.8
-TempC = 8.5   #  en degres C
 
 #### ------------------------------------
 # ---- CALL DEB PARAMETERS
 #### ------------------------------------
-source(paste(dir,"DEB param RBT.R", sep="/"))
+
+#--- Manually transfered in R script
+#source(paste(dir,"DEB param RBT.R", sep="/"))
+
+#--- Automatically importes from .mat file
+par=readMat(gsub("R codes RBT", "Oncorhynchus_mykiss/results_Oncorhynchus_mykiss.mat", dir))
+parvalue=sapply(par$par, "[[", 1)[1:dim(par$par)[1]-1]
+parname=attr(par$par,"dimnames")[[1]][1:dim(par$par)[1]-1]
+
+param=list()
+for (i in 1:length(parvalue)){
+  assign(parname[i],parvalue[i])
+  eval(parse(text=paste("param$", parname[i], "=",  parvalue[i], sep="")))}
+
+#--- Add p_Am here to be sure it is the same even when pM changes over time
+param$p_Am =  param$z * param$p.M / param$kap  # J/d.cm^2, max assimilation rate (eq coming from the fact that at Lmax, kap*pC=pM. And pC is provided by pA --> kap*pAm=pM)
+
+#--- Missing parameters in .mat
+param$w_E = 23.9
+param$w_V = 23.9
+param$M_V = param$d.V/ param$w_V     # mol/cm^3, volume-specific mass of structure
+
+param$kap_G = param$mu.V * param$M_V / param$E.G     # -, growth efficiency
+
+#--- Implied properties
+Lm = param$kap * (param$p_Am / param$p.M)              # m, maximum structural length
+Em = param$p_Am / param$v  * Lm^3                      # J, maximum reserves
+Wm = Lm^3 + Em / param$d.E * param$w_E / param$mu.E    # g, maximum wet weight
+
+
+#### ------------------------------------
+# ---- Forcing variables
+#### ------------------------------------
+
+param$f = 1
+param$TempC = 8.5   #  en degres C
+
 
 #### ------------------------------------
 # ---- CALL Differential equations
@@ -43,7 +76,7 @@ source(paste(dir,"debODE_ABJ.R", sep="/"))
 ####### ---------   COMPARE 'P_M VARYING' VS 'NOT VARYING'
 #########################################################################################################
 
-time=seq(1,1000, by=1)
+time=seq(1,3000, by=1)
 
 #### ------------------------------------
 # ---- WEIGHT AND LENGTH WHEN P_M NOT VARYING
@@ -55,20 +88,27 @@ LEHovertime_cont = ode(y = LEH, func = debODE_ABJ, times = time,
 colnames(LEHovertime_cont) = c("time", "L", "E", "H", "E_R", "Lb", "Lj")
 
 W = LEHovertime_cont[,"L"]^3 + 
-  LEHovertime_cont[,"E"] / d_E * w_E / mu_E   # g, wet weight
+  LEHovertime_cont[,"E"] / param$d.E * param$w_E / param$mu.E   # g, wet weight
 
-Lphysical = LEHovertime_cont[,"L"]/del_M        # cm, physical length
+Lphysical = LEHovertime_cont[,"L"]/param$del.M        # cm, physical length
 
 # SAVE
 Wcont = W
-Lcont = Lphysical
-pMcont = p_M
+Lcont =  LEHovertime_cont[,"L"]
+Lphysicalcont = Lphysical
+Econt = LEHovertime_cont[, "E"]
+econt = Econt / Em              
+pMcont = param$p.M
 Lbcont = LEHovertime_cont[length(LEHovertime_cont[,"Lb"]),"Lb"]
 Ljcont = LEHovertime_cont[length(LEHovertime_cont[,"Lj"]),"Lj"]
 sMcont = Ljcont/Lbcont
+tbcont = LEHovertime_cont[
+  which(abs(LEHovertime_cont[,"H"] - param$E.Hb) == min(abs(LEHovertime_cont[,"H"] - param$E.Hb))),"time"]
+tjcont = LEHovertime_cont[
+  which(abs(LEHovertime_cont[,"H"] - param$E.Hj) == min(abs(LEHovertime_cont[,"H"] - param$E.Hj))),"time"]
 
 #### ------------------------------------
-# ---- P_M VARY FOLLOWING SPRING AND DAMPER
+# ---- P_M VARIES FOLLOWING SPRING AND DAMPER
 #### ------------------------------------
 
 source(paste(dir, "spring_and_damper_model.R", sep="/"))
@@ -76,9 +116,9 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
 time_for_pM=seq(0,length(time)+1, by=1)                    # +1 because in debODE_ABJ "floor(t)+1"
 yini = c(0, 0)
 
-ks = 0.00001      # force of the spring
-cs = 0.001         # resilience of the damper
-Fpert = 300      # force of the perturbation
+ks = 1      # force of the spring
+cs = 90         # resilience of the damper
+Fpert = 12      # force of the perturbation     +- 10 for BPA30,   +- 12 for BPA100    +- 15 for BPA300
 
 tmin=0       # start of the pert (when Fpert applies)
 tmax=30       # stop of the pert
@@ -88,9 +128,11 @@ tmax=30       # stop of the pert
 
 tp_M=ode(y=yini,func=spring_damper_model, times=time_for_pM, parms=c(ks,cs), method="ode45")
 tp_M = as.data.frame(tp_M)
-tp_M[, 2] = tp_M[, 2] + p_M
+tp_M[, 2] = (tp_M[, 2]+1) * param$p.M
 plot(time_for_pM, tp_M[,2], main="p_M over time", type="l", col="red")
-p_M = tp_M[, c(1,2)]
+
+
+param$p.M = tp_M[, c(1,2)]
 
 #### ------------------------------------
 # ---- Calculate change on a period of time
@@ -102,17 +144,24 @@ LEHovertime_var = ode(y = LEH, func = debODE_ABJ, times = time,
 colnames(LEHovertime_var) = c("time", "L", "E", "H", "E_R", "Lb", "Lj")
 
 W = LEHovertime_var[,"L"]^3 + 
-  LEHovertime_var[,"E"] / d_E * w_E / mu_E   # g, wet weight
+  LEHovertime_var[,"E"] / param$d.E * param$w_E / param$mu.E   # g, wet weight
 
-Lphysical = LEHovertime_var[,"L"]/del_M        # cm, physical length
+Lphysical = LEHovertime_var[,"L"]/param$del.M        # cm, physical length
 
 # SAVE
 Wvar = W
-Lvar = Lphysical
-pMvar = p_M
+Lvar =  LEHovertime_var[,"L"]
+Lphysicalvar = Lphysical
+Evar = LEHovertime_var[,"E"]
+evar = Evar / Em
+pMvar = param$p.M
 Lbvar=LEHovertime_var[length(LEHovertime_var[,"Lb"]),"Lb"]
 Ljvar=LEHovertime_var[length(LEHovertime_var[,"Lj"]),"Lj"]
 sMvar=Ljvar/Lbvar
+tbvar = LEHovertime_var[
+  which(abs(LEHovertime_var[,"H"] - param$E.Hb) == min(abs(LEHovertime_var[,"H"] - param$E.Hb))),"time"]
+tjvar = LEHovertime_var[
+  which(abs(LEHovertime_var[,"H"] - param$E.Hj) == min(abs(LEHovertime_var[,"H"] - param$E.Hj))),"time"]
 
 
 #########################################################################################################
@@ -121,16 +170,33 @@ sMvar=Ljvar/Lbvar
 
 diff_W = (Wvar - Wcont)/Wcont*100
 diff_pM = (pMvar[pMvar$time %in% time,2]-pMcont)/pMcont *100
+diff_E = (Evar-Econt)/Econt *100
+diff_L = (Lvar-Lcont)/Lcont * 100
+
 
 
 #plot(time, diff_pM, main="diff p_M varying VS stable p_M over time")
+plot(time, diff_E, main="diff E varying VS stable p_M over time", type="p", col="red")
+plot(time, diff_L, main="diff L varying VS stable p_M over time", type="p", col="red")
 plot(time, diff_W, main="diff p_M varying VS stable p_M over time", type="p", col="red")
 
+plot(time, evar, main="Scaled reserves over time", type="p", col="red")
+points(time, econt, type="p", col="green")
+
+plot(time, Evar, main="Reserve over time", type="p", col="red")
+points(time, Econt, type="p", col="green")
 
 plot(time, Wvar, main="Weight over time", type="p", col="red")
-points(time, Wcont, main="Weight over time", type="p", col="green")
+points(time, Wcont, type="p", col="green")
 
+plot(time, Lvar, main="Structural length over time", type="p", col="red")
+points(time, Lcont, main="Structural length over time", type="p", col="green")
 
+abline(v=tbvar, col="red")
+abline(v=tbcont, col="green")
+
+abline(v=tjvar, col="red")
+abline(v=tjcont, col="green")
 
 #   
 # plot(time, W, main="Wet weight over time")

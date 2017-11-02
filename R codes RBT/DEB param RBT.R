@@ -8,8 +8,6 @@ p_M = 343.88     # J/d.cm^3, vol-spec somatic maint
 
 kap = 0.619      # -, allocation fraction to soma
 
-p_Am =  z * p_M / kap  # J/d.cm^2, max assimilation rate (eq coming from the fact that at Lmax, kap*pC=pM. And pC is provided by pA --> kap*pAm=pM)
-
 E_Hb = 4.329e+01   # J, maturity at birth
 E_Hj = 8.541e+02   # J, maturity at metam
 E_Hp = 3.881e+06   # J, maturity at puberty 
