@@ -54,7 +54,7 @@ function dLEH = dget_LEH(t, LEH, f, TC, p, c, pMoA)
   
   
   % Growth rate and mobilization rate:
-  pA  = f * c.p_Am * L^2 * (E_H >= p.E_Hb); % J/cm^2/d, maximum surface area-specific assimilation rate
+  pA  = f * c.p_Am * L^2 * (E_H >= p.E_Hb && t >= 64); % J/cm^2/d, maximum surface area-specific assimilation rate
   L2  = L * L; L3 = L2 * L; L4 = L3 * L;
   pC  = E/L3 * (p.E_G * p.v/ L  + p.p_M)/ (p.kap * E/ L3 + p.E_G);   % [p_C], J/cm^3 (2.12, Kooijman 2010)
     if p.kap * pC < p.p_M  
