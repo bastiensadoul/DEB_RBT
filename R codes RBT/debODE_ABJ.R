@@ -1,3 +1,16 @@
+##################################################################################
+##################         Created November 2017          ########################
+#####################         by Bastien Sadoul       ############################
+##################################################################################
+# Dif. eq. for a classic deb ABJ model (accel. between birth and metamorphosis)
+# BUT: 
+#      - f starts at 64dpf. Before f=0
+#      - possibility to have a pM, EG or pAm varying over time
+##################################################################################
+
+
+
+
 debODE_ABJ <- function(t, LEH, parms){
   
   with(as.list(parms), {
@@ -32,21 +45,38 @@ debODE_ABJ <- function(t, LEH, parms){
       } else { 
           if (H < E.Hj){                                     
             s_M = L/ Lb
-            # s_M = L/ 0.214616314    # Lb = 0.214616314 for cont
+            #s_M = L/ 0.214616314    # Lb = 0.214616314 for cont
             } else{
               s_M = Lj/ Lb
-             # s_M = 0.561039757/ 0.214616314     # Lj = 0.561039757 for cont and f=0.8
+              #s_M = 0.561039757/ 0.214616314     # Lj = 0.561039757 for cont and f=0.8
               }
         }
 
+    #s_M=1
+    
     ##-----------------------------------------  
-    # ---- If pM varies over time
+    # ---- If p.M varies over time
     ##-----------------------------------------
     if (length(p.M)>1) {
       pM = approx(c(floor(t),floor(t)+1), 
                   c(p.M[p.M$time==floor(t), 2], p.M[p.M$time==(floor(t)+1), 2]), xout=t)$y
     } else {pM = p.M}
     
+    ##-----------------------------------------  
+    # ---- If E.G varies over time
+    ##-----------------------------------------
+    if (length(E.G)>1) {
+      EG = approx(c(floor(t),floor(t)+1), 
+                  c(E.G[E.G$time==floor(t), 2], E.G[E.G$time==(floor(t)+1), 2]), xout=t)$y
+    } else {EG = E.G}
+    
+    ##-----------------------------------------  
+    # ---- If p.Am varies over time
+    ##-----------------------------------------
+    if (length(p_Am)>1) {
+      pAm = approx(c(floor(t),floor(t)+1), 
+                  c(p_Am[p_Am$time==floor(t), 2], p_Am[p_Am$time==(floor(t)+1), 2]), xout=t)$y
+    } else {pAm = p_Am}
     
     
     ##-----------------------------------------  
@@ -54,7 +84,7 @@ debODE_ABJ <- function(t, LEH, parms){
     ##-----------------------------------------
     
     v = v*s_M
-    p_Am = p_Am*s_M
+    pAm = pAm*s_M
     
     
     ##-----------------------------------------  
@@ -64,7 +94,7 @@ debODE_ABJ <- function(t, LEH, parms){
     TC = exp(((T.A)/(T.ref))-((T.A)/(TempC+273.15)))    # Arrhenius correction coeff
     
     v = v*TC               
-    p_Am = p_Am*TC
+    pAm = pAm*TC
     
     pM = pM*TC               
     k.J = k.J*TC
@@ -75,19 +105,19 @@ debODE_ABJ <- function(t, LEH, parms){
     
     # Assimilation 
     if (H>E.Hb){
-      pA=f*p_Am*L^2
+      pA=f*pAm*L^2
     } else {
       pA=0
       }
     
     # Mobilization rate (Out of reserves),  J/cm^3
-    pC = E/(L^3) * (E.G * v / L + pM) / (kap * E / (L^3) + E.G)      # eq 2.12 book
+    pC = E/(L^3) * (EG * v / L + pM) / (kap * E / (L^3) + EG)      # eq 2.12 book
     
     # Growth rate
     if (kap * pC < pM){ # if p.M higher than energy available
-      r = (E * v / (L^4) - pM / kap)    /    (E / (L^3) + E.G * kap_G / kap)     # negativ term because negative numerator
+      r = (E * v / (L^4) - pM / kap)    /    (E / (L^3) + EG * kap_G / kap)     # negativ term because negative numerator
     } else { 
-      r = (E * v / (L^4) - pM / kap)    /    (E / (L^3) + E.G / kap)
+      r = (E * v / (L^4) - pM / kap)    /    (E / (L^3) + EG / kap)
     }
     
     ##-----------------------------------------  

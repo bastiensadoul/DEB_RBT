@@ -1,0 +1,53 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf470
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww14620\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 #\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+Units of the parameters in .mat file coming from Add My Pet\
+and used in debODE_ABJ\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 #\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 \
+\
+z         	# -, zoom factor\
+v      		# cm/d,  energy conductance \
+\
+E.G     	# J/cm^3, spec cost for structure\
+p.M     	# J/d.cm^3, vol-spec somatic maint\
+\
+kap      	# -, allocation fraction to soma\
+\
+E.Hb   	# J, maturity at birth\
+E.Hj    	# J, maturity at metam\
+E.Hp   	# J, maturity at puberty \
+\
+\
+k.J        	# 1/d, maturity maint rate coefficient\
+kap.R       # -, reproduction efficiency\
+\
+T.ref    	# K, Reference temperature\
+T.A  		# K, Arrhenius temp\
+\
+del.M     	# -\
+\
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 #\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+R code to get implied properties using those parameters\
+#\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+\
+s_M=2.6167										      # for RBT if f=1 and T=8.5C\
+Lm = param$kap * (param$p_Am / param$p.M)                   	      # m, maximum structural length     \
+Li = f*Lm*s_M\
+Em = param$p_Am / param$v                                   			      # J, maximum reserves\
+Wi = (Li)^3 + Em*(Li)^3 / param$d.E * param$w_E / param$mu.E    # g, ultimate wet weight\
+\
+e = E/ (Em * L^3)          								      # -, scaled reserve density (E is expressed J/cm^3)\
+\
+param$p_Am =  param$z * param$p.M / param$kap  		      # J/d.cm^2, max ass. rate \
+# eq coming from the fact that at Lmax, kap*pC=pM. And pC is provided by pA --> kap*pAm=pM\
+\
+}
