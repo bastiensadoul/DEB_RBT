@@ -380,3 +380,16 @@ LLode <- function(param_spring_damper){
   totreal = tot
   untrace(LLode)
   
+  write.table(unlist(MLresults), paste(dir, "/results_optim/result_optim_", Sys.time(), ".txt", sep=""), sep = "\t")
+  
+  
+  
+  ########## ALARM WHEN DONE
+  
+  install.packages("beepr")
+  library(beepr)
+  beep()
+  
+  # Sends txt when script done (works only on mac)
+  system("osascript -e 'tell application \"Messages\"' -e 'send \"end of script\" to buddy \"moi\"' -e 'end tell'")
+  
