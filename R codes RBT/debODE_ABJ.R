@@ -5,7 +5,7 @@
 # Dif. eq. for a classic deb ABJ model (accel. between birth and metamorphosis)
 # BUT: 
 #      - f starts at 64dpf. Before f=0
-#      - possibility to have a pM, EG or pAm varying over time
+#      - possibility to have f, pM, EG or pAm varying over time
 ##################################################################################
 
 
@@ -36,6 +36,17 @@ debODE_ABJ <- function(t, LEH, parms){
       f=0
     } else {f=f}
     
+    
+    ##-----------------------------------------  
+    # ---- If f varies over time
+    ##-----------------------------------------
+    if (length(f)>1) {
+      fdt = approx(c(floor(t),floor(t)+1), 
+                  c(f[f$time==floor(t), 2], f[f$time==(floor(t)+1), 2]), xout=t)$y
+    } else {fdt = f}
+    
+    
+    
     ##-----------------------------------------  
     # ---- calculation of the shape coefficient
     ##-----------------------------------------
@@ -51,8 +62,9 @@ debODE_ABJ <- function(t, LEH, parms){
               #s_M = 0.561039757/ 0.214616314     # Lj = 0.561039757 for cont and f=0.8
               }
         }
-
-    #s_M=1
+    if ("sM" == FALSE){
+      s_M=1
+    }
     
     ##-----------------------------------------  
     # ---- If p.M varies over time
@@ -105,7 +117,7 @@ debODE_ABJ <- function(t, LEH, parms){
     
     # Assimilation 
     if (H>E.Hb){
-      pA=f*pAm*L^2
+      pA=fdt*pAm*L^2
     } else {
       pA=0
       }

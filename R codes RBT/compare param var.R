@@ -73,7 +73,7 @@ source(paste(dir,"debODE_ABJ.R", sep="/"))
 ####### ---------   COMPARE 'PARAM VARYING' VS 'NOT VARYING'
 #########################################################################################################
 
-time=seq(0,2000, by=1)
+time=seq(0,1000, by=1)
 
 #### ------------------------------------
 # ---- WEIGHT AND LENGTH WHEN PARAM NOT VARYING
@@ -208,21 +208,30 @@ diff_L = (Lvar-Lcont)/Lcont * 100
 xfin=1000
 
 #plot(time[c(1:xfin)], diff_pM[c(1:xfin)], main="diff p_M varying VS stable p_M over time")
-par(mfrow=c(1,1)) 
-plot(time_for_var[c(1:xfin)], tvar[c(1:xfin),2], main="PARAM varying over time", type="l", col="red")
-abline(v=tjvar)
-abline(v=tjcont)
-abline(v=tbvar)
-abline(v=tbcont)
-plot(time[c(1:xfin)], diff_E[c(1:xfin)], main="diff E PARAM varying VS stable PARAM over time", type="p", col="red")
-plot(time[c(1:xfin)], diff_L[c(1:xfin)], main="diff L PARAM varying VS stable PARAM over time", type="p", col="red")
-plot(time[c(1:xfin)], diff_W[c(1:xfin)], main="diff W PARAM varying VS stable PARAM over time", type="p", col="red")
 
+
+quartz(width=10,height=5,pointsize=12,dpi=100)
+
+par(mfrow=c(1,2),
+    mar=c(2,2,2,1)+0.1)
+layout(matrix(c(1,2), 1), c(3,1), 1)
+
+# abline(v=tjvar)
+# abline(v=tjcont)
+# abline(v=tbvar)
+# abline(v=tbcont)
+
+# plot(time[c(1:xfin)], diff_E[c(1:xfin)], main="diff E PARAM varying VS stable PARAM over time", type="p", col="red")
+# plot(time[c(1:xfin)], diff_L[c(1:xfin)], main="diff L PARAM varying VS stable PARAM over time", type="p", col="red")
+plot(time[c(1:xfin)], diff_W[c(1:xfin)], main="diff W PARAM varying VS stable PARAM over time", type="p", col="red",  ylab=NULL)
 abline(v=tjvar)
 abline(v=tjcont)
 abline(v=tbvar)
 abline(v=tbcont)
 abline(v=64)
+
+plot(time_for_var[c(1:200)], tvar[c(1:200),2], main="PARAM varying over time", type="l", col="red")
+
 
 # plot(time, evar, main="Scaled reserves over time", type="p", col="red")
 # points(time, econt, type="p", col="green")
@@ -230,8 +239,8 @@ abline(v=64)
 # plot(time, Evar, main="Reserve over time", type="p", col="red")
 # points(time, Econt, type="p", col="green")
 # 
-plot(time[c(1:xfin)], Wvar[c(1:xfin)], main="Weight over time", type="p", col="red")
-points(time[c(1:xfin)], Wcont[c(1:xfin)], type="p", col="green")
+# plot(time[c(1:xfin)], Wvar[c(1:xfin)], main="Weight over time", type="p", col="red")
+# points(time[c(1:xfin)], Wcont[c(1:xfin)], type="p", col="green")
 # 
 # plot(time, Hvar, main="Maturity over time", type="p", col="red")
 # points(time, Hcont, type="p", col="green")
@@ -239,9 +248,9 @@ points(time[c(1:xfin)], Wcont[c(1:xfin)], type="p", col="green")
 # plot(time, LEHovertime_var[,"Lb"], main="Lb over time", type="p", col="red")
 # plot(time, LEHovertime_var[,"Lj"], main="Lj over time", type="p", col="red")
 # 
-xfin=150
-plot(time[c(1:xfin)], Lvar[c(1:xfin)], main="Structural length over time", type="l", col="red", ylim=c(0.2, 0.7))
-points(time[c(1:xfin)], Lcont[c(1:xfin)], main="Structural length over time", type="l", col="green")
+# xfin=150
+# plot(time[c(1:xfin)], Lvar[c(1:xfin)], main="Structural length over time", type="l", col="red", ylim=c(0.2, 0.7))
+# points(time[c(1:xfin)], Lcont[c(1:xfin)], main="Structural length over time", type="l", col="green")
 # 
 # plot(time, Lphysicalvar, main="Physical length over time", type="p", col="red")
 # points(time, Lphysicalcont, main="Physical length over time", type="p", col="green")
