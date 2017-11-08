@@ -6,6 +6,10 @@ library(akima)      # for interpolation in debODE_ABJ.R
 library(R.matlab)
 library(deSolve)
 library(reshape2)
+library(ggplot2)
+library(data.table)
+library(gridExtra)
+library(cowplot)
 
 # --------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------
@@ -19,8 +23,8 @@ library(reshape2)
 dpf=seq(0,1069, by=1)
 
 # Spring and damper parameters
-param_spring_damper = c(ks = 1, cs = 90, Fpert_BPA03 = 1, Fpert_BPA3 = 10,
-                        Fpert_BPA30 = 12, Fpert_BPA300 = 30, Fpert_BPA100 = 15)
+param_spring_damper = c(ks = 300, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 0.1,
+                        Fpert_BPA30 = 4 , Fpert_BPA300 = 7, Fpert_BPA100 = 5)
 
 
 tmin=0
@@ -29,8 +33,30 @@ tmax=40
 # Mode of action "p.M", "E.G" or "p_Am"
 MoA = "E.G"
 
+# Shall the recovery time be identical (works only )
+identical_recovery_time
+
+# Study to plot : "gw150" or "gw124"
+studytoplot = "gw124"
+
+
 # Acceleration? If sM = False --> no acceleration (sM=1)
 sM = "TRUE"
+
+# If only want to test on BPA300
+onlyBPA300 = "FALSE"
+
+# TRUE if acceleration only after f=1 (pM = Lj/Lb after t=64dpf)
+acc_after_64dpf = "FALSE"
+
+# Choose the function to be used for varying parameter over time 
+# ("spring_damper_model", "exp_decrease", "decreasing_logistic", "linearmod")
+function_var = "linearmod"
+
+# Initial reserves
+E0 = 643.562
+
+#E0 = 800
 
 # --------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------
@@ -138,6 +164,9 @@ param_cont$M_V = param_cont$d.V/ param_cont$w_V     # mol/cm^3, volume-specific 
 
 param_cont$kap_G = param_cont$mu.V * param_cont$M_V / param_cont$E.G     # -, growth efficiency
 
+#--- Add options
+param_cont$acc_after_64dpf = acc_after_64dpf
+
 #--- Calculate f (mean of control)
 f_studies = readMat(gsub("R codes RBT", "/f_prdData_funique_all.mat", dir))$f[,,1]
 
@@ -150,6 +179,9 @@ f_gw124 = data.frame(time = c(1:(length(dpf)+1)))
 f_gw124$f=c(rep(f_gw124ini, 350), 
     approx(c(351,438), c(f_gw124ini, f_gw124fin), xout=c(351:438))$y,
     rep(f_gw124fin, length(dpf)+1-438))
+
+# f_gw150 = 1
+# f_gw124 = 1
 
 
 #### ------------------------------------
@@ -187,7 +219,7 @@ for (repstudy in unique(totreal$study2)) {
   LEH = numeric(6)
   
   LEH[1] = 0.0001     # L
-  LEH[2] = 643.562     # E
+  LEH[2] = E0     # E
   LEH[3] = 0   # H
   LEH[4] = 0     # E_R
   LEH[5] = 0     # Lb, we don't know yet. Will be determined by the ode (when L reaches E_Hb)
@@ -210,7 +242,7 @@ for (repstudy in unique(totreal$study2)) {
   
   
   #### ------------------------------------
-  # ---- CALCULATE tb and tj
+  # ---- CALCULATE tb and tj, Lb and Lj
   #### ------------------------------------
 
   tbcont = LEHovertime_cont[
@@ -218,6 +250,12 @@ for (repstudy in unique(totreal$study2)) {
   
   tjcont = LEHovertime_cont[
     which(abs(LEHovertime_cont[,"H"] - param_cont$E.Hj) == min(abs(LEHovertime_cont[,"H"] - param_cont$E.Hj))),"dpf"]
+
+  Lbcont = LEHovertime_cont[
+    which(abs(LEHovertime_cont[,"H"] - param_cont$E.Hb) == min(abs(LEHovertime_cont[,"H"] - param_cont$E.Hb))),"L"]
+    
+  Ljcont = LEHovertime_cont[
+    which(abs(LEHovertime_cont[,"H"] - param_cont$E.Hj) == min(abs(LEHovertime_cont[,"H"] - param_cont$E.Hj))),"L"]
   
   
   #### ------------------------------------
@@ -228,6 +266,9 @@ for (repstudy in unique(totreal$study2)) {
   
   temp_res$estim_W_cont = LEHovertime_cont$estim_W_cont
   temp_res$estim_L_cont = LEHovertime_cont[,"L"]
+  temp_res$estim_E_cont = LEHovertime_cont[,"E"]
+  temp_res$estim_H_cont = LEHovertime_cont[,"H"]
+  
   mintime = min(totreal[totreal$study2 == repstudy, "dpf"])
   maxtime = max(totreal[totreal$study2 == repstudy, "dpf"])
 
@@ -235,9 +276,12 @@ for (repstudy in unique(totreal$study2)) {
 
   temp_res$tbcont=tbcont  
   temp_res$tjcont=tjcont
+  temp_res$Lbcont=Lbcont
+  temp_res$Ljcont=Ljcont
   
-  temp_res = temp_res[which(temp_res$dpf>=mintime & temp_res$dpf<=maxtime),]
   
+  # temp_res = temp_res[which(temp_res$dpf>=mintime & temp_res$dpf<=maxtime),]
+  # 
   if (i==1){
     estim_res_cont = temp_res
   } else {estim_res_cont = rbind(estim_res_cont, temp_res)}
@@ -276,7 +320,8 @@ for (repstudy in unique(totreal$study2)) {
 
 rm(list=setdiff(ls(), c("totreal", "debODE_ABJ", "param_cont", "estim_res_cont", "dir",
                         "f_gw150", "f_gw124", "dpf",
-                        "param_spring_damper", "tmin", "tmax", "MoA")))
+                        "param_spring_damper", "empirical", "tmin", "tmax", "MoA", "onlyBPA300",
+                        "function_var", "studytoplot", "E0")))
 
 
 source(paste(dir, "spring_and_damper_model.R", sep="/"))
@@ -299,15 +344,16 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
   # ---- PARAMETERS OF THE SPRING AND DAMPER
   #### ------------------------------------
   
-  time_for_var=seq(tmin,length(dpf)+1, by=1)                    # +1 because in debODE_ABJ "floor(t)+1"
-  yini = c(0, 0)
-  
+
   # param_spring_damper = data.frame(ks = 2, cs = 200, Fpert_BPA03 = 20, Fpert_BPA3 = 20,
   #                                  Fpert_BPA30 = 30, Fpert_BPA300 = 20, Fpert_BPA100 = 20)
   
   #  # ---- Make sure all spring and damper parameters are above zero
   
-  param_spring_damper = abs(param_spring_damper)+0.0001
+  if (function_var == "spring_damper_model"){
+    param_spring_damper = abs(param_spring_damper)+0.01
+  }
+
   
   #  # ---- Extract parameters
   
@@ -322,13 +368,20 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
   Fpert_BPA300 = param_spring_damper[6]
   Fpert_BPA100 = param_spring_damper[7]
   
+
+  
   #### ------------------------------------
   # ---- LOOP ON ALL TANKS EXCEPT BPA0
   #### ------------------------------------  
   i=1
   
-  for (condition_estim in unique(totreal$condition_estim[totreal$condition == "BPA300"])){
+  if (onlyBPA300==T){
+    toestim = unique(totreal$condition_estim[totreal$condition == "BPA300"])
+  } else {toestim = unique(totreal$condition_estim[totreal$condition != "BPA0"])}
+  
+  for (condition_estim in toestim){
     
+    # condition_estim = toestim
     print(i)
     
     
@@ -354,7 +407,7 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
     LEH = numeric(6)
     
     LEH[1] = 0.0001     # L
-    LEH[2] = 643.562     # E
+    LEH[2] = E0     # E
     LEH[3] = 0   # H
     LEH[4] = 0     # E_R
     LEH[5] = 0     # Lb, we don't know yet. Will be determined by the ode (when L reaches E_Hb)
@@ -363,11 +416,31 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
     
     
     # ---- Creates a PARAM varying through time
+
+    # Initial state of the coefficient multiplying/divising PARAM
+    time_for_var=seq(tmin,length(dpf)+1, by=1)                    # +1 because in debODE_ABJ "floor(t)+1"
+    if (function_var == "spring_damper_model"){yini = c(0, 0)
+    } else if (function_var %in% c("exp_decrease", "linearmod")) {yini = Fpert
+    } else if (function_var == "decreasing_logistic") {yini = 0.99
+    }
     
-    tPARAM=ode(y=yini,func=spring_damper_model, times=time_for_var, parms=c(ks,cs), method="ode45")
+    # Selects the function to be used
+    eval(parse(text=paste("functionforvar = ", function_var, sep="")))
+    
+    # Ode for coeff over time
+    tPARAM=ode(y=yini,func=functionforvar, times=time_for_var, parms=c(ks,cs), method="ode45")
     tPARAM = as.data.frame(tPARAM)
-    if(MoA=="p_Am"){tPARAM[, 2] = 1/(tPARAM[, 2]+1)-1}
-    eval(parse(text= paste("tPARAM[, 2] = (tPARAM[, 2]+1) * param_deb$", MoA, sep="")))
+    if (function_var == "decreasing_logistic") {tPARAM[, 2] = tPARAM[, 2]*Fpert
+    }
+    
+    # Multiply/Divise PARAM by coeff
+    eval(parse(text=c("iniparam = param_deb$", MoA)))
+    if(MoA=="p_Am"){
+      tPARAM[, 2] = tPARAM[, 2]/100
+      tPARAM[, 2] = -tPARAM[, 2]
+      }
+    
+    tPARAM[, 2] = (tPARAM[, 2]+1) * iniparam
     eval(parse(text= paste("param_deb$", MoA, " = tPARAM[, c(1,2)]", sep="")))
 
     
@@ -382,17 +455,28 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
     LEHovertime_var$estim_W_var = LEHovertime_var[,"L"]^3 + 
       LEHovertime_var[,"E"] / param_deb$d.E * param_deb$w_E / param_deb$mu.E   # g, wet weight
     
-    # ---- Calculate tb, tj
+    # ---- Calculate tb, tj, Lb, Lj
     tbvar = LEHovertime_var[
       which(abs(LEHovertime_var[,"H"] - param_deb$E.Hb) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hb))),"dpf"]
     
     tjvar = LEHovertime_var[
       which(abs(LEHovertime_var[,"H"] - param_deb$E.Hj) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hj))),"dpf"]
     
+    Lbvar = LEHovertime_var[
+      which(abs(LEHovertime_var[,"H"] - param_deb$E.Hb) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hb))),"L"]
+    
+    Ljvar = LEHovertime_var[
+      which(abs(LEHovertime_var[,"H"] - param_deb$E.Hj) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hj))),"L"]
+    
+    
+    
     # ---- SAVE
     temp_res = data.frame(dpf)
     temp_res$estim_W_var = LEHovertime_var$estim_W_var
     temp_res$estim_L_var = LEHovertime_var[,"L"]
+    temp_res$estim_E_var = LEHovertime_var[,"E"]
+    temp_res$estim_H_var = LEHovertime_var[,"H"]
+    
     mintime = min(totreal[totreal$study2 == study2, "dpf"])
     maxtime = max(totreal[totreal$study2 == study2, "dpf"])
     
@@ -402,8 +486,10 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
     
     temp_res$tbvar = tbvar
     temp_res$tjvar = tjvar
+    temp_res$Lbvar = Lbvar
+    temp_res$Ljvar = Ljvar
     
-    temp_res = temp_res[which(temp_res$dpf>=mintime & temp_res$dpf<=maxtime),]
+    # temp_res = temp_res[which(temp_res$dpf>=mintime & temp_res$dpf<=maxtime),]
     
     if (i==1){
       estim_res_var = temp_res
@@ -425,13 +511,22 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
   estim_res = merge(estim_res_var, estim_res_cont)
 
   estim_res$diff_estimates = (estim_res$estim_W_var - estim_res$estim_W_cont) / estim_res$estim_W_cont *100
+  estim_res$diff_E_estimates = (estim_res$estim_E_var - estim_res$estim_E_cont) / estim_res$estim_E_cont *100
+  estim_res$diff_L_estimates = (estim_res$estim_L_var - estim_res$estim_L_cont) / estim_res$estim_L_cont *100
+  
+  estim_res$sMvar = estim_res$Ljvar/estim_res$Lbvar
+  estim_res$sMcont = estim_res$Ljcont/estim_res$Lbcont
   
   totfinal = merge(tot, estim_res, 
                    by=c("dpf", "study2", "condition_estim", "condition"),
                    all.x=T)
   
-  # Diff before tj
- # totfinal = totfinal[totfinal$dpf < maxtjcont,]
+  # Calculate sMcont et sMvar
+  totfinal$sMcont = totfinal$Ljcont/totfinal$Lbcont
+  totfinal$sMvar = totfinal$Ljvar/totfinal$Lbvar
+  
+  # # Diff before tj
+  # totfinal = totfinal[totfinal$dpf > totfinal$tjvar,]
   
   diff=totfinal$real_diffW-totfinal$diff_estimates
   diff = diff[!is.na(diff)]
@@ -461,18 +556,20 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
 
 # estim_res=rbind(data.frame(estim_res), data.frame(dpf=dpf, study2="gw124", estim_W_var=NA, condition_estim = NA, condition="BPA0", estim_W_cont=NA, tbcont = NA, tjcont = NA, diff_estimates=0))
 
+#studytoplot = "gw150"
+#studytoplot = "gw124"
   
-temp=totfinal[which(totfinal$study2=="gw124" & 
-                      totfinal$condition %in% c("BPA0", "BPA300")),]
+temp=totfinal[which(totfinal$study2 == studytoplot),]
 p = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
   stat_summary(fun.y = mean, geom = "point", size=5, alpha=0.6) + 
   stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
   stat_summary(fun.data = mean_cl_normal, fun.args=list(mult=1), alpha=0.6)+
-  geom_line(data=estim_res[which(estim_res$condition %in% c("BPA0", "BPA300")),], aes(x=dpf, y=diff_estimates, colour=condition), size=2, alpha=1)+
-  scale_fill_manual(labels=c("control", "BPA300"), 
-                    values=colorRampPalette(c("green", "black"))(n = 2))+
-  scale_color_manual(labels=c("control", "BPA300"), 
-                     values=colorRampPalette(c("green", "black"))(n = 2))+
+  geom_line(data=estim_res[estim_res$study2 == studytoplot,] ,
+            aes(x=dpf, y=diff_estimates, colour=condition), size=2, alpha=1)+
+  # scale_fill_manual(labels=c("control", "BPA300"), 
+  #                   values=colorRampPalette(c("green", "black"))(n = 2))+
+  # scale_color_manual(labels=c("control", "BPA300"), 
+  #                    values=colorRampPalette(c("green", "black"))(n = 2))+
   # geom_point(alpha=0.6,size=5)+
   # geom_line(alpha=0.6,size=1)+
   expand_limits(x=c(0, 1100),y=c(-30,30))+
@@ -483,21 +580,177 @@ p = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
         legend.text = element_text(size=16), legend.title = element_text(size=16),
         panel.grid.minor = element_blank(),
         panel.grid.major = element_blank(),
-        panel.background=element_rect("grey", fill="white", size=1)
+        panel.background=element_rect("grey", fill="white", size=1),
+        plot.margin = unit(c(0.5,0.5,0.5,1), "cm")
   )
-p
+
+eval(parse(text=paste("param_over_time = param_deb$", MoA, "[, c(1,2)]", sep=""))) 
+
+
+param_over_time$var=param_over_time[,2]
+
+p2 = ggplot(data=param_over_time, aes(x=time, y=var))+
+  geom_line()+
+  labs(x="Days post fertilization", y=MoA) +
+  expand_limits(x=c(0, 1100),y=c(0,max(param_over_time$var)))+
+  theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
+        axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
+        legend.text = element_text(size=16), legend.title = element_text(size=16),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.background=element_rect("grey", fill="white", size=1),
+        plot.margin = unit(c(0,3.5,0.5,0.5), "cm")
+  )+
+  annotate("text", label = paste("ks = ", ks, sep=""), x = 1000, y = max(param_over_time$var))+
+  annotate("text", label = paste(names(Fpert), " = ", Fpert, sep=""), x = 1000, y = max(param_over_time$var)*0.9)
+  
+
+if (function_var == "spring_damper_model"){
+  p2=p2+annotate("text", label = paste("cs = ", cs, sep=""), x = 1000, y = max(param_over_time$var)*0.8)
+}
+
+p2 = p2+  
+  annotate("text", label = paste("tmin = ", tmin, sep=""), x = 1000, y = max(param_over_time$var)*0.5)+
+  annotate("text", label = paste("tmax = ", tmax, sep=""), x = 1000, y = max(param_over_time$var)*0.4)
+
+plot_grid(p, p2, nrow=2, rel_heights = c(1/2, 1/3))
 
 
 
 
-eval(parse(text=paste("plot(param_deb$", MoA, "[,1], param_deb$", MoA,"[,2])", sep="")))
 
 
+######################## CONSEQUENCES ON STATE VARIABLES
+
+#studytoplot = "gw150"
+#studytoplot = "gw124"
+
+temp=estim_res[which(estim_res$study2 == studytoplot),]    # the two studies have diff f
+
+pW = ggplot(data=temp,
+           aes(x=dpf, y=diff_estimates, colour=condition)) +
+  geom_line(size=2, alpha=1)+
+  expand_limits(x=c(0, 1100),y=c(-30,30))+
+  labs(x="Days post fertilization", y=expression("Mass difference \n to control (%)")) + 
+  theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
+        axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
+        legend.text = element_text(size=16), legend.title = element_text(size=16),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.background=element_rect("grey", fill="white", size=1),
+        plot.margin = unit(c(0.5,0.5,0.5,1), "cm")
+  )
 
 
+pE = ggplot(data=temp,
+            aes(x=dpf, y=diff_E_estimates, colour=condition)) +
+  geom_line(size=2, alpha=1)+
+  expand_limits(x=c(0, 1100),y=c(-30,30))+
+  labs(x="Days post fertilization", y=expression("Reserve difference \n to control (%)")) + 
+  theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
+        axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
+        legend.text = element_text(size=16), legend.title = element_text(size=16),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.background=element_rect("grey", fill="white", size=1),
+        plot.margin = unit(c(0.5,0.5,0.5,1), "cm")
+  )
 
+pL = ggplot(data=temp,
+            aes(x=dpf, y=diff_L_estimates, colour=condition)) +
+  geom_line(size=2, alpha=1)+
+  expand_limits(x=c(0, 1100),y=c(-30,30))+
+  labs(x="Days post fertilization", y=expression("Struct. L difference \n to control (%)")) + 
+  theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
+        axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
+        legend.text = element_text(size=16), legend.title = element_text(size=16),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.background=element_rect("grey", fill="white", size=1),
+        plot.margin = unit(c(0.5,0.5,0.5,1), "cm")
+  )
 
+plot_grid(pW, pL, pE, nrow=3)
 
+# 
+# pWvar = ggplot(data=temp,
+#                aes(x=dpf, y=estim_W_var, colour=condition)) +
+#   geom_line(size=2, alpha=1)+
+#   geom_line(data=unique(temp[,c("dpf", "estim_W_cont")]),
+#             aes(x=dpf, y=estim_L_cont), size=1, alpha=1, col="black")+
+#   expand_limits(x=c(0, 1100))+
+#   labs(x="Days post fertilization", y="Struct Length for PARAM var") + 
+#   theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
+#         axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
+#         legend.text = element_text(size=16), legend.title = element_text(size=16),
+#         panel.grid.minor = element_blank(),
+#         panel.grid.major = element_blank(),
+#         panel.background=element_rect("grey", fill="white", size=1),
+#         plot.margin = unit(c(0.5,0.5,0.5,1), "cm")
+#   )
+# 
+# pLvar = ggplot(data=temp,
+#             aes(x=dpf, y=estim_L_var, colour=condition)) +
+#   geom_line(size=2, alpha=1)+
+#   geom_line(data=unique(temp[,c("dpf", "estim_E_cont")]),
+#             aes(x=dpf, y=estim_L_cont), size=1, alpha=1, col="black")+
+#   expand_limits(x=c(0, 1100))+
+#   labs(x="Days post fertilization", y="Struct Length for PARAM var") + 
+#   theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
+#         axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
+#         legend.text = element_text(size=16), legend.title = element_text(size=16),
+#         panel.grid.minor = element_blank(),
+#         panel.grid.major = element_blank(),
+#         panel.background=element_rect("grey", fill="white", size=1),
+#         plot.margin = unit(c(0.5,0.5,0.5,1), "cm")
+#   )
+# 
+# pEvar = ggplot(data=temp,
+#                aes(x=dpf, y=estim_E_var, colour=condition)) +
+#   geom_line(size=2, alpha=1)+
+#   geom_line(data=unique(temp[,c("dpf", "estim_E_cont")]),
+#             aes(x=dpf, y=estim_E_cont), size=1, alpha=1, col="black")+
+#   # scale_fill_manual(labels=c("control", "BPA300"), 
+#   #                   values=colorRampPalette(c("green", "black"))(n = 2))+
+#   # scale_color_manual(labels=c("control", "BPA300"), 
+#   #                    values=colorRampPalette(c("green", "black"))(n = 2))+
+#   # geom_point(alpha=0.6,size=5)+
+#   # geom_line(alpha=0.6,size=1)+
+#   expand_limits(x=c(0, 1100))+
+#   #  expand_limits(x=c(0, 600),y=c(-30,30))+
+#   labs(x="Days post fertilization", y="Struct Length for PARAM var") + 
+#   theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
+#         axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
+#         legend.text = element_text(size=16), legend.title = element_text(size=16),
+#         panel.grid.minor = element_blank(),
+#         panel.grid.major = element_blank(),
+#         panel.background=element_rect("grey", fill="white", size=1),
+#         plot.margin = unit(c(0.5,0.5,0.5,1), "cm")
+#   )
+# 
+# pHvar = ggplot(data=temp,
+#                aes(x=dpf, y=estim_H_var, colour=condition)) +
+#   geom_line(size=2, alpha=1)+
+#   geom_line(data=unique(temp[,c("dpf", "estim_H_cont")]),
+#             aes(x=dpf, y=estim_H_cont), size=1, alpha=1, col="black")+
+#   # scale_fill_manual(labels=c("control", "BPA300"), 
+#   #                   values=colorRampPalette(c("green", "black"))(n = 2))+
+#   # scale_color_manual(labels=c("control", "BPA300"), 
+#   #                    values=colorRampPalette(c("green", "black"))(n = 2))+
+#   # geom_point(alpha=0.6,size=5)+
+#   # geom_line(alpha=0.6,size=1)+
+#   expand_limits(x=c(0, 1100))+
+#   #  expand_limits(x=c(0, 600),y=c(-30,30))+
+#   labs(x="Days post fertilization", y="Struct Length for PARAM var") + 
+#   theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
+#         axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
+#         legend.text = element_text(size=16), legend.title = element_text(size=16),
+#         panel.grid.minor = element_blank(),
+#         panel.grid.major = element_blank(),
+#         panel.background=element_rect("grey", fill="white", size=1),
+#         plot.margin = unit(c(0.5,0.5,0.5,1), "cm")
+#   )
+# 
 
 
 

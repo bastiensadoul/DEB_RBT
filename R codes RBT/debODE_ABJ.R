@@ -66,6 +66,10 @@ debODE_ABJ <- function(t, LEH, parms){
       s_M=1
     }
     
+    if (acc_after_64dpf == TRUE & t<64){
+      s_M=1
+    }
+    
     ##-----------------------------------------  
     # ---- If p.M varies over time
     ##-----------------------------------------

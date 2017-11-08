@@ -6,6 +6,8 @@ library(akima)      # for interpolation in debODE_ABJ.R
 library(R.matlab)
 library(deSolve)
 library(reshape2)
+library(ggplot2)
+
 
 # --------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------
@@ -450,7 +452,7 @@ MLresults <- optim(param_spring_damper, LLode, method = c("Nelder-Mead"), hessia
 totreal = tot
 untrace(LLode)
 
-write.table(unlist(MLresults), paste(dir, "/results_optim/result_optim_", Sys.Date(), ".txt", sep=""), sep = "\t")
+write.table(unlist(MLresults), paste(dir, "/results_optim/result_optim_", "MoA_", Sys.Date(), ".txt", sep=""), sep = "\t")
 
 ########## ALARM WHEN DONE
 
