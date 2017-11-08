@@ -23,8 +23,8 @@ library(cowplot)
 dpf=seq(0,1069, by=1)
 
 # Spring and damper parameters
-param_spring_damper = c(ks = 300, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 0.1,
-                        Fpert_BPA30 = 4 , Fpert_BPA300 = 7, Fpert_BPA100 = 5)
+param_spring_damper = c(ks = 0.0065, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 1,
+                        Fpert_BPA30 = 4 , Fpert_BPA300 = 8.5, Fpert_BPA100 = 5)
 
 
 tmin=0
@@ -34,7 +34,7 @@ tmax=40
 MoA = "E.G"
 
 # Shall the recovery time be identical (works only )
-identical_recovery_time
+identical_recovery_time = "TRUE"
 
 # Study to plot : "gw150" or "gw124"
 studytoplot = "gw124"
@@ -51,7 +51,7 @@ acc_after_64dpf = "FALSE"
 
 # Choose the function to be used for varying parameter over time 
 # ("spring_damper_model", "exp_decrease", "decreasing_logistic", "linearmod")
-function_var = "linearmod"
+function_var = "exp_decrease"
 
 # Initial reserves
 E0 = 643.562
@@ -321,7 +321,7 @@ for (repstudy in unique(totreal$study2)) {
 rm(list=setdiff(ls(), c("totreal", "debODE_ABJ", "param_cont", "estim_res_cont", "dir",
                         "f_gw150", "f_gw124", "dpf",
                         "param_spring_damper", "empirical", "tmin", "tmax", "MoA", "onlyBPA300",
-                        "function_var", "studytoplot", "E0")))
+                        "function_var", "studytoplot", "E0", "identical_recovery_time")))
 
 
 source(paste(dir, "spring_and_damper_model.R", sep="/"))
