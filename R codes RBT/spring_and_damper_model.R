@@ -48,8 +48,8 @@ exp_decrease=function(t,y, param){
   if (t>tmin && t<tmax){
     list(dy = 0)
   } else {
-    if (identical_recovery_time == "TRUE"){list(dy = -ks*y)
-    } else {list(dy = -ks/Fpert*y)}
+    if (identical_recovery_time == "TRUE"){list(dy = -y*1/ks)     # used to be -y*ks when "best fits manually" was created
+    } else {list(dy = -y/Fpert * 1/ks)} 
   }
   
 }
@@ -78,7 +78,7 @@ linearmod=function(t,y, param){
     list(dy = 0)
   } else if (y>0) {
       if (identical_recovery_time == "TRUE"){list(dy = -Fpert/ks)
-        } else {list(dy = -ks)}
+        } else {list(dy = -1/ks)}
   } else {list(dy = 0)}
   
 }
