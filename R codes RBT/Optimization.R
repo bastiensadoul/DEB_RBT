@@ -19,8 +19,9 @@ library(cowplot)
 # --------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------
 
-# ODE method see ?ode (euler is much faster)
+# ODE method see ?ode (euler is the fastest)
 ODEmethod="euler"
+#ODEmethod="ode23"
 
 # Integration step   --> dt<1 might be wrong because approx pb in debODE_ABJ with "floor(t)+1"
 dt=1     
@@ -29,15 +30,20 @@ dt=1
 dpf=seq(0,1069, by=dt)
 
 # Spring and damper parameters
-param_spring_damper = c(ks = 154, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 3,
-                        Fpert_BPA30 = 4 , Fpert_BPA300 = 8.5, Fpert_BPA100 = 5)
-
+param_spring_damper = c(ks = 40, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 0.5,
+                        Fpert_BPA30 = 4 , Fpert_BPA300 = 10, Fpert_BPA100 = 5
+                        )
+# 
+# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_2017-11-21.txt", sep=""), sep = "\t", header=T)
+# row.names(param_spring_damper)=substring(row.names(param_spring_damper),5)
+# param_spring_damper = as.data.frame(t(param_spring_damper))[,c(1:length(t(param_spring_damper)))]
+# param_spring_damper = unlist(param_spring_damper)
 
 tmin=0
-tmax=40
+tmax=0
 
 # Mode of action "p.M", "E.G" or "p_Am"
-MoA = "E.G"
+MoA = "p.M"
 
 # Shall the recovery time be identical (works only )
 identical_recovery_time = "TRUE"
@@ -60,9 +66,9 @@ acc_after_64dpf = "FALSE"
 function_var = "exp_decrease"
 
 # Initial reserves
-E0 = 643.562
+E0_gw124 = 643.5622
+E0_gw150 = 605.2904
 
-#E0 = 800
 
 # --------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------
@@ -108,8 +114,10 @@ totreal$condition = colsplit(totreal$study, "_", names = c("1", "2"))[,2]
 totreal$condition[totreal$condition==""]="BPA0"
 
 totreal$study = colsplit(totreal$study, "_", names = c("1", "2"))[,1]
-totreal$study[which(totreal$study=="gw124" & totreal$dpf<=350)]="gw124ini"
-totreal$study[which(totreal$study=="gw124" & totreal$dpf>350)]="gw124fin"
+# totreal$study[which(totreal$study=="gw124" & totreal$dpf<=350)]="gw124ini"
+# totreal$study[which(totreal$study=="gw124" & totreal$dpf>350)]="gw124fin"
+totreal$study[which(totreal$study=="gw124" & totreal$dpf<=391)]="gw124ini"
+totreal$study[which(totreal$study=="gw124" & totreal$dpf>391)]="gw124fin"
 
 totreal$variable = as.character(totreal$variable)
 totreal$variable[which(totreal$study=="gw124ini")]=
@@ -185,8 +193,11 @@ f_gw124fin = mean(unlist(f_studies)[names(f_studies) %in% names(f_studies)[grep(
 # f linearly interpolated between ini and fin
 f_gw124 = data.frame(time = seq(min(dpf), max(dpf)+1, by = dt))
 f_gw124$f = NA
-f_gw124$f[f_gw124$time<=350] = f_gw124ini
-f_gw124$f[f_gw124$time>350 & f_gw124$time<438] = approx(c(350,438), c(f_gw124ini, f_gw124fin), xout=seq(350+dt,438-dt, dt))$y
+# f_gw124$f[f_gw124$time<=350] = f_gw124ini
+# f_gw124$f[f_gw124$time>350 & f_gw124$time<438] = approx(c(350,438), c(f_gw124ini, f_gw124fin), xout=seq(350+dt,438-dt, dt))$y
+# f_gw124$f[f_gw124$time>=438] = f_gw124fin
+f_gw124$f[f_gw124$time<=391] = f_gw124ini
+f_gw124$f[f_gw124$time>391 & f_gw124$time<438] = approx(c(391,438), c(f_gw124ini, f_gw124fin), xout=seq(391+dt,438-dt, dt))$y
 f_gw124$f[f_gw124$time>=438] = f_gw124fin
 
 # f_gw150 = 1
@@ -220,6 +231,8 @@ for (repstudy in unique(totreal$study2)) {
   ### --- Temp
   param_cont$TempC = 8.5   #  en degres C
   
+  ### --- Provides E0
+  eval(parse(text = paste("E0 = ", "E0_", repstudy, sep="")))
   
   #### ------------------------------------
   # ---- Initial state
@@ -313,16 +326,6 @@ for (repstudy in unique(totreal$study2)) {
 
 
 
-
-
-
-
-
-
-
-
-
-
 ##########################################################
 ############## ---- ESTIMATED WEIGHT WITH VARYING PARAM
 ##########################################################
@@ -331,7 +334,7 @@ for (repstudy in unique(totreal$study2)) {
 rm(list=setdiff(ls(), c("totreal", "debODE_ABJ", "param_cont", "estim_res_cont", "dir",
                         "f_gw150", "f_gw124", "dpf",
                         "param_spring_damper", "empirical", "tmin", "tmax", "MoA", "onlyBPA300",
-                        "function_var", "studytoplot", "E0", "identical_recovery_time", "ODEmethod",
+                        "function_var", "studytoplot", "E0_gw124", "E0_gw150", "identical_recovery_time", "ODEmethod",
                         "dt")))
 
 
@@ -345,8 +348,8 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
 
 
 
-# LLode <- function(param_spring_damper){
-  
+LLode <- function(param_spring_damper){
+
   
   # <-
 
@@ -358,6 +361,9 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
 
   # param_spring_damper = data.frame(ks = 2, cs = 200, Fpert_BPA03 = 20, Fpert_BPA3 = 20,
   #                                  Fpert_BPA30 = 30, Fpert_BPA300 = 20, Fpert_BPA100 = 20)
+
+  # param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_2017-11-15.txt", sep=""), sep = "\t", header=T)
+  # param_spring_damper = as.data.frame(t(param_spring_damper))[,c(1:7)]
   
   #  # ---- Make sure all spring and damper parameters are above zero
   
@@ -368,16 +374,16 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
   
   #  # ---- Extract parameters
   
-  ks <<- param_spring_damper[1]
+  ks <<- param_spring_damper["ks"]
   # ks = 2      # force of the spring
-  cs <<- param_spring_damper[2]
+  cs <<- param_spring_damper["cs"]
   # cs = 200         # resilience of the damper
   
-  Fpert_BPA03 = param_spring_damper[3]
-  Fpert_BPA3 = param_spring_damper[4]
-  Fpert_BPA30 = param_spring_damper[5]
-  Fpert_BPA300 = param_spring_damper[6]
-  Fpert_BPA100 = param_spring_damper[7]
+  Fpert_BPA03 = abs(param_spring_damper["Fpert_BPA03"])
+  Fpert_BPA3 = abs(param_spring_damper["Fpert_BPA3"])
+  Fpert_BPA30 = abs(param_spring_damper["Fpert_BPA30"])
+  Fpert_BPA300 = abs(param_spring_damper["Fpert_BPA300"])
+  Fpert_BPA100 = abs(param_spring_damper["Fpert_BPA100"])
   
 
   
@@ -401,7 +407,11 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
     condition = unique(totreal$condition[totreal$condition_estim == condition_estim])
     study2 = unique(totreal$study2[totreal$condition_estim == condition_estim])
     
+    
+    # ---- Parameter of the pert model
     eval(parse(text=paste("Fpert <<- Fpert_", condition, sep="")))
+    # eval(parse(text=paste("tmax <<- param_spring_damper['tmax_", condition, "']", sep="")))
+    if (!is.na(param_spring_damper["tmax"])){tmax <<- param_spring_damper["tmax"]}
     
     
     # ---- Forcing variables
@@ -411,6 +421,9 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
     }
     
     param_deb$TempC = 8.5   #  en degres C
+    
+    ### --- Provides E0
+    eval(parse(text = paste("E0 = ", "E0_", study2, sep="")))
     
     
     # ---- Initial state
@@ -552,11 +565,49 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
   diff = diff[!is.na(diff)]
   
   LL =  as.numeric(t(diff) %*% diff)
-#  return(LL)
-#}
+ return(LL)
+}
 
 
 
+
+
+
+#########################################################################################################
+####### ---------  OPTIMISATION
+#########################################################################################################
+
+# Starting parameters
+# param_spring_damper = c(ks = 166.2296584, cs =  12.7335188, Fpert_BPA03 = 0.62931, Fpert_BPA3 = 0.1968554,
+#                         Fpert_BPA30 = 3.5879307 , Fpert_BPA300 = 7.2959569, Fpert_BPA100 = 4.5292535)
+# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_2017-11-15.txt", sep=""), sep = "\t", header=T)
+# param_spring_damper = as.data.frame(t(param_spring_damper))[,c(1:7)]
+
+# Run the optimization procedure
+# tmin=0       # start of the pert (when Fpert applies)
+# tmax=40       # stop of the pert
+
+# Remove cs if not using spring and damper model
+if (function_var!="spring__damper_model"){
+  param_spring_damper = param_spring_damper[names(param_spring_damper)!="cs"]
+}
+
+trace(LLode, exit= quote(print(c(returnValue(), param_spring_damper))))
+# totreal = totreal[which(totreal$study == "gw150" & totreal$condition == "BPA30"),]
+# param_spring_damper = data.frame(ks = 2, cs = 200,
+# Fpert_BPA30 = 12)
+MLresults <- optim(param_spring_damper, LLode, method = c("Nelder-Mead"), hessian=F,
+                   control=list(trace=10, maxit=10000))
+totreal = tot
+untrace(LLode)
+
+write.table(unlist(MLresults), paste(dir, "/results_optim/result_optim_", MoA, "_", format(Sys.time(), "%d-%b-%Y %H.%M"), ".txt", sep=""), sep = "\t")
+
+########## ALARM WHEN DONE
+
+
+# # Sends txt when script done (works only on mac)
+# system("osascript -e 'tell application \"Messages\"' -e 'send \"end of script\" to buddy \"moi\"' -e 'end tell'")
 
 
 
@@ -581,7 +632,7 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
   
 temp=totfinal[which(totfinal$study2 == studytoplot),]
 tempestim = estim_res[estim_res$study2 == studytoplot,]
-tempestim = tempestim[which(tempestim$dpf>160),]
+#tempestim = tempestim[which(tempestim$dpf>160),]
 p = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
   stat_summary(fun.y = mean, geom = "point", size=5, alpha=0.6) + 
   stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
@@ -691,6 +742,11 @@ pL = ggplot(data=temp,
   )
 
 plot_grid(pW, pL, pE, nrow=3)
+
+
+
+# Additional plots --------------------------------------------------------
+
 
 # 
 # pWvar = ggplot(data=temp,

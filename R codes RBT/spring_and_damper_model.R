@@ -43,7 +43,7 @@ spring_damper_model=function(t,y, param){
 exp_decrease=function(t,y, param){
   
   ks <- param[1]
-  cs <- param[2]
+# cs <- param[2]
   
   if (t>tmin && t<tmax){
     list(dy = 0)
