@@ -32,7 +32,7 @@ dpf=seq(0,1069, by=dt)
 
 # Spring and damper parameters
 
-param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_p.M_23-nov.-2017 17.27.txt", sep=""), sep = "\t", header=T)
+param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_22-nov.-2017 19.12.txt", sep=""), sep = "\t", header=T)
 row.names(param_spring_damper)=substring(row.names(param_spring_damper),5)
 param_spring_damper = as.data.frame(t(param_spring_damper))[,c(1:length(t(param_spring_damper)))]
 param_spring_damper = unlist(param_spring_damper)
@@ -40,10 +40,10 @@ param_spring_damper = unlist(param_spring_damper)
 # param_spring_damper["Fpert_BPA300"] = 10
 
 tmin=0
-tmax=0
+tmax=1000
 
 # Mode of action "p.M", "E.G" or "p_Am"
-MoA = "p.M"
+MoA = "E.G"
 
 # Shall the recovery time be identical (works only )
 identical_recovery_time = "TRUE"
@@ -57,6 +57,9 @@ sM = "TRUE"
 
 # If only want to test on BPA300
 onlyBPA300 = "FALSE"
+
+# Shall the acceleration start when Lb reached
+acc_after_Lbcont = "TRUE"
 
 # TRUE if acceleration only after f=1 (pM = Lj/Lb after t=64dpf)
 acc_after_64dpf = "FALSE"
@@ -182,6 +185,7 @@ param_cont$dt=dt
 
 #--- Add options
 param_cont$acc_after_64dpf = acc_after_64dpf
+param_cont$acc_after_Lbcont = c("FALSE", NULL) # for control, never acc_after_Lbcont
 
 #--- Calculate f (mean of control)
 f_studies = readMat(gsub("R codes RBT", "/f_prdData_funique_all.mat", dir))$f[,,1]
@@ -335,7 +339,7 @@ rm(list=setdiff(ls(), c("totreal", "debODE_ABJ", "param_cont", "estim_res_cont",
                         "f_gw150", "f_gw124", "dpf",
                         "param_spring_damper", "empirical", "tmin", "tmax", "MoA", "onlyBPA300",
                         "function_var", "studytoplot", "E0_gw124", "E0_gw150", "identical_recovery_time", "ODEmethod",
-                        "dt")))
+                        "dt", "acc_after_Lbcont")))
 
 
 source(paste(dir, "spring_and_damper_model.R", sep="/"))
@@ -387,7 +391,7 @@ if (onlyBPA300==T){
 
 for (condition_estim in toestim){
   
-  # condition_estim = toestim
+  # condition_estim = toestim[1]
   print(i)
   
   
@@ -412,6 +416,12 @@ for (condition_estim in toestim){
   
   ### --- Provides E0
   eval(parse(text = paste("E0 = ", "E0_", study2, sep="")))
+  
+  
+  ### --- Add options not true for control
+  param_deb$acc_after_Lbcont = c(acc_after_Lbcont, 
+                                 unique(estim_res_cont$Lbcont[estim_res_cont$study2==study2]))
+  
   
   
   # ---- Initial state
@@ -469,18 +479,12 @@ for (condition_estim in toestim){
     LEHovertime_var[,"E"] / param_deb$d.E * param_deb$w_E / param_deb$mu.E   # g, wet weight
   
   # ---- Calculate tb, tj, Lb, Lj
+  Lbvar = max(LEHovertime_var$Lb)
+  Ljvar = max(LEHovertime_var$Lj)
   tbvar = LEHovertime_var[
-    which(abs(LEHovertime_var[,"H"] - param_deb$E.Hb) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hb))),"dpf"]
-  
+    which(abs(LEHovertime_var[,"L"] - Lbvar) == min(abs(LEHovertime_var[,"L"] - Lbvar))),"dpf"]
   tjvar = LEHovertime_var[
-    which(abs(LEHovertime_var[,"H"] - param_deb$E.Hj) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hj))),"dpf"]
-  
-  Lbvar = LEHovertime_var[
-    which(abs(LEHovertime_var[,"H"] - param_deb$E.Hb) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hb))),"L"]
-  
-  Ljvar = LEHovertime_var[
-    which(abs(LEHovertime_var[,"H"] - param_deb$E.Hj) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hj))),"L"]
-  
+    which(abs(LEHovertime_var[,"L"] - Ljvar) == min(abs(LEHovertime_var[,"L"] - Ljvar))),"dpf"]
   
   
   # ---- SAVE
@@ -575,6 +579,8 @@ if (MoA=="E.G"){
   estim_param_var[,2] = estim_param_var[,2]/1000
 }
 
+# xaxis maximum
+xmax=150
 
 # ------------------------------------------------------------- PLOT Diff pred gw150
   
@@ -585,7 +591,8 @@ tempestim = estim_res[estim_res$study2 == studytoplot,]
 tempparam=estim_param_var[estim_param_var$condition %in% unique(temp$condition),]
 tempparam$var=tempparam[,2]
 
-
+temp=temp[temp$dpf<xmax,]
+tempestim=tempestim[tempestim$dpf<xmax,]
 
 # Create colour vector
 if (studytoplot == "gw150"){
@@ -600,7 +607,7 @@ if (studytoplot == "gw150"){
 }
 
 #########  Diff pred
-  
+
 #tempestim = tempestim[which(tempestim$dpf>160),]
 p_gw150 = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
   stat_summary(fun.y = mean, geom = "point", size=5, alpha=0.6) + 
@@ -632,7 +639,7 @@ p_gw150 = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
 p_gw150_2 = ggplot(data=tempparam, aes(x=time, y=var, col=condition))+
   geom_line(size=1.5)+
   # labs(x="Days post fertilization", y=bquote(.(MoA)*' (KJ.'*~cm^-3*')')) +
-  labs(x="Days post fertilization", y=bquote(E[G]*' (KJ.'*~cm^-3*')')) +
+  labs(x="Days post fertilization", y=bquote("["*E[G]*"]"*' (KJ.'*~cm^-3*')')) +
   expand_limits(x=c(0, 1100),y=c(0,max(estim_param_var$E.G)))+
   scale_fill_manual(labels=labvec[-1],
                     values=colvec[-1])+
@@ -662,6 +669,9 @@ tempestim = estim_res[estim_res$study2 == studytoplot,]
 tempparam=estim_param_var[estim_param_var$condition %in% unique(temp$condition),]
 tempparam$var=tempparam[,2]
 
+temp=temp[temp$dpf<xmax,]
+tempestim=tempestim[tempestim$dpf<xmax,]
+
 
 # Create colour vector
 if (studytoplot == "gw150"){
@@ -677,7 +687,6 @@ if (studytoplot == "gw150"){
 
 #########  Diff pred
 
-#tempestim = tempestim[which(tempestim$dpf>160),]
 p_gw124 = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
   stat_summary(fun.y = mean, geom = "point", size=5, alpha=0.6) + 
   stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
@@ -690,7 +699,7 @@ p_gw124 = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
                      values=colvec)+
   # geom_point(alpha=0.6,size=5)+
   # geom_line(alpha=0.6,size=1)+
-  expand_limits(x=c(0, 1100),y=c(min(estim_res$diff_estimates),30))+
+  expand_limits(x=c(0, xmax),y=c(min(estim_res$diff_estimates),30))+
   #  expand_limits(x=c(0, 600),y=c(-30,30))+
   labs(x="Days post fertilization", y="Mass difference to control (%)") + 
   theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
@@ -720,7 +729,7 @@ p_gw124 = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
 
 p_gw124_2 = ggplot(data=tempparam, aes(x=time, y=var, col=condition))+
   geom_line(size=1.5)+
-  labs(x="Days post fertilization", y=bquote(E[G]*' (KJ.'*~cm^-3*')')) +
+  labs(x="Days post fertilization", y=bquote("["*E[G]*"]"*' (KJ.'*~cm^-3*')')) +
   expand_limits(x=c(0, 1100),y=c(0,max(estim_param_var$E.G)))+
   scale_fill_manual(labels=labvec[-1],
                     values=colvec[-1])+
@@ -780,7 +789,7 @@ maxEG$forcol = factor(maxEG$concentration, levels = c("0", "0.3", "3", "30", "10
 Fpert = ggplot(data=maxEG, aes(x=concentration, y=E.G))+
   geom_point(aes(colour=forcol), size=5, alpha=0.6)+ 
   # labs(x="BPA treatment (ng/L)", y=bquote(.(MoA)*' (KJ.'*~cm^-3*')')) +
-  labs(x="BPA treatment (ng/L)", y=bquote(E[G]*' (KJ.'*~cm^-3*') at t = 0 dpf')) +
+  labs(x="BPA treatment (ng/L)", y=bquote("["*E[G]*"]"*' (KJ.'*~cm^-3*')')) +
   expand_limits(x=c(-8, 300),y=c(0,max(estim_param_var$E.G)))+
   geom_smooth(aes(x=concentration, y=E.G),
               method="nls", 

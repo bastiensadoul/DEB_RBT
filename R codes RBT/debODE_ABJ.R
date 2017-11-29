@@ -47,6 +47,15 @@ debODE_ABJ <- function(t, LEH, parms){
     
     
     
+    ##--------------Options for birth after a given Lb value
+    if (acc_after_Lbcont[1] == TRUE & L<acc_after_Lbcont[2]){
+      Lb=acc_after_Lbcont[2]
+      Lb=as.numeric(Lb)
+    }
+    ##--------------
+    
+    
+    
     ##-----------------------------------------  
     # ---- calculation of the shape coefficient
     ##-----------------------------------------
@@ -66,9 +75,18 @@ debODE_ABJ <- function(t, LEH, parms){
       s_M=1
     }
     
+    
+    
+    ##--------------Options for birth after 64dpf or after a given Lb value
     if (acc_after_64dpf == TRUE & t<64){
       s_M=1
     }
+    if (acc_after_Lbcont[1] == TRUE & L<acc_after_Lbcont[2]){
+      s_M=1
+    }
+    ##--------------
+    
+    
     
     ##-----------------------------------------  
     # ---- If p.M varies over time
@@ -124,7 +142,18 @@ debODE_ABJ <- function(t, LEH, parms){
       pA=fdt*pAm*L^2
     } else {
       pA=0
-      }
+    }
+    
+    
+    ##--------------Options for birth after 64dpf or after a given Lb value
+    if (acc_after_64dpf == TRUE & t<64){
+      pA=0
+    }
+    if (acc_after_Lbcont[1] == TRUE & L<acc_after_Lbcont[2]){
+      pA=0
+    }
+    ##--------------
+    
     
     # Mobilization rate (Out of reserves),  J/cm^3
     pC = E/(L^3) * (EG * v / L + pM) / (kap * E / (L^3) + EG)      # eq 2.12 book
@@ -160,14 +189,41 @@ debODE_ABJ <- function(t, LEH, parms){
     # Change in structural length
     dL = L * r / 3 #
     
-    # Extract Lj and Lb dynamically
+    # Extract Lb dynamically
     if (H <= E.Hb) {
       dLb = max(0, dL)
     } else dLb=0
     
+    
+    ##--------------Options for birth after 64dpf or after a given Lb value
+    if (acc_after_64dpf == TRUE & t<64){
+      dLb=max(0, dL)
+    }
+    if (acc_after_Lbcont[1] == TRUE & L<acc_after_Lbcont[2]){
+      dLb=max(0, dL)
+    }
+    ##--------------
+    
+    
+
+    # Extract Lj dynamically
     if (H <= E.Hj) {
       dLj = max(0, dL)
     } else dLj=0
+    
+    
+    
+    
+    ##--------------Options for birth after 64dpf or after a given Lb value
+    if (acc_after_64dpf == TRUE & t<64){
+      dLj=max(0, dL)
+    }
+    if (acc_after_Lbcont[1] == TRUE & L<acc_after_Lbcont[2]){
+      dLj=max(0, dL)
+    }
+    ##--------------
+    
+    
     
     
     ##-----------------------------------------  
