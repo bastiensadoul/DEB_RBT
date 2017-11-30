@@ -30,14 +30,14 @@ dt=1
 dpf=seq(0,1069, by=dt)
 
 # Spring and damper parameters
-param_spring_damper = c(ks = 40, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 0.5,
-                        Fpert_BPA30 = 4 , Fpert_BPA300 = 10, Fpert_BPA100 = 5
-                        )
-# 
-# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_2017-11-21.txt", sep=""), sep = "\t", header=T)
-# row.names(param_spring_damper)=substring(row.names(param_spring_damper),5)
-# param_spring_damper = as.data.frame(t(param_spring_damper))[,c(1:length(t(param_spring_damper)))]
-# param_spring_damper = unlist(param_spring_damper)
+# param_spring_damper = c(ks = 10, cs =  8.6, Fpert_BPA03 = 0, Fpert_BPA3 = 0,
+#                         Fpert_BPA30 = 0 , Fpert_BPA300 = 0, Fpert_BPA100 = 0
+#                         )
+
+param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_22-nov.-2017 19.12.txt", sep=""), sep = "\t", header=T)
+row.names(param_spring_damper)=substring(row.names(param_spring_damper),5)
+param_spring_damper = as.data.frame(t(param_spring_damper))[,c(1:length(t(param_spring_damper)))]
+param_spring_damper = unlist(param_spring_damper)
 
 tmin=0
 tmax=0
@@ -51,18 +51,17 @@ identical_recovery_time = "TRUE"
 # Study to plot : "gw150" or "gw124"
 studytoplot = "gw124"
 
-
 # Acceleration? If sM = False --> no acceleration (sM=1)
 sM = "TRUE"
+
+# Shall the acceleration and birth start when Lb reached
+acc_after_Lbcont = "TRUE"
 
 # If only want to test on BPA300
 onlyBPA300 = "FALSE"
 
-# Shall the acceleration start when Lb reached
-acc_after_Lbcont = "TRUE"
-
 # TRUE if acceleration only after f=1 (pM = Lj/Lb after t=64dpf)
-acc_after_64dpf = "TRUE"
+acc_after_64dpf = "FALSE"
 
 # Choose the function to be used for varying parameter over time 
 # ("spring_damper_model", "exp_decrease", "decreasing_logistic", "linearmod")
@@ -187,7 +186,6 @@ param_cont$dt=dt
 param_cont$acc_after_64dpf = acc_after_64dpf
 param_cont$acc_after_Lbcont = c("FALSE", NULL) # for control, never acc_after_Lbcont
 
-
 #--- Calculate f (mean of control)
 f_studies = readMat(gsub("R codes RBT", "/f_prdData_funique_all.mat", dir))$f[,,1]
 
@@ -222,6 +220,8 @@ source(paste(dir,"debODE_ABJ.R", sep="/"))
 i=1
 
 for (repstudy in unique(totreal$study2)) {
+  
+  # repstudy="gw124"
   
   #### ------------------------------------
   # ---- Forcing variables
@@ -353,7 +353,6 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
 
 
 
-LLode <- function(param_spring_damper){
 
   
   # <-
@@ -403,7 +402,7 @@ LLode <- function(param_spring_damper){
   
   for (condition_estim in toestim){
     
-    # condition_estim = toestim
+    # condition_estim = toestim[1]
     print(i)
     
     
@@ -433,7 +432,7 @@ LLode <- function(param_spring_damper){
     
     ### --- Add options not true for control
     param_deb$acc_after_Lbcont = c(acc_after_Lbcont, 
-                                   unique(estim_res_cont$Lbcont[estim_res_cont$study2==study2]))
+                                  unique(estim_res_cont$Lbcont[estim_res_cont$study2==study2]))
     
     
     
@@ -576,49 +575,7 @@ LLode <- function(param_spring_damper){
   diff = diff[!is.na(diff)]
   
   LL =  as.numeric(t(diff) %*% diff)
- return(LL)
-}
-
-
-
-
-
-
-#########################################################################################################
-####### ---------  OPTIMISATION
-#########################################################################################################
-
-# Starting parameters
-# param_spring_damper = c(ks = 166.2296584, cs =  12.7335188, Fpert_BPA03 = 0.62931, Fpert_BPA3 = 0.1968554,
-#                         Fpert_BPA30 = 3.5879307 , Fpert_BPA300 = 7.2959569, Fpert_BPA100 = 4.5292535)
-# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_2017-11-15.txt", sep=""), sep = "\t", header=T)
-# param_spring_damper = as.data.frame(t(param_spring_damper))[,c(1:7)]
-
-# Run the optimization procedure
-# tmin=0       # start of the pert (when Fpert applies)
-# tmax=40       # stop of the pert
-
-# Remove cs if not using spring and damper model
-if (function_var!="spring__damper_model"){
-  param_spring_damper = param_spring_damper[names(param_spring_damper)!="cs"]
-}
-
-trace(LLode, exit= quote(print(c(returnValue(), param_spring_damper))))
-# totreal = totreal[which(totreal$study == "gw150" & totreal$condition == "BPA30"),]
-# param_spring_damper = data.frame(ks = 2, cs = 200,
-# Fpert_BPA30 = 12)
-MLresults <- optim(param_spring_damper, LLode, method = c("Nelder-Mead"), hessian=F,
-                   control=list(trace=10, maxit=10000))
-totreal = tot
-untrace(LLode)
-
-write.table(unlist(MLresults), paste(dir, "/results_optim/result_optim_", MoA, "_", format(Sys.time(), "%d-%b-%Y %H.%M"), ".txt", sep=""), sep = "\t")
-
-########## ALARM WHEN DONE
-
-
-# # Sends txt when script done (works only on mac)
-# system("osascript -e 'tell application \"Messages\"' -e 'send \"end of script\" to buddy \"moi\"' -e 'end tell'")
+  LL
 
 
 
@@ -631,217 +588,199 @@ write.table(unlist(MLresults), paste(dir, "/results_optim/result_optim_", MoA, "
 
 
 
-#########################################################################################################
-####### ---------  PLOTS
-#########################################################################################################
-# 
-# 
-# # estim_res=rbind(data.frame(estim_res), data.frame(dpf=dpf, study2="gw124", estim_W_var=NA, condition_estim = NA, condition="BPA0", estim_W_cont=NA, tbcont = NA, tjcont = NA, diff_estimates=0))
-# 
-# #studytoplot = "gw150"
-# #studytoplot = "gw124"
-#   
-# temp=totfinal[which(totfinal$study2 == studytoplot),]
-# tempestim = estim_res[estim_res$study2 == studytoplot,]
-# #tempestim = tempestim[which(tempestim$dpf>160),]
-# p = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
-#   stat_summary(fun.y = mean, geom = "point", size=5, alpha=0.6) + 
-#   stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
-#   stat_summary(fun.data = mean_cl_normal, fun.args=list(mult=1), alpha=0.6)+
-#   geom_line(data=tempestim ,
-#             aes(x=dpf, y=diff_estimates, colour=condition), size=2, alpha=1)+
-#   # scale_fill_manual(labels=c("control", "BPA300"), 
-#   #                   values=colorRampPalette(c("green", "black"))(n = 2))+
-#   # scale_color_manual(labels=c("control", "BPA300"), 
-#   #                    values=colorRampPalette(c("green", "black"))(n = 2))+
-#   # geom_point(alpha=0.6,size=5)+
-#   # geom_line(alpha=0.6,size=1)+
-#   expand_limits(x=c(0, 1100),y=c(-30,30))+
-#   #  expand_limits(x=c(0, 600),y=c(-30,30))+
-#   labs(x="Days post fertilization", y="Mass difference to control (%)") + 
-#   theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
-#         axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
-#         legend.text = element_text(size=16), legend.title = element_text(size=16),
-#         panel.grid.minor = element_blank(),
-#         panel.grid.major = element_blank(),
-#         panel.background=element_rect("grey", fill="white", size=1),
-#         plot.margin = unit(c(0.5,0.5,0.5,1), "cm")
-#   )
-# 
-# tempparam=estim_param_var[estim_param_var$condition %in% unique(temp$condition),]
-# tempparam$var=tempparam[,2]
-# p2 = ggplot(data=tempparam, aes(x=time, y=var, col=condition))+
-#   geom_line()+
-#   labs(x="Days post fertilization", y=MoA) +
-#   expand_limits(x=c(0, 1100),y=c(0,max(tempparam$var)))+
-#   theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
-#         axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
-#         legend.text = element_text(size=16), legend.title = element_text(size=16),
-#         panel.grid.minor = element_blank(),
-#         panel.grid.major = element_blank(),
-#         panel.background=element_rect("grey", fill="white", size=1),
-#         plot.margin = unit(c(0,3.5,0.5,0.5), "cm"),
-#         legend.position="none"
-#   )+
-#   annotate("text", label = paste("ks = ", ks, sep=""), x = 1000, y = max(tempparam$var))+
-#   annotate("text", label = paste(names(Fpert), " = ", Fpert, sep=""), x = 1000, y = max(tempparam$var)*0.9)
-#   
-# 
-# if (function_var == "spring_damper_model"){
-#   p2=p2+annotate("text", label = paste("cs = ", cs, sep=""), x = 1000, y = max(tempparam$var)*0.8)
-# }
-# 
-# p2 = p2+  
-#   annotate("text", label = paste("tmin = ", tmin, sep=""), x = 1000, y = max(tempparam$var)*0.5)+
-#   annotate("text", label = paste("tmax = ", tmax, sep=""), x = 1000, y = max(tempparam$var)*0.4)
-# 
-# plot_grid(p, p2, nrow=2, rel_heights = c(1/2, 1/3))
-# 
-# 
-# 
-# 
-# 
-# 
-# ######################## CONSEQUENCES ON STATE VARIABLES
-# 
-# #studytoplot = "gw150"
-# #studytoplot = "gw124"
-# 
-# temp=estim_res[which(estim_res$study2 == studytoplot),]    # the two studies have diff f
-# 
-# pW = ggplot(data=temp,
-#            aes(x=dpf, y=diff_estimates, colour=condition)) +
-#   geom_line(size=2, alpha=1)+
-#   expand_limits(x=c(0, 1100),y=c(-30,30))+
-#   labs(x="Days post fertilization", y=expression("Mass difference \n to control (%)")) + 
-#   theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
-#         axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
-#         legend.text = element_text(size=16), legend.title = element_text(size=16),
-#         panel.grid.minor = element_blank(),
-#         panel.grid.major = element_blank(),
-#         panel.background=element_rect("grey", fill="white", size=1),
-#         plot.margin = unit(c(0.5,0.5,0.5,1), "cm")
-#   )
-# 
-# 
-# pE = ggplot(data=temp,
-#             aes(x=dpf, y=diff_E_estimates, colour=condition)) +
-#   geom_line(size=2, alpha=1)+
-#   expand_limits(x=c(0, 1100),y=c(-30,30))+
-#   labs(x="Days post fertilization", y=expression("Reserve difference \n to control (%)")) + 
-#   theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
-#         axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
-#         legend.text = element_text(size=16), legend.title = element_text(size=16),
-#         panel.grid.minor = element_blank(),
-#         panel.grid.major = element_blank(),
-#         panel.background=element_rect("grey", fill="white", size=1),
-#         plot.margin = unit(c(0.5,0.5,0.5,1), "cm")
-#   )
-# 
-# pL = ggplot(data=temp,
-#             aes(x=dpf, y=diff_L_estimates, colour=condition)) +
-#   geom_line(size=2, alpha=1)+
-#   expand_limits(x=c(0, 1100),y=c(-30,30))+
-#   labs(x="Days post fertilization", y=expression("Struct. L difference \n to control (%)")) + 
-#   theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
-#         axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
-#         legend.text = element_text(size=16), legend.title = element_text(size=16),
-#         panel.grid.minor = element_blank(),
-#         panel.grid.major = element_blank(),
-#         panel.background=element_rect("grey", fill="white", size=1),
-#         plot.margin = unit(c(0.5,0.5,0.5,1), "cm")
-#   )
-# 
-# plot_grid(pW, pL, pE, nrow=3)
-# 
-# 
-
-# Additional plots --------------------------------------------------------
-
-
-# 
-# pWvar = ggplot(data=temp,
-#                aes(x=dpf, y=estim_W_var, colour=condition)) +
-#   geom_line(size=2, alpha=1)+
-#   geom_line(data=unique(temp[,c("dpf", "estim_W_cont")]),
-#             aes(x=dpf, y=estim_L_cont), size=1, alpha=1, col="black")+
-#   expand_limits(x=c(0, 1100))+
-#   labs(x="Days post fertilization", y="Struct Length for PARAM var") + 
-#   theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
-#         axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
-#         legend.text = element_text(size=16), legend.title = element_text(size=16),
-#         panel.grid.minor = element_blank(),
-#         panel.grid.major = element_blank(),
-#         panel.background=element_rect("grey", fill="white", size=1),
-#         plot.margin = unit(c(0.5,0.5,0.5,1), "cm")
-#   )
-# 
-# pLvar = ggplot(data=temp,
-#             aes(x=dpf, y=estim_L_var, colour=condition)) +
-#   geom_line(size=2, alpha=1)+
-#   geom_line(data=unique(temp[,c("dpf", "estim_E_cont")]),
-#             aes(x=dpf, y=estim_L_cont), size=1, alpha=1, col="black")+
-#   expand_limits(x=c(0, 1100))+
-#   labs(x="Days post fertilization", y="Struct Length for PARAM var") + 
-#   theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
-#         axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
-#         legend.text = element_text(size=16), legend.title = element_text(size=16),
-#         panel.grid.minor = element_blank(),
-#         panel.grid.major = element_blank(),
-#         panel.background=element_rect("grey", fill="white", size=1),
-#         plot.margin = unit(c(0.5,0.5,0.5,1), "cm")
-#   )
-# 
-# pEvar = ggplot(data=temp,
-#                aes(x=dpf, y=estim_E_var, colour=condition)) +
-#   geom_line(size=2, alpha=1)+
-#   geom_line(data=unique(temp[,c("dpf", "estim_E_cont")]),
-#             aes(x=dpf, y=estim_E_cont), size=1, alpha=1, col="black")+
-#   # scale_fill_manual(labels=c("control", "BPA300"), 
-#   #                   values=colorRampPalette(c("green", "black"))(n = 2))+
-#   # scale_color_manual(labels=c("control", "BPA300"), 
-#   #                    values=colorRampPalette(c("green", "black"))(n = 2))+
-#   # geom_point(alpha=0.6,size=5)+
-#   # geom_line(alpha=0.6,size=1)+
-#   expand_limits(x=c(0, 1100))+
-#   #  expand_limits(x=c(0, 600),y=c(-30,30))+
-#   labs(x="Days post fertilization", y="Struct Length for PARAM var") + 
-#   theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
-#         axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
-#         legend.text = element_text(size=16), legend.title = element_text(size=16),
-#         panel.grid.minor = element_blank(),
-#         panel.grid.major = element_blank(),
-#         panel.background=element_rect("grey", fill="white", size=1),
-#         plot.margin = unit(c(0.5,0.5,0.5,1), "cm")
-#   )
-# 
-# pHvar = ggplot(data=temp,
-#                aes(x=dpf, y=estim_H_var, colour=condition)) +
-#   geom_line(size=2, alpha=1)+
-#   geom_line(data=unique(temp[,c("dpf", "estim_H_cont")]),
-#             aes(x=dpf, y=estim_H_cont), size=1, alpha=1, col="black")+
-#   # scale_fill_manual(labels=c("control", "BPA300"), 
-#   #                   values=colorRampPalette(c("green", "black"))(n = 2))+
-#   # scale_color_manual(labels=c("control", "BPA300"), 
-#   #                    values=colorRampPalette(c("green", "black"))(n = 2))+
-#   # geom_point(alpha=0.6,size=5)+
-#   # geom_line(alpha=0.6,size=1)+
-#   expand_limits(x=c(0, 1100))+
-#   #  expand_limits(x=c(0, 600),y=c(-30,30))+
-#   labs(x="Days post fertilization", y="Struct Length for PARAM var") + 
-#   theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
-#         axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
-#         legend.text = element_text(size=16), legend.title = element_text(size=16),
-#         panel.grid.minor = element_blank(),
-#         panel.grid.major = element_blank(),
-#         panel.background=element_rect("grey", fill="white", size=1),
-#         plot.margin = unit(c(0.5,0.5,0.5,1), "cm")
-#   )
-# 
-
-
-
-
-
-
-
+  
+  #########################################################################################################
+  ####### ---------  PLOTS
+  #########################################################################################################
+  
+  if (MoA=="E.G"){
+    estim_param_var[,2] = estim_param_var[,2]/1000
+  }
+  
+  
+  # ------------------------------------------------------------- PLOT Diff pred gw150
+  
+  studytoplot = "gw150"
+  
+  temp=totfinal[which(totfinal$study2 == studytoplot),]
+  tempestim = estim_res[estim_res$study2 == studytoplot,]
+  tempparam=estim_param_var[estim_param_var$condition %in% unique(temp$condition),]
+  tempparam$var=tempparam[,2]
+  
+  
+  
+  # Create colour vector
+  if (studytoplot == "gw150"){
+    labvec = c("control", "BPA3", "BPA30")
+    colvec=colorRampPalette(c("green", "red", "black"))(n = 6)[c(1,3,4)]
+  } else {
+    labvec = c("control", "BPA0.3", "BPA3", "BPA30", "BPA100", "BPA300")
+    colvec=colorRampPalette(c("green", "red", "black"))(n = 6)
+    tempestim$condition=factor(tempestim$condition, levels=c("BPA0", "BPA03", "BPA3", "BPA30", "BPA100", "BPA300"))
+    temp$condition=factor(temp$condition, levels=c("BPA0", "BPA03", "BPA3", "BPA30", "BPA100", "BPA300"))
+    tempparam$condition=factor(tempparam$condition, levels=c("BPA03", "BPA3", "BPA30", "BPA100", "BPA300"))
+  }
+  
+  #########  Diff pred
+  
+  #tempestim = tempestim[which(tempestim$dpf>160),]
+  p_gw150 = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
+    stat_summary(fun.y = mean, geom = "point", size=5, alpha=0.6) + 
+    stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
+    stat_summary(fun.data = mean_cl_normal, fun.args=list(mult=1), alpha=0.6)+
+    geom_line(data=tempestim ,
+              aes(x=dpf, y=diff_estimates, colour=condition), size=1.5, alpha=1)+
+    scale_fill_manual(labels=labvec,
+                      values=colvec)+
+    scale_color_manual(labels=labvec,
+                       values=colvec)+
+    # geom_point(alpha=0.6,size=5)+
+    # geom_line(alpha=0.6,size=1)+
+    expand_limits(x=c(0, 1100),y=c(min(estim_res$diff_estimates),30))+
+    #  expand_limits(x=c(0, 600),y=c(-30,30))+
+    labs(x="Days post fertilization", y="Mass difference to control (%)") + 
+    theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
+          axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
+          legend.text = element_text(size=16), legend.title = element_text(size=16),
+          panel.grid.minor = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.background=element_rect("grey", fill="white", size=1),
+          plot.margin = unit(c(0.5,0.5,0.5,0.5), "cm")
+    )
+  
+  
+  #########  Pert
+  
+  p_gw150_2 = ggplot(data=tempparam, aes(x=time, y=var, col=condition))+
+    geom_line(size=1.5)+
+    # labs(x="Days post fertilization", y=bquote(.(MoA)*' (KJ.'*~cm^-3*')')) +
+    labs(x="Days post fertilization", y=bquote(E[G]*' (KJ.'*~cm^-3*')')) +
+    expand_limits(x=c(0, 1100),y=c(0,max(estim_param_var$E.G)))+
+    scale_fill_manual(labels=labvec[-1],
+                      values=colvec[-1])+
+    scale_color_manual(labels=labvec[-1],
+                       values=colvec[-1])+
+    theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
+          axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
+          legend.text = element_text(size=16), legend.title = element_text(size=16),
+          panel.grid.minor = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.background=element_rect("grey", fill="white", size=1),
+          plot.margin = unit(c(0,3.5,0.5,0.5), "cm"),
+          legend.position="none"
+    )
+  
+  
+  plot_grid(p_gw150, p_gw150_2, nrow=2, rel_heights = c(1/2, 1/3))
+  
+  
+  
+  # ------------------------------------------------------------- PLOT Diff pred gw124
+  
+  studytoplot = "gw124"
+  
+  temp=totfinal[which(totfinal$study2 == studytoplot),]
+  tempestim = estim_res[estim_res$study2 == studytoplot,]
+  tempparam=estim_param_var[estim_param_var$condition %in% unique(temp$condition),]
+  tempparam$var=tempparam[,2]
+  
+  
+  # Create colour vector
+  if (studytoplot == "gw150"){
+    labvec = c("control", "BPA3", "BPA30")
+    colvec=colorRampPalette(c("green", "red", "black"))(n = 6)[c(1,3,4)]
+  } else {
+    labvec = c("control", "BPA0.3", "BPA3", "BPA30", "BPA100", "BPA300")
+    colvec=colorRampPalette(c("green", "red", "black"))(n = 6)
+    tempestim$condition=factor(tempestim$condition, levels=c("BPA0", "BPA03", "BPA3", "BPA30", "BPA100", "BPA300"))
+    temp$condition=factor(temp$condition, levels=c("BPA0", "BPA03", "BPA3", "BPA30", "BPA100", "BPA300"))
+    tempparam$condition=factor(tempparam$condition, levels=c("BPA03", "BPA3", "BPA30", "BPA100", "BPA300"))
+  }
+  
+  #########  Diff pred
+  
+  #tempestim = tempestim[which(tempestim$dpf>160),]
+  p_gw124 = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
+    stat_summary(fun.y = mean, geom = "point", size=5, alpha=0.6) + 
+    stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
+    stat_summary(fun.data = mean_cl_normal, fun.args=list(mult=1), alpha=0.6)+
+    geom_line(data=tempestim ,
+              aes(x=dpf, y=diff_estimates, colour=condition), size=1.5, alpha=1)+
+    scale_fill_manual(labels=labvec,
+                      values=colvec)+
+    scale_color_manual(labels=labvec,
+                       values=colvec)+
+    # geom_point(alpha=0.6,size=5)+
+    # geom_line(alpha=0.6,size=1)+
+    expand_limits(x=c(0, 1100),y=c(min(estim_res$diff_estimates),30))+
+    #  expand_limits(x=c(0, 600),y=c(-30,30))+
+    labs(x="Days post fertilization", y="Mass difference to control (%)") + 
+    theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
+          axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
+          legend.text = element_text(size=16), legend.title = element_text(size=16),
+          panel.grid.minor = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.background=element_rect("grey", fill="white", size=1),
+          plot.margin = unit(c(0.5,0.5,0.5,0.5), "cm")
+    )
+  
+  
+  # # Create colour vector
+  # if (studytoplot == "gw150"){
+  #   labvec = c("control", "BPA3", "BPA30")
+  #   colvec=colorRampPalette(c("green", "red", "black"))(n = 6)[c(1,3,4)]
+  # } else {
+  #   labvec = c("control", "BPA0.3", "BPA3", "BPA30", "BPA100", "BPA300")
+  #   colvec=colorRampPalette(c("green", "red", "black"))(n = 6)
+  #   tempestim$condition=factor(tempestim$condition, levels=c("BPA0", "BPA03", "BPA3", "BPA30", "BPA100", "BPA300"))
+  #   temp$condition=factor(temp$condition, levels=c("BPA0", "BPA03", "BPA3", "BPA30", "BPA100", "BPA300"))
+  #   tempparam$condition=factor(tempparam$condition, levels=c("BPA03", "BPA3", "BPA30", "BPA100", "BPA300"))
+  # }
+  
+  
+  #########  Pert
+  
+  p_gw124_2 = ggplot(data=tempparam, aes(x=time, y=var, col=condition))+
+    geom_line(size=1.5)+
+    labs(x="Days post fertilization", y=bquote(E[G]*' (KJ.'*~cm^-3*')')) +
+    expand_limits(x=c(0, 1100),y=c(0,max(estim_param_var$E.G)))+
+    scale_fill_manual(labels=labvec[-1],
+                      values=colvec[-1])+
+    scale_color_manual(labels=labvec[-1],
+                       values=colvec[-1])+
+    theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
+          axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
+          legend.text = element_text(size=16), legend.title = element_text(size=16),
+          panel.grid.minor = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.background=element_rect("grey", fill="white", size=1),
+          plot.margin = unit(c(0,3.5,0.5,0.5), "cm"),
+          legend.position="none"
+    )
+  
+  
+  plot_grid(p_gw124, p_gw124_2, nrow=2, rel_heights = c(1/2, 1/3))
+  
+  
+  # ------------------------------------------------------------- PLOT TOTAL Diff pred
+  
+  p_gw124 <- arrangeGrob(p_gw124, top = textGrob("a", x = unit(0.1, "npc")
+                                                 , y   = unit(0.8, "npc"), just=c("left","top"),
+                                                 gp=gpar(col="black", fontsize=30, fontfamily="Times Roman")))
+  p_gw124_2 <- arrangeGrob(p_gw124_2, top = textGrob("b", x = unit(0.1, "npc")
+                                                     , y   = unit(1.2, "npc"), just=c("left","top"),
+                                                     gp=gpar(col="black", fontsize=30, fontfamily="Times Roman")))
+  p_gw150 <- arrangeGrob(p_gw150, top = textGrob("c", x = unit(0.1, "npc")
+                                                 , y   = unit(.8, "npc"), just=c("left","top"),
+                                                 gp=gpar(col="black", fontsize=30, fontfamily="Times Roman")))
+  p_gw150_2 <- arrangeGrob(p_gw150_2, top = textGrob("d", x = unit(0.1, "npc")
+                                                     , y   = unit(1.2, "npc"), just=c("left","top"),
+                                                     gp=gpar(col="black", fontsize=30, fontfamily="Times Roman")))
+  
+  
+  
+  
+  #jpeg(paste(dir, "/Figures/diff_pred.jpg", sep=""), res=600, width=30, height=20, units="cm")
+  plot_grid(p_gw124,p_gw150, p_gw124_2, p_gw150_2, nrow=2, ncol=2, rel_heights = c(1/2, 1/3, 1/2, 1/3))
+  #dev.off()
+  

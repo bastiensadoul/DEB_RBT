@@ -56,6 +56,9 @@ sM = "TRUE"
 # If only want to test on BPA300
 onlyBPA300 = "FALSE"
 
+# Shall the acceleration start when Lb reached
+acc_after_Lbcont = "TRUE"
+
 # TRUE if acceleration only after f=1 (pM = Lj/Lb after t=64dpf)
 acc_after_64dpf = "FALSE"
 
@@ -164,6 +167,10 @@ for (f in ftest){
   
   ### --- Temp
   param_cont$TempC = TempC   #  en degres C
+  
+  ### --- Options
+  param_cont$acc_after_Lbcont = c("FALSE", NULL) # for control, never acc_after_Lbcont
+  
   
   ### --- Provides E0
   E0=E0
@@ -311,6 +318,11 @@ for (f in ftest){
   
   ### --- Provides E0
   E0=E0
+  
+  ### --- Add options not true for control
+  param_deb$acc_after_Lbcont = c(acc_after_Lbcont, 
+                                 unique(estim_res_cont$Lbcont[estim_res_cont$study2==study2]))
+  
   
   
   # ---- Initial state
