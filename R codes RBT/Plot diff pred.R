@@ -32,7 +32,8 @@ dpf=seq(0,1069, by=dt)
 
 # Spring and damper parameters
 
-param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_p.M_23-nov.-2017 17.27.txt", sep=""), sep = "\t", header=T)
+#param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_p.M_23-nov.-2017 17.27.txt", sep=""), sep = "\t", header=T)
+param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_22-nov.-2017 19.47.txt", sep=""), sep = "\t", header=T)
 row.names(param_spring_damper)=substring(row.names(param_spring_damper),5)
 param_spring_damper = as.data.frame(t(param_spring_damper))[,c(1:length(t(param_spring_damper)))]
 param_spring_damper = unlist(param_spring_damper)
@@ -43,7 +44,7 @@ tmin=0
 tmax=0
 
 # Mode of action "p.M", "E.G" or "p_Am"
-MoA = "p.M"
+MoA = "E.G"
 
 # Shall the recovery time be identical (works only )
 identical_recovery_time = "TRUE"
@@ -440,20 +441,21 @@ for (condition_estim in toestim){
   eval(parse(text=paste("functionforvar = ", function_var, sep="")))
   
   # Ode for coeff over time
-  tPARAM=ode(y=yini,func=functionforvar, times=time_for_var, parms=c(ks,cs), method=ODEmethod)
+  stress=ode(y=yini,func=functionforvar, times=time_for_var, parms=c(ks,cs), method=ODEmethod)
   
-  tPARAM = as.data.frame(tPARAM)
-  if (function_var == "decreasing_logistic") {tPARAM[, 2] = tPARAM[, 2]*Fpert
+  stress = as.data.frame(stress)
+  tPARAM = stress
+  if (function_var == "decreasing_logistic") {tPARAM[, 2] = stress[, 2]*Fpert
   }
   
-  # Multiply/Divise PARAM by coeff
+  # Multiply/Divise stress by coeff
   eval(parse(text=c("iniparam = param_deb$", MoA)))
   if(MoA=="p_Am"){
-    tPARAM[, 2] = tPARAM[, 2]/100
-    tPARAM[, 2] = -tPARAM[, 2]
+    stress[, 2] = stress[, 2]/100
+    stress[, 2] = -stress[, 2]
   }
   
-  tPARAM[, 2] = (tPARAM[, 2]+1) * iniparam
+  tPARAM[, 2] = (stress[, 2]+1) * iniparam
   eval(parse(text= paste("param_deb$", MoA, " = tPARAM[, c(1,2)]", sep="")))
   
   
@@ -551,6 +553,7 @@ totfinal$sMvar = totfinal$Ljvar/totfinal$Lbvar
 
 fordiff=totfinal[totfinal$condition!="BPA0",]
 fordiff=fordiff[which(!fordiff$dpf %in% c(784.5, 958.5, 616.5)),]
+#fordiff=fordiff[fordiff$dpf!=64,]
 diff=fordiff$real_diffW-fordiff$diff_estimates
 #diff = diff[!is.na(diff)]
 
@@ -566,6 +569,43 @@ plot(fordiff$dpf, diff)
 LL           # Sum of square difference between real diff and estimated diff
 # as.numeric(t(diff[-c(1:20)]) %*% diff[-c(1:20)])
 
+
+#########################################################################################################
+####### ---------  CALCULATE CONSEQUENCES
+#########################################################################################################
+
+#----------------------  Difference at t=0 of the MoA (equivalent to the max value)
+
+eval(parse(text = paste("estim_param_var$MoA = estim_param_var$", MoA, sep="")))
+
+maxMoA = aggregate(MoA~condition, data=estim_param_var, FUN=max)
+maxMoA=rbind(maxMoA, c(condition="BPA0", MoA=iniparam))
+
+maxMoA$MoA=as.numeric(maxMoA$MoA)
+maxMoA$concentration = as.numeric(c(0.3, 100, 3, 30, 300, 0))
+maxMoA$forcol = factor(maxMoA$concentration, levels = c("0", "0.3", "3", "30", "100", "300"))
+
+
+#----------------------  Lb value
+Lbvar_per_cond = aggregate(Lbvar~condition*study2, data=estim_res_var, FUN=max)
+
+#----------------------  Lj value
+Ljvar_per_cond = aggregate(Ljvar~condition*study2, data=estim_res_var, FUN=max)
+
+#----------------------  tb value
+tbvar_per_cond = aggregate(tbvar~condition*study2, data=estim_res_var, FUN=unique)
+
+#----------------------  tj value
+tjvar_per_cond = aggregate(tjvar~condition*study2, data=estim_res_var, FUN=unique)
+
+#----------------------  merge
+sM_table = merge(Lbvar_per_cond, Ljvar_per_cond)
+sM_table = merge(sM_table, tbvar_per_cond)
+sM_table = merge(sM_table, tjvar_per_cond)
+sM_table$sM = sM_table$Ljvar /  sM_table$Lbvar
+sM_table = sM_table[order(sM_table$study2, sM_table$condition),]
+sM_table = sM_table[c(1,3,4,2,5,6,7),]
+t(sM_table)
 
 #########################################################################################################
 ####### ---------  PLOTS
@@ -649,7 +689,7 @@ p_gw150_2 = ggplot(data=tempparam, aes(x=time, y=var, col=condition))+
   )
 
 
-plot_grid(p_gw150, p_gw150_2, nrow=2, rel_heights = c(1/2, 1/3))
+# plot_grid(p_gw150, p_gw150_2, nrow=2, rel_heights = c(1/2, 1/3))
 
 
 
@@ -737,7 +777,7 @@ p_gw124_2 = ggplot(data=tempparam, aes(x=time, y=var, col=condition))+
   )
 
 
-plot_grid(p_gw124, p_gw124_2, nrow=2, rel_heights = c(1/2, 1/3))
+# plot_grid(p_gw124, p_gw124_2, nrow=2, rel_heights = c(1/2, 1/3))
 
 
 # ------------------------------------------------------------- PLOT TOTAL Diff pred
@@ -764,29 +804,19 @@ plot_grid(p_gw124,p_gw150, p_gw124_2, p_gw150_2, nrow=2, ncol=2, rel_heights = c
 
 
 
-
-
-
-
 # ------------------------------------------------------------- PLOT Fpert Concentration
 
-maxEG = aggregate(E.G~condition, data=estim_param_var, FUN=max)
-maxEG=rbind(maxEG, c(condition="BPA0", E.G=0))
-
-maxEG$E.G=as.numeric(maxEG$E.G)
-maxEG$concentration = as.numeric(c(0.3, 100, 3, 30, 300, 0))
-maxEG$forcol = factor(maxEG$concentration, levels = c("0", "0.3", "3", "30", "100", "300"))
-
-Fpert = ggplot(data=maxEG, aes(x=concentration, y=E.G))+
+maxMoA$MoA = maxMoA$MoA/1000
+Fpert = ggplot(data=maxMoA, aes(x=concentration, y=MoA))+
   geom_point(aes(colour=forcol), size=5, alpha=0.6)+ 
   # labs(x="BPA treatment (ng/L)", y=bquote(.(MoA)*' (KJ.'*~cm^-3*')')) +
   labs(x="BPA treatment (ng/L)", y=bquote(E[G]*' (KJ.'*~cm^-3*') at t = 0 dpf')) +
-  expand_limits(x=c(-8, 300),y=c(0,max(estim_param_var$E.G)))+
-  geom_smooth(aes(x=concentration, y=E.G),
+  expand_limits(x=c(0, 300),y=c(0,max(maxMoA$MoA)))+
+  geom_smooth(aes(x=concentration, y=MoA),
               method="nls", 
               col="black",
               formula=y~a+Vmax*(1-exp(-x*tau)),
-              method.args = list(start=c(a=0,tau=0.2,Vmax=50)),
+              method.args = list(start=c(a=0,tau=0.05,Vmax=50)),
               se=FALSE, fullrange=T)+
   scale_fill_manual(labels=labvec,
                     values=colvec)+
