@@ -62,6 +62,9 @@ onlyBPA300 = "FALSE"
 # TRUE if acceleration only after f=1 (pM = Lj/Lb after t=64dpf)
 acc_after_64dpf = "FALSE"
 
+# Shall the acceleration start when Lb reached
+acc_after_Lbcont = "TRUE"
+
 # Choose the function to be used for varying parameter over time 
 # ("spring_damper_model", "exp_decrease", "decreasing_logistic", "linearmod")
 function_var = "exp_decrease"
@@ -183,6 +186,8 @@ param_cont$dt=dt
 
 #--- Add options
 param_cont$acc_after_64dpf = acc_after_64dpf
+param_cont$acc_after_Lbcont = c("FALSE", NULL) # for control, never acc_after_Lbcont
+
 
 #--- Calculate f (mean of control)
 f_studies = readMat(gsub("R codes RBT", "/f_prdData_funique_all.mat", dir))$f[,,1]
@@ -336,7 +341,7 @@ rm(list=setdiff(ls(), c("totreal", "debODE_ABJ", "param_cont", "estim_res_cont",
                         "f_gw150", "f_gw124", "dpf",
                         "param_spring_damper", "empirical", "tmin", "tmax", "MoA", "onlyBPA300",
                         "function_var", "studytoplot", "E0_gw124", "E0_gw150", "identical_recovery_time", "ODEmethod",
-                        "dt")))
+                        "dt", "acc_after_Lbcont")))
 
 
 source(paste(dir, "spring_and_damper_model.R", sep="/"))
@@ -349,21 +354,21 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
 
 
 
-  
-  #### ------------------------------------
-  # ---- PARAMETERS OF THE SPRING AND DAMPER
-  #### ------------------------------------
-  
 
-  #  # ---- Make sure all spring and damper parameters are above zero
-  
-  if (function_var == "spring_damper_model"){
-    param_spring_damper = abs(param_spring_damper)+0.01
-  }
-  
-  
-  #  # ---- Extract parameters
-  
+#### ------------------------------------
+# ---- PARAMETERS OF THE SPRING AND DAMPER
+#### ------------------------------------
+
+
+#  # ---- Make sure all spring and damper parameters are above zero
+
+if (function_var == "spring_damper_model"){
+  param_spring_damper = abs(param_spring_damper)+0.01
+}
+
+
+#  # ---- Extract parameters
+
 ks <<- param_spring_damper["ks"]
 # ks = 2      # force of the spring
 cs <<- param_spring_damper["cs"]
@@ -374,9 +379,9 @@ Fpert_BPA3 = abs(param_spring_damper["Fpert_BPA3"])
 Fpert_BPA30 = abs(param_spring_damper["Fpert_BPA30"])
 Fpert_BPA300 = abs(param_spring_damper["Fpert_BPA300"])
 Fpert_BPA100 = abs(param_spring_damper["Fpert_BPA100"])
-  
-  
-  
+
+
+
 #### ------------------------------------
 # ---- LOOP ON ALL TANKS EXCEPT BPA0
 #### ------------------------------------  
@@ -402,7 +407,7 @@ for (condition_estim in toestim){
   eval(parse(text=paste("Fpert <<- Fpert_", condition, sep="")))
   # eval(parse(text=paste("tmax <<- param_spring_damper['tmax_", condition, "']", sep="")))
   if (!is.na(param_spring_damper["tmax"])){tmax <<- param_spring_damper["tmax"]}
-
+  
   # ---- Forcing variables
   if (study2=="gw150"){param_deb$f=f_gw150
   } else {
@@ -413,6 +418,10 @@ for (condition_estim in toestim){
   
   ### --- Provides E0
   eval(parse(text = paste("E0 = ", "E0_", study2, sep="")))
+  
+  ### --- Add options not true for control
+  param_deb$acc_after_Lbcont = c(acc_after_Lbcont, 
+                                 unique(estim_res_cont$Lbcont[estim_res_cont$study2==study2]))
   
   
   # ---- Initial state
@@ -617,7 +626,7 @@ if (MoA=="E.G"){
 
 
 # ------------------------------------------------------------- PLOT Diff pred gw150
-  
+
 studytoplot = "gw150"
 
 temp=totfinal[which(totfinal$study2 == studytoplot),]
@@ -640,7 +649,7 @@ if (studytoplot == "gw150"){
 }
 
 #########  Diff pred
-  
+
 #tempestim = tempestim[which(tempestim$dpf>160),]
 p_gw150 = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
   stat_summary(fun.y = mean, geom = "point", size=5, alpha=0.6) + 
@@ -783,17 +792,17 @@ p_gw124_2 = ggplot(data=tempparam, aes(x=time, y=var, col=condition))+
 # ------------------------------------------------------------- PLOT TOTAL Diff pred
 
 p_gw124 <- arrangeGrob(p_gw124, top = textGrob("a", x = unit(0.1, "npc")
-                                   , y   = unit(0.8, "npc"), just=c("left","top"),
-                                   gp=gpar(col="black", fontsize=30, fontfamily="Times Roman")))
-p_gw124_2 <- arrangeGrob(p_gw124_2, top = textGrob("b", x = unit(0.1, "npc")
-                                     , y   = unit(1.2, "npc"), just=c("left","top"),
-                                     gp=gpar(col="black", fontsize=30, fontfamily="Times Roman")))
-p_gw150 <- arrangeGrob(p_gw150, top = textGrob("c", x = unit(0.1, "npc")
-                                     , y   = unit(.8, "npc"), just=c("left","top"),
-                                     gp=gpar(col="black", fontsize=30, fontfamily="Times Roman")))
-p_gw150_2 <- arrangeGrob(p_gw150_2, top = textGrob("d", x = unit(0.1, "npc")
-                                               , y   = unit(1.2, "npc"), just=c("left","top"),
+                                               , y   = unit(0.8, "npc"), just=c("left","top"),
                                                gp=gpar(col="black", fontsize=30, fontfamily="Times Roman")))
+p_gw124_2 <- arrangeGrob(p_gw124_2, top = textGrob("b", x = unit(0.1, "npc")
+                                                   , y   = unit(1.2, "npc"), just=c("left","top"),
+                                                   gp=gpar(col="black", fontsize=30, fontfamily="Times Roman")))
+p_gw150 <- arrangeGrob(p_gw150, top = textGrob("c", x = unit(0.1, "npc")
+                                               , y   = unit(.8, "npc"), just=c("left","top"),
+                                               gp=gpar(col="black", fontsize=30, fontfamily="Times Roman")))
+p_gw150_2 <- arrangeGrob(p_gw150_2, top = textGrob("d", x = unit(0.1, "npc")
+                                                   , y   = unit(1.2, "npc"), just=c("left","top"),
+                                                   gp=gpar(col="black", fontsize=30, fontfamily="Times Roman")))
 
 
 
