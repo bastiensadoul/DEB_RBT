@@ -52,6 +52,10 @@ debODE_ABJ <- function(t, LEH, parms){
       Lb=acc_after_Lbcont[2]
       Lb=as.numeric(Lb)
     }
+    if (acc_after_Lbcont[1] == TRUE & L<acc_after_Lbcont[3]){
+      Lj=acc_after_Lbcont[3]
+      Lj=as.numeric(Lj)
+    }
     ##--------------
     
     
@@ -83,6 +87,9 @@ debODE_ABJ <- function(t, LEH, parms){
     }
     if (acc_after_Lbcont[1] == TRUE & L<acc_after_Lbcont[2]){
       s_M=1
+    }
+    if (acc_after_Lbcont[1] == TRUE & L>=acc_after_Lbcont[2] & L<acc_after_Lbcont[3]){
+      s_M=L/Lb
     }
     ##--------------
     
@@ -218,7 +225,7 @@ debODE_ABJ <- function(t, LEH, parms){
     if (acc_after_64dpf == TRUE & t<64){
       dLj=max(0, dL)
     }
-    if (acc_after_Lbcont[1] == TRUE & L<acc_after_Lbcont[2]){
+    if (acc_after_Lbcont[1] == TRUE & L<acc_after_Lbcont[3]){
       dLj=max(0, dL)
     }
     ##--------------

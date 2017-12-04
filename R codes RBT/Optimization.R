@@ -30,7 +30,7 @@ dt=1
 dpf=seq(0,1069, by=dt)
 
 # Spring and damper parameters
-param_spring_damper = c(ks = 40, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 0.5,
+param_spring_damper = c(ks = 120, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 0.5,
                         Fpert_BPA30 = 4 , Fpert_BPA300 = 10, Fpert_BPA100 = 5
                         )
 # 
@@ -59,18 +59,18 @@ sM = "TRUE"
 onlyBPA300 = "FALSE"
 
 # Shall the acceleration start when Lb reached
-acc_after_Lbcont = "TRUE"
+acc_after_Lbcont = "FALSE"
 
 # TRUE if acceleration only after f=1 (pM = Lj/Lb after t=64dpf)
-acc_after_64dpf = "TRUE"
+acc_after_64dpf = "FALSE"
 
 # Choose the function to be used for varying parameter over time 
 # ("spring_damper_model", "exp_decrease", "decreasing_logistic", "linearmod")
 function_var = "exp_decrease"
 
 # Initial reserves
-E0_gw124 = 643.5622
-E0_gw150 = 605.2904
+E0_gw124 = 604
+E0_gw150 = 644
 
 
 # --------------------------------------------------------------------------------
@@ -185,7 +185,7 @@ param_cont$dt=dt
 
 #--- Add options
 param_cont$acc_after_64dpf = acc_after_64dpf
-param_cont$acc_after_Lbcont = c("FALSE", NULL) # for control, never acc_after_Lbcont
+param_cont$acc_after_Lbcont = c("FALSE", NULL, NULL) # for control, never acc_after_Lbcont
 
 
 #--- Calculate f (mean of control)
@@ -433,7 +433,8 @@ LLode <- function(param_spring_damper){
     
     ### --- Add options not true for control
     param_deb$acc_after_Lbcont = c(acc_after_Lbcont, 
-                                   unique(estim_res_cont$Lbcont[estim_res_cont$study2==study2]))
+                                   unique(estim_res_cont$Lbcont[estim_res_cont$study2==study2]),
+                                   unique(estim_res_cont$Ljcont[estim_res_cont$study2==study2]))
     
     
     
@@ -477,6 +478,9 @@ LLode <- function(param_spring_damper){
       }
     
     tPARAM[, 2] = (tPARAM[, 2]+1) * iniparam
+    if(MoA=="p_Am"){
+      tPARAM[tPARAM[,2]<0, 2] =0 
+    }
     eval(parse(text= paste("param_deb$", MoA, " = tPARAM[, c(1,2)]", sep="")))
 
     
@@ -491,18 +495,14 @@ LLode <- function(param_spring_damper){
     LEHovertime_var$estim_W_var = LEHovertime_var[,"L"]^3 + 
       LEHovertime_var[,"E"] / param_deb$d.E * param_deb$w_E / param_deb$mu.E   # g, wet weight
     
+    
     # ---- Calculate tb, tj, Lb, Lj
+    Lbvar = max(LEHovertime_var$Lb)
+    Ljvar = max(LEHovertime_var$Lj)
     tbvar = LEHovertime_var[
-      which(abs(LEHovertime_var[,"H"] - param_deb$E.Hb) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hb))),"dpf"]
-    
+      which(abs(LEHovertime_var[,"L"] - Lbvar) == min(abs(LEHovertime_var[,"L"] - Lbvar))),"dpf"]
     tjvar = LEHovertime_var[
-      which(abs(LEHovertime_var[,"H"] - param_deb$E.Hj) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hj))),"dpf"]
-    
-    Lbvar = LEHovertime_var[
-      which(abs(LEHovertime_var[,"H"] - param_deb$E.Hb) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hb))),"L"]
-    
-    Ljvar = LEHovertime_var[
-      which(abs(LEHovertime_var[,"H"] - param_deb$E.Hj) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hj))),"L"]
+      which(abs(LEHovertime_var[,"L"] - Ljvar) == min(abs(LEHovertime_var[,"L"] - Ljvar))),"dpf"]
     
     
     
@@ -569,13 +569,14 @@ LLode <- function(param_spring_damper){
   totfinal$sMcont = totfinal$Ljcont/totfinal$Lbcont
   totfinal$sMvar = totfinal$Ljvar/totfinal$Lbvar
   
-  # # Diff before tj
-  # totfinal = totfinal[totfinal$dpf > totfinal$tjvar,]
+  # Take residuals only after x dpf
+  totfinal = totfinal[totfinal$dpf > 138,]
   
-  diff=totfinal$real_diffW-totfinal$diff_estimates
+  diff=abs(totfinal$real_diffW-totfinal$diff_estimates)/abs(mean(totfinal$real_diffW))
   diff = diff[!is.na(diff)]
   
   LL =  as.numeric(t(diff) %*% diff)
+  # LL =  sum(diff)/length(diff)
  return(LL)
 }
 

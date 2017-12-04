@@ -30,20 +30,20 @@ dt=1
 dpf=seq(0,1069, by=dt)
 
 # Spring and damper parameters
-# param_spring_damper = c(ks = 10, cs =  8.6, Fpert_BPA03 = 0, Fpert_BPA3 = 0,
-#                         Fpert_BPA30 = 0 , Fpert_BPA300 = 0, Fpert_BPA100 = 0
-#                         )
+param_spring_damper = c(ks = 120, cs =  8.6, Fpert_BPA03 = 0, Fpert_BPA3 = 0,
+                        Fpert_BPA30 = 0.5 , Fpert_BPA300 = 100, Fpert_BPA100 = 0.6
+                        )
 
-param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_22-nov.-2017 19.12.txt", sep=""), sep = "\t", header=T)
-row.names(param_spring_damper)=substring(row.names(param_spring_damper),5)
-param_spring_damper = as.data.frame(t(param_spring_damper))[,c(1:length(t(param_spring_damper)))]
-param_spring_damper = unlist(param_spring_damper)
+# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_22-nov.-2017 19.12.txt", sep=""), sep = "\t", header=T)
+# row.names(param_spring_damper)=substring(row.names(param_spring_damper),5)
+# param_spring_damper = as.data.frame(t(param_spring_damper))[,c(1:length(t(param_spring_damper)))]
+# param_spring_damper = unlist(param_spring_damper)
 
 tmin=0
 tmax=0
 
 # Mode of action "p.M", "E.G" or "p_Am"
-MoA = "E.G"
+MoA = "p.M"
 
 # Shall the recovery time be identical (works only )
 identical_recovery_time = "TRUE"
@@ -68,8 +68,8 @@ acc_after_64dpf = "FALSE"
 function_var = "exp_decrease"
 
 # Initial reserves
-E0_gw124 = 643.5622
-E0_gw150 = 605.2904
+E0_gw124 = 604
+E0_gw150 = 644
 
 
 # --------------------------------------------------------------------------------
@@ -184,7 +184,7 @@ param_cont$dt=dt
 
 #--- Add options
 param_cont$acc_after_64dpf = acc_after_64dpf
-param_cont$acc_after_Lbcont = c("FALSE", NULL) # for control, never acc_after_Lbcont
+param_cont$acc_after_Lbcont = c("FALSE", NULL, NULL) # for control, never acc_after_Lbcont
 
 #--- Calculate f (mean of control)
 f_studies = readMat(gsub("R codes RBT", "/f_prdData_funique_all.mat", dir))$f[,,1]
@@ -432,7 +432,8 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
     
     ### --- Add options not true for control
     param_deb$acc_after_Lbcont = c(acc_after_Lbcont, 
-                                  unique(estim_res_cont$Lbcont[estim_res_cont$study2==study2]))
+                                  unique(estim_res_cont$Lbcont[estim_res_cont$study2==study2]),
+                                  unique(estim_res_cont$Ljcont[estim_res_cont$study2==study2]))
     
     
     
@@ -476,6 +477,9 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
       }
     
     tPARAM[, 2] = (tPARAM[, 2]+1) * iniparam
+    if(MoA=="p_Am"){
+      tPARAM[tPARAM[,2]<0, 2] =0 
+    }
     eval(parse(text= paste("param_deb$", MoA, " = tPARAM[, c(1,2)]", sep="")))
 
     
@@ -490,19 +494,14 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
     LEHovertime_var$estim_W_var = LEHovertime_var[,"L"]^3 + 
       LEHovertime_var[,"E"] / param_deb$d.E * param_deb$w_E / param_deb$mu.E   # g, wet weight
     
+
     # ---- Calculate tb, tj, Lb, Lj
+    Lbvar = max(LEHovertime_var$Lb)
+    Ljvar = max(LEHovertime_var$Lj)
     tbvar = LEHovertime_var[
-      which(abs(LEHovertime_var[,"H"] - param_deb$E.Hb) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hb))),"dpf"]
-    
+      which(abs(LEHovertime_var[,"L"] - Lbvar) == min(abs(LEHovertime_var[,"L"] - Lbvar))),"dpf"]
     tjvar = LEHovertime_var[
-      which(abs(LEHovertime_var[,"H"] - param_deb$E.Hj) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hj))),"dpf"]
-    
-    Lbvar = LEHovertime_var[
-      which(abs(LEHovertime_var[,"H"] - param_deb$E.Hb) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hb))),"L"]
-    
-    Ljvar = LEHovertime_var[
-      which(abs(LEHovertime_var[,"H"] - param_deb$E.Hj) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hj))),"L"]
-    
+      which(abs(LEHovertime_var[,"L"] - Ljvar) == min(abs(LEHovertime_var[,"L"] - Ljvar))),"dpf"]
     
     
     # ---- SAVE
@@ -576,6 +575,44 @@ source(paste(dir, "spring_and_damper_model.R", sep="/"))
   
   LL =  as.numeric(t(diff) %*% diff)
   LL
+  
+  #########################################################################################################
+  ####### ---------  CALCULATE CONSEQUENCES
+  #########################################################################################################
+  
+  #----------------------  Difference at t=0 of the MoA (equivalent to the max value)
+  
+  eval(parse(text = paste("estim_param_var$MoA = estim_param_var$", MoA, sep="")))
+  
+  maxMoA = aggregate(MoA~condition, data=estim_param_var, FUN=max)
+  maxMoA=rbind(maxMoA, c(condition="BPA0", MoA=iniparam))
+  
+  maxMoA$MoA=as.numeric(maxMoA$MoA)
+  maxMoA$concentration = as.numeric(c(0.3, 100, 3, 30, 300, 0))
+  maxMoA$forcol = factor(maxMoA$concentration, levels = c("0", "0.3", "3", "30", "100", "300"))
+  
+  
+  #----------------------  Lb value
+  Lbvar_per_cond = aggregate(Lbvar~condition*study2, data=estim_res_var, FUN=max)
+  
+  #----------------------  Lj value
+  Ljvar_per_cond = aggregate(Ljvar~condition*study2, data=estim_res_var, FUN=max)
+  
+  #----------------------  tb value
+  tbvar_per_cond = aggregate(tbvar~condition*study2, data=estim_res_var, FUN=unique)
+  
+  #----------------------  tj value
+  tjvar_per_cond = aggregate(tjvar~condition*study2, data=estim_res_var, FUN=unique)
+  
+  #----------------------  merge
+  sM_table = merge(Lbvar_per_cond, Ljvar_per_cond)
+  sM_table = merge(sM_table, tbvar_per_cond)
+  sM_table = merge(sM_table, tjvar_per_cond)
+  sM_table$sM = sM_table$Ljvar /  sM_table$Lbvar
+  sM_table = sM_table[order(sM_table$study2, sM_table$condition),]
+  sM_table = sM_table[c(1,3,4,2,5,6,7),]
+  t(sM_table)
+  
 
 
 

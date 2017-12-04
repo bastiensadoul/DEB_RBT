@@ -33,7 +33,9 @@ dpf=seq(0,1069, by=dt)
 # Spring and damper parameters
 
 #param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_p.M_23-nov.-2017 17.27.txt", sep=""), sep = "\t", header=T)
-param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_22-nov.-2017 19.47.txt", sep=""), sep = "\t", header=T)
+param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_04-déc.-2017 18.41.txt", sep=""), sep = "\t", header=T)
+
+#param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_22-nov.-2017 19.47.txt", sep=""), sep = "\t", header=T)
 row.names(param_spring_damper)=substring(row.names(param_spring_damper),5)
 param_spring_damper = as.data.frame(t(param_spring_damper))[,c(1:length(t(param_spring_damper)))]
 param_spring_damper = unlist(param_spring_damper)
@@ -63,15 +65,15 @@ onlyBPA300 = "FALSE"
 acc_after_64dpf = "FALSE"
 
 # Shall the acceleration start when Lb reached
-acc_after_Lbcont = "TRUE"
+acc_after_Lbcont = "FALSE"
 
 # Choose the function to be used for varying parameter over time 
 # ("spring_damper_model", "exp_decrease", "decreasing_logistic", "linearmod")
 function_var = "exp_decrease"
 
 # Initial reserves
-E0_gw124 = 643.5622
-E0_gw150 = 605.2904
+E0_gw124 = 604
+E0_gw150 = 644
 
 
 # --------------------------------------------------------------------------------
@@ -186,7 +188,7 @@ param_cont$dt=dt
 
 #--- Add options
 param_cont$acc_after_64dpf = acc_after_64dpf
-param_cont$acc_after_Lbcont = c("FALSE", NULL) # for control, never acc_after_Lbcont
+param_cont$acc_after_Lbcont = c("FALSE", NULL, NULL) # for control, never acc_after_Lbcont
 
 
 #--- Calculate f (mean of control)
@@ -393,7 +395,8 @@ if (onlyBPA300==T){
 
 for (condition_estim in toestim){
   
-  # condition_estim = toestim
+  # condition_estim = toestim[1]
+  # condition_estim = "gw124_BPA300"
   print(i)
   
   
@@ -421,7 +424,8 @@ for (condition_estim in toestim){
   
   ### --- Add options not true for control
   param_deb$acc_after_Lbcont = c(acc_after_Lbcont, 
-                                 unique(estim_res_cont$Lbcont[estim_res_cont$study2==study2]))
+                                 unique(estim_res_cont$Lbcont[estim_res_cont$study2==study2]),
+                                 unique(estim_res_cont$Ljcont[estim_res_cont$study2==study2]))
   
   
   # ---- Initial state
@@ -465,6 +469,9 @@ for (condition_estim in toestim){
   }
   
   tPARAM[, 2] = (stress[, 2]+1) * iniparam
+  if(MoA=="p_Am"){
+    tPARAM[tPARAM[,2]<0, 2] =0 
+  }
   eval(parse(text= paste("param_deb$", MoA, " = tPARAM[, c(1,2)]", sep="")))
   
   
@@ -480,18 +487,12 @@ for (condition_estim in toestim){
     LEHovertime_var[,"E"] / param_deb$d.E * param_deb$w_E / param_deb$mu.E   # g, wet weight
   
   # ---- Calculate tb, tj, Lb, Lj
+  Lbvar = max(LEHovertime_var$Lb)
+  Ljvar = max(LEHovertime_var$Lj)
   tbvar = LEHovertime_var[
-    which(abs(LEHovertime_var[,"H"] - param_deb$E.Hb) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hb))),"dpf"]
-  
+    which(abs(LEHovertime_var[,"L"] - Lbvar) == min(abs(LEHovertime_var[,"L"] - Lbvar))),"dpf"]
   tjvar = LEHovertime_var[
-    which(abs(LEHovertime_var[,"H"] - param_deb$E.Hj) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hj))),"dpf"]
-  
-  Lbvar = LEHovertime_var[
-    which(abs(LEHovertime_var[,"H"] - param_deb$E.Hb) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hb))),"L"]
-  
-  Ljvar = LEHovertime_var[
-    which(abs(LEHovertime_var[,"H"] - param_deb$E.Hj) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hj))),"L"]
-  
+    which(abs(LEHovertime_var[,"L"] - Ljvar) == min(abs(LEHovertime_var[,"L"] - Ljvar))),"dpf"]
   
   
   # ---- SAVE

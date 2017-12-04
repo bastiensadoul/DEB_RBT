@@ -67,8 +67,8 @@ acc_after_64dpf = "FALSE"
 function_var = "exp_decrease"
 
 # Initial reserves
-# E0 = 643.5622    # E0 of gw124
-# E0 = 605.2904    # E0 of gw150
+# E0 = 604    # E0 of gw124
+# E0 = 644    # E0 of gw150
 # E0 = 800 # For tests
 E0test = c(400,500,600,700,800)
 
@@ -169,7 +169,7 @@ for (f in ftest){
   param_cont$TempC = TempC   #  en degres C
   
   ### --- Options
-  param_cont$acc_after_Lbcont = c("FALSE", NULL) # for control, never acc_after_Lbcont
+  param_cont$acc_after_Lbcont = c("FALSE", NULL, NULL) # for control, never acc_after_Lbcont
   
   
   ### --- Provides E0
@@ -321,7 +321,8 @@ for (f in ftest){
   
   ### --- Add options not true for control
   param_deb$acc_after_Lbcont = c(acc_after_Lbcont, 
-                                 unique(estim_res_cont$Lbcont[estim_res_cont$study2==study2]))
+                                 unique(estim_res_cont$Lbcont[estim_res_cont$study2==study2]),
+                                 unique(estim_res_cont$Ljcont[estim_res_cont$study2==study2]))
   
   
   
@@ -365,6 +366,9 @@ for (f in ftest){
   }
   
   tPARAM[, 2] = (tPARAM[, 2]+1) * iniparam
+  if(MoA=="p_Am"){
+    tPARAM[tPARAM[,2]<0, 2] =0 
+  }
   eval(parse(text= paste("param_deb$", MoA, " = tPARAM[, c(1,2)]", sep="")))
   
   
@@ -379,18 +383,14 @@ for (f in ftest){
   LEHovertime_var$estim_W_var = LEHovertime_var[,"L"]^3 + 
     LEHovertime_var[,"E"] / param_deb$d.E * param_deb$w_E / param_deb$mu.E   # g, wet weight
   
+
   # ---- Calculate tb, tj, Lb, Lj
+  Lbvar = max(LEHovertime_var$Lb)
+  Ljvar = max(LEHovertime_var$Lj)
   tbvar = LEHovertime_var[
-    which(abs(LEHovertime_var[,"H"] - param_deb$E.Hb) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hb))),"dpf"]
-  
+    which(abs(LEHovertime_var[,"L"] - Lbvar) == min(abs(LEHovertime_var[,"L"] - Lbvar))),"dpf"]
   tjvar = LEHovertime_var[
-    which(abs(LEHovertime_var[,"H"] - param_deb$E.Hj) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hj))),"dpf"]
-  
-  Lbvar = LEHovertime_var[
-    which(abs(LEHovertime_var[,"H"] - param_deb$E.Hb) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hb))),"L"]
-  
-  Ljvar = LEHovertime_var[
-    which(abs(LEHovertime_var[,"H"] - param_deb$E.Hj) == min(abs(LEHovertime_var[,"H"] - param_deb$E.Hj))),"L"]
+    which(abs(LEHovertime_var[,"L"] - Ljvar) == min(abs(LEHovertime_var[,"L"] - Ljvar))),"dpf"]
   
   
   

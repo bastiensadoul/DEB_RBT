@@ -40,8 +40,8 @@ sM = "TRUE"
 acc_after_64dpf = "FALSE"
 
 # Initial reserves
-E0_gw124 = 643.5622
-E0_gw150 = 605.2904
+E0_gw124 = 604
+E0_gw150 = 644
 
 
 # --------------------------------------------------------------------------------
@@ -122,7 +122,15 @@ totreal=totreal[which(!is.na(totreal$mean_gwBPA0)),]     # remove those with no 
 totreal$real_diffW = (totreal$gw - totreal$mean_gwBPA0)/totreal$mean_gwBPA0 * 100
 
 
+#### ------------------------------------
+# ---- GET A RE TANK VERSUS MEAN OF THE TANKS
+#### ------------------------------------
 
+mean_diffBPA0 = aggregate(real_diffW ~ study*dpf, data=totreal[totreal$condition=="BPA0",], FUN=mean)
+names(mean_diffBPA0)[3] = "mean_diffBPA0"
+forRE = merge(totreal[totreal$condition=="BPA0",], mean_diffBPA0)
+RE = abs(forRE$mean_diffBPA0 - forRE$real_diffW)/ abs(mean(forRE$real_diffW))
+RE = sum(RE)/ length(RE)
 
 
 # --------------------------------------------------------------------------------
