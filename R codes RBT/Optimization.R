@@ -30,9 +30,15 @@ dt=1
 dpf=seq(0,1069, by=dt)
 
 # Spring and damper parameters
-param_spring_damper = c(ks = 120, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 0.5,
-                        Fpert_BPA30 = 4 , Fpert_BPA300 = 10, Fpert_BPA100 = 5
-                        )
+param_spring_damper = c(ks = 155, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 0.2,
+                        Fpert_BPA30 = 6 , Fpert_BPA300 = 11, Fpert_BPA100 = 7) # good start values for EG
+param_spring_damper = c(ks = 60, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 0.2,
+                        Fpert_BPA30 = 6 , Fpert_BPA300 = 11, Fpert_BPA100 = 7)  # good start values for pM
+param_spring_damper = c(ks = 130, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 0.2,
+                        Fpert_BPA30 = 20 , Fpert_BPA300 = 70, Fpert_BPA100 = 30)  # good start values for pAm
+param_spring_damper = c(ks = 150, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 3,
+                        Fpert_BPA30 = 7 , Fpert_BPA300 = 30, Fpert_BPA100 = 8)  # good start values for v
+# 
 # 
 # param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_2017-11-21.txt", sep=""), sep = "\t", header=T)
 # row.names(param_spring_damper)=substring(row.names(param_spring_damper),5)
@@ -43,7 +49,7 @@ tmin=0
 tmax=0
 
 # Mode of action "p.M", "E.G" or "p_Am"
-MoA = "E.G"
+MoA = "v"
 
 # Shall the recovery time be identical (works only )
 identical_recovery_time = "TRUE"
@@ -471,18 +477,25 @@ LLode <- function(param_spring_damper){
     }
     
     # Multiply/Divise PARAM by coeff
-    eval(parse(text=c("iniparam = param_deb$", MoA)))
-    if(MoA=="p_Am"){
+    
+    if(MoA %in% c("kap_low", "kap_high")){
+      eval(parse(text=c("iniparam = param_deb$", "kap")))
+    } else {eval(parse(text=c("iniparam = param_deb$", MoA)))}
+    
+    if(MoA %in% c("p_Am", "v", "kap_low")){
       tPARAM[, 2] = tPARAM[, 2]/100
       tPARAM[, 2] = -tPARAM[, 2]
-      }
+    }
     
     tPARAM[, 2] = (tPARAM[, 2]+1) * iniparam
-    if(MoA=="p_Am"){
+    if(MoA %in% c("p_Am", "v", "kap_low")){
       tPARAM[tPARAM[,2]<0, 2] =0 
     }
-    eval(parse(text= paste("param_deb$", MoA, " = tPARAM[, c(1,2)]", sep="")))
-
+    
+    if(MoA %in% c("kap_low", "kap_high")){
+      eval(parse(text= paste("param_deb$", "kap", " = tPARAM[, c(1,2)]", sep="")))
+    } else {eval(parse(text= paste("param_deb$", MoA, " = tPARAM[, c(1,2)]", sep="")))}
+    
     
     # ---- ESTIMATED WEIGHT 
     LEHovertime_var = ode(y = LEH, func = debODE_ABJ, times = dpf, 
@@ -543,7 +556,7 @@ LLode <- function(param_spring_damper){
   }
   
   #########################################################################################################
-  ####### ---------  CALCULATES DIFF ESTIMATES AND COMPARE WITH REAL DIFF
+  ####### ---------  CALCULATES DIFF ESTIMATES
   #########################################################################################################
   
   ### ------ MERGE ALL
@@ -569,14 +582,49 @@ LLode <- function(param_spring_damper){
   totfinal$sMcont = totfinal$Ljcont/totfinal$Lbcont
   totfinal$sMvar = totfinal$Ljvar/totfinal$Lbvar
   
-  # Take residuals only after x dpf
-  totfinal = totfinal[totfinal$dpf > 138,]
+  #########################################################################################################
+  ####### ---------  COMPARE ESTIMATED DIFF WITH REAL DIFF
+  #########################################################################################################
   
-  diff=abs(totfinal$real_diffW-totfinal$diff_estimates)/abs(mean(totfinal$real_diffW))
+  # Take only after x dpf
+  fordiff = totfinal[totfinal$dpf > 0,]
+  fordiff=fordiff[fordiff$condition!="BPA0",]
+  fordiff=fordiff[which(!(fordiff$dpf %in% c(616.5, 784.5, 958.5))),]
+  
+  
+  ############# MRE
+  
+  # calcRE = function(x){
+  #   # x=fordiff[fordiff$condition_estim=="gw124_BPA100",]
+  #   meandi = abs(mean(x$real_diffW))
+  #   RE=sum(abs(x$diff_estimates - x$real_diffW)/meandi)
+  #   return(RE)
+  # }
+  
+  calcRE = function(x){
+    # x=fordiff[fordiff$condition_estim=="gw124_BPA100",]
+    meandi = abs(mean(x$real_diffW))
+    diffdipi = abs(x$diff_estimates - x$real_diffW)
+    ldi = length(x$real_diffW)
+    RE=sum(diffdipi/meandi)/ldi
+    return(RE)
+  }
+  
+  fordiff2=by(fordiff, list(fordiff$variable), FUN=calcRE)
+  
+  MRE =  sum(fordiff2)/length(fordiff2)
+  
+  
+  ############# OPTIMISATION (LL=MRE or LL is calculated differently)
+  
+  # LL=MRE
+  
+  
+  diff=abs(fordiff$real_diffW-fordiff$diff_estimates)
   diff = diff[!is.na(diff)]
-  
   LL =  as.numeric(t(diff) %*% diff)
-  # LL =  sum(diff)/length(diff)
+
+  
  return(LL)
 }
 
@@ -614,6 +662,8 @@ totreal = tot
 untrace(LLode)
 
 write.table(unlist(MLresults), paste(dir, "/results_optim/result_optim_", MoA, "_", format(Sys.time(), "%d-%b-%Y %H.%M"), ".txt", sep=""), sep = "\t")
+
+print(format(Sys.time(), "%d-%b-%Y %H.%M"))
 
 ########## ALARM WHEN DONE
 

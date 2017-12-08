@@ -39,6 +39,9 @@ sM = "TRUE"
 # TRUE if acceleration only after f=1 (pM = Lj/Lb after t=64dpf)
 acc_after_64dpf = "FALSE"
 
+# Shall the acceleration start when Lb reached
+acc_after_Lbcont = "FALSE"
+
 # Initial reserves
 E0_gw124 = 604
 E0_gw150 = 644
@@ -122,15 +125,6 @@ totreal=totreal[which(!is.na(totreal$mean_gwBPA0)),]     # remove those with no 
 totreal$real_diffW = (totreal$gw - totreal$mean_gwBPA0)/totreal$mean_gwBPA0 * 100
 
 
-#### ------------------------------------
-# ---- GET A RE TANK VERSUS MEAN OF THE TANKS
-#### ------------------------------------
-
-mean_diffBPA0 = aggregate(real_diffW ~ study*dpf, data=totreal[totreal$condition=="BPA0",], FUN=mean)
-names(mean_diffBPA0)[3] = "mean_diffBPA0"
-forRE = merge(totreal[totreal$condition=="BPA0",], mean_diffBPA0)
-RE = abs(forRE$mean_diffBPA0 - forRE$real_diffW)/ abs(mean(forRE$real_diffW))
-RE = sum(RE)/ length(RE)
 
 
 # --------------------------------------------------------------------------------
@@ -296,6 +290,58 @@ for (repstudy in unique(totreal$study2)) {
 
 
 
+# --------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------
+##################################################################################
+####### ---------   RELATIVE ERRORS
+##################################################################################
+# --------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------
+
+
+#### ------------------------------------
+# ---- GET A RE FOR ESTIMATES
+#### ------------------------------------
+
+# Take only after x dpf
+fordiff = merge(totreal[totreal$condition == "BPA0",], estim_res_cont)
+fordiff=fordiff[which(!(fordiff$dpf %in% c(616.5, 784.5, 958.5))),]
+
+calcRE = function(x){
+  # x=fordiff[fordiff$variable=="gw150A",]
+  meandi = mean(x$gw)
+  diffdipi = abs(x$gw - x$estim_W_cont)
+  ldi=length(x$gw)
+  RE=sum(diffdipi/meandi)/ldi
+  # RE=sqrt(RE)
+  # RE=RE/(1-RE)
+  return(RE)
+}
+
+fordiff=by(fordiff, list(fordiff$variable), FUN=calcRE)
+fordiff
+
+#### ------------------------------------
+# ---- GET A RE TANK VERSUS MEAN OF THE TANKS
+#### ------------------------------------
+
+fordiff = merge(totreal[totreal$condition == "BPA0",], estim_res_cont)
+fordiff=fordiff[which(!(fordiff$dpf %in% c(616.5, 784.5, 958.5))),]
+mean_gw = aggregate(gw ~ study*dpf, data=fordiff, FUN=mean)
+names(mean_gw)[3]="meangw"
+fordiff=merge(fordiff, mean_gw)
+
+calcRE = function(x){
+  # x=fordiff[fordiff$variable=="gw150A",]
+  meandi = mean(x$gw)
+  diffdipi = abs(x$gw - x$mean_gw)
+  ldi=length(x$gw)
+  RE=sum(diffdipi/meandi)/ldi
+  return(RE)
+}
+
+fordiff=by(fordiff, list(fordiff$variable), FUN=calcRE)
+fordiff
 
 
 
@@ -329,7 +375,7 @@ temp = temp[which(temp$condition == "BPA0"),]
 tempestim = estim_res_cont[estim_res_cont$study2 == studytoplot,]
 
 p = ggplot(temp, aes(x=dpf, y=gw)) +
-  stat_summary(fun.y = mean, geom = "point", size=5, alpha=0.6) + 
+  stat_summary(fun.y = mean, geom = "point", size=2, alpha=0.6) + 
   stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
   stat_summary(fun.data = mean_cl_normal, fun.args=list(mult=1), alpha=0.6)+
   geom_line(data=tempestim ,
@@ -365,7 +411,7 @@ tempestim = estim_res_cont[estim_res_cont$study2 == studytoplot,]
 tempestim = tempestim[tempestim$dpf<=max(temp$dpf),]
 
 p2 = ggplot(temp, aes(x=dpf, y=gw)) +
-  stat_summary(fun.y = mean, geom = "point", size=5, alpha=0.6) + 
+  stat_summary(fun.y = mean, geom = "point", size=2, alpha=0.6) + 
   stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
   stat_summary(fun.data = mean_cl_normal, fun.args=list(mult=1), alpha=0.6)+
   geom_line(data=tempestim ,
@@ -422,7 +468,7 @@ tempestim = estim_res_cont[estim_res_cont$study2 == substr(studytoplot, 1,5),]
 tempestim = tempestim[tempestim$dpf<=max(temp$dpf),]
 
 p = ggplot(temp, aes(x=dpf, y=gw)) +
-  stat_summary(fun.y = mean, geom = "point", size=5, alpha=0.6) + 
+  stat_summary(fun.y = mean, geom = "point", size=2, alpha=0.6) + 
   stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
   stat_summary(fun.data = mean_cl_normal, fun.args=list(mult=1), alpha=0.6)+
   geom_line(data=tempestim ,
@@ -457,7 +503,7 @@ tempestim = estim_res_cont[estim_res_cont$study2 == substr(studytoplot, 1,5),]
 tempestim = tempestim[tempestim$dpf>=min(temp$dpf),]
 
 p2 = ggplot(temp, aes(x=dpf, y=gw)) +
-  stat_summary(fun.y = mean, geom = "point", size=5, alpha=0.6) + 
+  stat_summary(fun.y = mean, geom = "point", size=2, alpha=0.6) + 
   stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
   stat_summary(fun.data = mean_cl_normal, fun.args=list(mult=1), alpha=0.6)+
   geom_line(data=tempestim ,
@@ -492,7 +538,7 @@ tempestim = estim_res_cont[estim_res_cont$study2 == studytoplot,]
 tempestim = tempestim[tempestim$dpf<=max(temp$dpf),]
 
 p3 = ggplot(temp, aes(x=dpf, y=gw)) +
-  stat_summary(fun.y = mean, geom = "point", size=5, alpha=0.6) + 
+  stat_summary(fun.y = mean, geom = "point", size=2, alpha=0.6) + 
   stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
   stat_summary(fun.data = mean_cl_normal, fun.args=list(mult=1), alpha=0.6)+
   geom_line(data=tempestim ,
@@ -518,7 +564,7 @@ p3 = ggplot(temp, aes(x=dpf, y=gw)) +
 p3
 
 p <- arrangeGrob(p, top = textGrob("a", x = unit(0.1, "npc")
-                                   , y   = unit(0.8, "npc"), just=c("left","top"),
+                                   , y   = unit(.8, "npc"), just=c("left","top"),
                                    gp=gpar(col="black", fontsize=30, fontfamily="Times Roman")))
 p2 <- arrangeGrob(p2, top = textGrob("b", x = unit(0.1, "npc")
                                      , y   = unit(.8, "npc"), just=c("left","top"),

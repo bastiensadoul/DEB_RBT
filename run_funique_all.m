@@ -61,6 +61,7 @@ newAuxData.pMoA = 'control'; % choose physiological mode of action
         
         if estim
         [newPar, info, nsteps] = petregr_f('predict_tW', par, newData, newAuxData, newWeights, filterNm); % WLS estimate parameters using overwrite
+        [merr, rerr, prdInfo] = mre_st('predict_tW', newPar, newData, newAuxData, newWeights);
         else
         newPar = par;
         end

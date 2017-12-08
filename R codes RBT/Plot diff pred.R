@@ -33,20 +33,29 @@ dpf=seq(0,1069, by=dt)
 # Spring and damper parameters
 
 #param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_p.M_23-nov.-2017 17.27.txt", sep=""), sep = "\t", header=T)
-param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_04-déc.-2017 18.41.txt", sep=""), sep = "\t", header=T)
+# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_05-déc.-2017 16.51.txt", sep=""), sep = "\t", header=T)
+# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_22-nov.-2017 19.47.txt", sep=""), sep = "\t", header=T)
+# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_p.M_07-déc.-2017 14.57.txt", sep=""), sep = "\t", header=T)
+# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_07-déc.-2017 11.51.txt", sep=""), sep = "\t", header=T)
+# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_p_Am_08-déc.-2017 15.02.txt", sep=""), sep = "\t", header=T)
+param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_v_08-déc.-2017 17.28.txt", sep=""), sep = "\t", header=T)
 
-#param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_22-nov.-2017 19.47.txt", sep=""), sep = "\t", header=T)
+
 row.names(param_spring_damper)=substring(row.names(param_spring_damper),5)
 param_spring_damper = as.data.frame(t(param_spring_damper))[,c(1:length(t(param_spring_damper)))]
 param_spring_damper = unlist(param_spring_damper)
 
-# param_spring_damper["Fpert_BPA300"] = 10
+# param_spring_damper = c(ks = 120, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 3,
+#                         Fpert_BPA30 = 7 , Fpert_BPA300 = 30, Fpert_BPA100 = 8
+# )
+
+# param_spring_damper["Fpert_BPA300"] = 9
 
 tmin=0
 tmax=0
 
-# Mode of action "p.M", "E.G" or "p_Am"
-MoA = "E.G"
+# Mode of action "p.M", "E.G", "p_Am", "v", "kap_low", "kap_high"
+MoA = "v"
 
 # Shall the recovery time be identical (works only )
 identical_recovery_time = "TRUE"
@@ -461,18 +470,27 @@ for (condition_estim in toestim){
   if (function_var == "decreasing_logistic") {tPARAM[, 2] = stress[, 2]*Fpert
   }
   
-  # Multiply/Divise stress by coeff
-  eval(parse(text=c("iniparam = param_deb$", MoA)))
-  if(MoA=="p_Am"){
-    stress[, 2] = stress[, 2]/100
-    stress[, 2] = -stress[, 2]
+  # Multiply/Divise PARAM by coeff
+  
+  if(MoA %in% c("kap_low", "kap_high")){
+    eval(parse(text=c("iniparam = param_deb$", "kap")))
+  } else {eval(parse(text=c("iniparam = param_deb$", MoA)))}
+
+  if(MoA %in% c("p_Am", "v", "kap_low")){
+    tPARAM[, 2] = tPARAM[, 2]/100
+    tPARAM[, 2] = -tPARAM[, 2]
   }
   
-  tPARAM[, 2] = (stress[, 2]+1) * iniparam
-  if(MoA=="p_Am"){
+  tPARAM[, 2] = (tPARAM[, 2]+1) * iniparam
+  if(MoA %in% c("p_Am", "v", "kap_low")){
     tPARAM[tPARAM[,2]<0, 2] =0 
   }
-  eval(parse(text= paste("param_deb$", MoA, " = tPARAM[, c(1,2)]", sep="")))
+  
+  if(MoA %in% c("kap_low", "kap_high")){
+    eval(parse(text= paste("param_deb$", "kap", " = tPARAM[, c(1,2)]", sep="")))
+  } else {eval(parse(text= paste("param_deb$", MoA, " = tPARAM[, c(1,2)]", sep="")))}
+  
+  
   
   
   # ---- ESTIMATED WEIGHT 
@@ -532,7 +550,7 @@ for (condition_estim in toestim){
 }
 
 #########################################################################################################
-####### ---------  CALCULATES DIFF ESTIMATES AND COMPARE WITH REAL DIFF
+####### ---------  CALCULATES DIFF ESTIMATES
 #########################################################################################################
 
 ### ------ MERGE ALL
@@ -558,26 +576,52 @@ totfinal = merge(tot, estim_res,
 totfinal$sMcont = totfinal$Ljcont/totfinal$Lbcont
 totfinal$sMvar = totfinal$Ljvar/totfinal$Lbvar
 
-# # Diff before tj
-# totfinal = totfinal[totfinal$dpf > totfinal$tjvar,]
+#########################################################################################################
+####### ---------  COMPARE ESTIMATED DIFF WITH REAL DIFF
+#########################################################################################################
 
-fordiff=totfinal[totfinal$condition!="BPA0",]
-fordiff=fordiff[which(!fordiff$dpf %in% c(784.5, 958.5, 616.5)),]
-#fordiff=fordiff[fordiff$dpf!=64,]
-diff=fordiff$real_diffW-fordiff$diff_estimates
-#diff = diff[!is.na(diff)]
+# Take only after x dpf
+fordiff = totfinal[totfinal$dpf > 138,]
+fordiff=fordiff[fordiff$condition!="BPA0",]
+fordiff=fordiff[which(!(fordiff$dpf %in% c(616.5, 784.5, 958.5))),]
 
+
+############# MRE
+
+# calcRE = function(x){
+#   # x=fordiff[fordiff$condition_estim=="gw124_BPA100",]
+#   meandi = abs(mean(x$real_diffW))
+#   RE=sum(abs(x$diff_estimates - x$real_diffW)/meandi)
+#   return(RE)
+# }
+
+calcRE = function(x){
+  # x=fordiff[fordiff$condition_estim=="gw124_BPA100",]
+  meandi = abs(mean(x$real_diffW))
+  diffdipi = abs(x$diff_estimates - x$real_diffW)
+  ldi = length(x$real_diffW)
+  RE=sum(diffdipi/meandi)/ldi
+  return(RE)
+}
+
+fordiff2=by(fordiff, list(fordiff$variable), FUN=calcRE)
+
+MRE =  sum(fordiff2)/length(fordiff2)
+
+
+############# OPTIMISATION (LL=MRE or LL is calculated differently)
+
+# LL=MRE
+
+
+diff=abs(fordiff$real_diffW-fordiff$diff_estimates)
+diff = diff[!is.na(diff)]
 LL =  as.numeric(t(diff) %*% diff)
 
 
-plot(fordiff$dpf, diff)
 
-#########################################################################################################
-####### ---------  CALCULATE RE
-#########################################################################################################
 
-LL           # Sum of square difference between real diff and estimated diff
-# as.numeric(t(diff[-c(1:20)]) %*% diff[-c(1:20)])
+
 
 
 #########################################################################################################
@@ -589,6 +633,11 @@ LL           # Sum of square difference between real diff and estimated diff
 eval(parse(text = paste("estim_param_var$MoA = estim_param_var$", MoA, sep="")))
 
 maxMoA = aggregate(MoA~condition, data=estim_param_var, FUN=max)
+
+if(MoA %in% c("v", "p_Am", "kap")){
+  maxMoA = aggregate(MoA~condition, data=estim_param_var, FUN=min)
+}
+
 maxMoA=rbind(maxMoA, c(condition="BPA0", MoA=iniparam))
 
 maxMoA$MoA=as.numeric(maxMoA$MoA)
@@ -681,8 +730,9 @@ p_gw150 = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
 
 p_gw150_2 = ggplot(data=tempparam, aes(x=time, y=var, col=condition))+
   geom_line(size=1.5)+
-  # labs(x="Days post fertilization", y=bquote(.(MoA)*' (KJ.'*~cm^-3*')')) +
-  labs(x="Days post fertilization", y=bquote(E[G]*' (KJ.'*~cm^-3*')')) +
+  # labs(x="BPA treatment (ng/L)", y=bquote(.(MoA)*' (KJ.'*~cm^-3*')')) +
+  #labs(x="BPA treatment (ng/L)", y=bquote(E[G]*' (KJ.'*~cm^-3*')')) +
+  labs(x="BPA treatment (ng/L)", y=bquote(v *' (cm.'*d^-1*')')) +
   expand_limits(x=c(0, 1100),y=c(0,max(estim_param_var$E.G)))+
   scale_fill_manual(labels=labvec[-1],
                     values=colvec[-1])+
@@ -701,7 +751,8 @@ p_gw150_2 = ggplot(data=tempparam, aes(x=time, y=var, col=condition))+
 
 # plot_grid(p_gw150, p_gw150_2, nrow=2, rel_heights = c(1/2, 1/3))
 
-
+# labvec = NA
+# colvec=NA
 
 # ------------------------------------------------------------- PLOT Diff pred gw124
 
@@ -770,7 +821,9 @@ p_gw124 = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
 
 p_gw124_2 = ggplot(data=tempparam, aes(x=time, y=var, col=condition))+
   geom_line(size=1.5)+
-  labs(x="Days post fertilization", y=bquote(E[G]*' (KJ.'*~cm^-3*')')) +
+  # labs(x="BPA treatment (ng/L)", y=bquote(.(MoA)*' (KJ.'*~cm^-3*')')) +
+  #labs(x="BPA treatment (ng/L)", y=bquote(E[G]*' (KJ.'*~cm^-3*')')) +
+  labs(x="BPA treatment (ng/L)", y=bquote(v *' (cm.'*d^-1*')')) +
   expand_limits(x=c(0, 1100),y=c(0,max(estim_param_var$E.G)))+
   scale_fill_manual(labels=labvec[-1],
                     values=colvec[-1])+
@@ -816,17 +869,20 @@ plot_grid(p_gw124,p_gw150, p_gw124_2, p_gw150_2, nrow=2, ncol=2, rel_heights = c
 
 # ------------------------------------------------------------- PLOT Fpert Concentration
 
-maxMoA$MoA = maxMoA$MoA/1000
+if (MoA == "E.G"){maxMoA$MoA = maxMoA$MoA/1000}
 Fpert = ggplot(data=maxMoA, aes(x=concentration, y=MoA))+
   geom_point(aes(colour=forcol), size=5, alpha=0.6)+ 
   # labs(x="BPA treatment (ng/L)", y=bquote(.(MoA)*' (KJ.'*~cm^-3*')')) +
-  labs(x="BPA treatment (ng/L)", y=bquote(E[G]*' (KJ.'*~cm^-3*') at t = 0 dpf')) +
+  #labs(x="BPA treatment (ng/L)", y=bquote(E[G]*' (KJ.'*~cm^-3*') at t = 0 dpf')) +
+  labs(x="BPA treatment (ng/L)", y=bquote(v *' (cm.'*d^-1*') at t = 0 dpf')) +
   expand_limits(x=c(0, 300),y=c(0,max(maxMoA$MoA)))+
   geom_smooth(aes(x=concentration, y=MoA),
               method="nls", 
               col="black",
-              formula=y~a+Vmax*(1-exp(-x*tau)),
-              method.args = list(start=c(a=0,tau=0.05,Vmax=50)),
+              # formula=y~a+Vmax*(1-exp(-x*tau)),
+              formula=y~a-x*tau,
+              # method.args = list(start=c(a=0,tau=0.05,Vmax=50)),
+              method.args = list(start=c(a=0,tau=0.0001)),
               se=FALSE, fullrange=T)+
   scale_fill_manual(labels=labvec,
                     values=colvec)+
@@ -841,11 +897,11 @@ Fpert = ggplot(data=maxMoA, aes(x=concentration, y=MoA))+
         plot.margin = unit(c(0,3.5,0.5,0.5), "cm"),
         legend.position="none"
   )
-Fpert
+# Fpert
 
 
-#jpeg(paste(dir, "/Figures/EGvsConc.jpg", sep=""), res=600, width=16, height=10, units="cm")
-Fpert
+#jpeg(paste(dir, "/Figures/vvsConc.jpg", sep=""), res=600, width=16, height=10, units="cm")
+# Fpert
 #dev.off()
 
 
@@ -893,21 +949,21 @@ Fpert
 #         plot.margin = unit(c(0.5,0.5,0.5,1), "cm")
 #   )
 # 
-# pL = ggplot(data=temp,
-#             aes(x=dpf, y=diff_L_estimates, colour=condition)) +
-#   geom_line(size=2, alpha=1)+
-#   expand_limits(x=c(0, 1100),y=c(-30,30))+
-#   labs(x="Days post fertilization", y=expression("Struct. L difference \n to control (%)")) + 
-#   theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
-#         axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
-#         legend.text = element_text(size=16), legend.title = element_text(size=16),
-#         panel.grid.minor = element_blank(),
-#         panel.grid.major = element_blank(),
-#         panel.background=element_rect("grey", fill="white", size=1),
-#         plot.margin = unit(c(0.5,0.5,0.5,1), "cm")
-#   )
-# 
-# plot_grid(pW, pL, pE, nrow=3)
+pL = ggplot(data=temp,
+            aes(x=dpf, y=diff_L_estimates, colour=condition)) +
+  geom_line(size=2, alpha=1)+
+  expand_limits(x=c(0, 1100),y=c(-30,30))+
+  labs(x="Days post fertilization", y=expression("Struct. L difference \n to control (%)")) +
+  theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
+        axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
+        legend.text = element_text(size=16), legend.title = element_text(size=16),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.background=element_rect("grey", fill="white", size=1),
+        plot.margin = unit(c(0.5,0.5,0.5,1), "cm")
+  )
+
+plot_grid(pW, pL, pE, nrow=3)
 
 
 
