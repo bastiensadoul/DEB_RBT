@@ -36,9 +36,9 @@ dpf=seq(0,1069, by=dt)
 # param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_05-déc.-2017 16.51.txt", sep=""), sep = "\t", header=T)
 # param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_22-nov.-2017 19.47.txt", sep=""), sep = "\t", header=T)
 # param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_p.M_07-déc.-2017 14.57.txt", sep=""), sep = "\t", header=T)
-# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_07-déc.-2017 11.51.txt", sep=""), sep = "\t", header=T)
+ param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_07-déc.-2017 11.51.txt", sep=""), sep = "\t", header=T)
 # param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_p_Am_08-déc.-2017 15.02.txt", sep=""), sep = "\t", header=T)
-param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_v_08-déc.-2017 17.28.txt", sep=""), sep = "\t", header=T)
+# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_v_08-déc.-2017 17.28.txt", sep=""), sep = "\t", header=T)
 
 
 row.names(param_spring_damper)=substring(row.names(param_spring_damper),5)
@@ -55,7 +55,7 @@ tmin=0
 tmax=0
 
 # Mode of action "p.M", "E.G", "p_Am", "v", "kap_low", "kap_high"
-MoA = "v"
+MoA = "E.G"
 
 # Shall the recovery time be identical (works only )
 identical_recovery_time = "TRUE"
@@ -666,11 +666,17 @@ sM_table = sM_table[order(sM_table$study2, sM_table$condition),]
 sM_table = sM_table[c(1,3,4,2,5,6,7),]
 t(sM_table)
 
+
+#----------------------  Parameters of the perturbation table
+para_pert = data.frame(concentration=c(0.3,3,30,300,100,0),
+                      pert=c(param_spring_damper[2:6],0))
+para_pert$forcol = maxMoA$forcol
+
 #########################################################################################################
 ####### ---------  PLOTS
 #########################################################################################################
 
-if (MoA=="E.G"){
+if (MoA %in% c("E.G", "p.M")){
   estim_param_var[,2] = estim_param_var[,2]/1000
 }
 
@@ -731,8 +737,11 @@ p_gw150 = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
 p_gw150_2 = ggplot(data=tempparam, aes(x=time, y=var, col=condition))+
   geom_line(size=1.5)+
   # labs(x="BPA treatment (ng/L)", y=bquote(.(MoA)*' (KJ.'*~cm^-3*')')) +
-  #labs(x="BPA treatment (ng/L)", y=bquote(E[G]*' (KJ.'*~cm^-3*')')) +
-  labs(x="BPA treatment (ng/L)", y=bquote(v *' (cm.'*d^-1*')')) +
+  labs(x="BPA treatment (ng/L)", y=bquote('['*E[G]*'] (KJ.'*~cm^-3*')')) +
+  # labs(x="BPA treatment (ng/L)", y=bquote(dot(v) *' (cm.'*d^-1*')')) +
+  #labs(x="BPA treatment (ng/L)", y=bquote('['*dot(p)[M]*'] (KJ.'*cm^-3*'.'*d^-1*')')) +
+  #labs(x="BPA treatment (ng/L)", y=bquote('{'*dot(p)[Am]*'} (J.'*cm^-2*'.'*d^-1*')')) +
+  
   expand_limits(x=c(0, 1100),y=c(0,max(estim_param_var$E.G)))+
   scale_fill_manual(labels=labvec[-1],
                     values=colvec[-1])+
@@ -822,8 +831,10 @@ p_gw124 = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
 p_gw124_2 = ggplot(data=tempparam, aes(x=time, y=var, col=condition))+
   geom_line(size=1.5)+
   # labs(x="BPA treatment (ng/L)", y=bquote(.(MoA)*' (KJ.'*~cm^-3*')')) +
-  #labs(x="BPA treatment (ng/L)", y=bquote(E[G]*' (KJ.'*~cm^-3*')')) +
-  labs(x="BPA treatment (ng/L)", y=bquote(v *' (cm.'*d^-1*')')) +
+  labs(x="BPA treatment (ng/L)", y=bquote('['*E[G]*'] (KJ.'*~cm^-3*')')) +
+  #labs(x="BPA treatment (ng/L)", y=bquote(dot(v) *' (cm.'*d^-1*')')) +
+  #labs(x="BPA treatment (ng/L)", y=bquote('['*dot(p)[M]*'] (KJ.'*cm^-3*'.'*d^-1*')')) +
+  #labs(x="BPA treatment (ng/L)", y=bquote('{'*dot(p)[Am]*'} (J.'*cm^-2*'.'*d^-1*')')) +
   expand_limits(x=c(0, 1100),y=c(0,max(estim_param_var$E.G)))+
   scale_fill_manual(labels=labvec[-1],
                     values=colvec[-1])+
@@ -904,6 +915,78 @@ Fpert = ggplot(data=maxMoA, aes(x=concentration, y=MoA))+
 # Fpert
 #dev.off()
 
+
+
+para_pert$logpert=log(para_pert$pert+1)
+# para_pert[para_pert$concentration=="0.3", "logpert"]=0
+Fpertsini = ggplot(data=para_pert, aes(x=concentration, y=logpert))+
+  geom_point(aes(colour=forcol), size=5, alpha=0.6)+ 
+  # labs(x="BPA treatment (ng/L)", y=bquote(.(MoA)*' (KJ.'*~cm^-3*')')) +
+  #labs(x="BPA treatment (ng/L)", y=bquote(E[G]*' (KJ.'*~cm^-3*') at t = 0 dpf')) +
+  labs(x="BPA treatment (ng/L)", y=bquote('log('*s[ini] *')')) +
+  expand_limits(x=c(0, 300),y=c(0,max(para_pert$logpert)))+
+  geom_smooth(aes(x=concentration, y=logpert),
+              method="nls",
+              col="black",
+              formula=y~Vmax*(1-exp(-x*tau)),
+              # formula=y~a-x*tau,
+              method.args = list(start=c(Vmax=4, tau=0.05)),
+              # method.args = list(start=c(a=0,tau=0.0001)),
+              se=FALSE, fullrange=T)+
+  scale_fill_manual(labels=labvec,
+                    values=colvec)+
+  scale_color_manual(labels=labvec,
+                     values=colvec)+
+  theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
+        axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
+        legend.text = element_text(size=16), legend.title = element_text(size=16),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.background=element_rect("grey", fill="white", size=1),
+        plot.margin = unit(c(0,3.5,0.5,0.5), "cm"),
+        legend.position="none"
+  )
+# Fpertsini
+
+
+# jpeg(paste(dir, "/Figures/sini for v.jpg", sep=""), res=600, width=16, height=10, units="cm")
+# Fpertsini
+# dev.off()
+
+
+Fpertsini = ggplot(data=para_pert, aes(x=concentration, y=pert))+
+  geom_point(aes(colour=forcol), size=5, alpha=0.6)+ 
+  # labs(x="BPA treatment (ng/L)", y=bquote(.(MoA)*' (KJ.'*~cm^-3*')')) +
+  #labs(x="BPA treatment (ng/L)", y=bquote(E[G]*' (KJ.'*~cm^-3*') at t = 0 dpf')) +
+  labs(x="BPA treatment (ng/L)", y=bquote(s[ini])) +
+  expand_limits(x=c(0, 300),y=c(0,max(para_pert$pert)))+
+  geom_smooth(aes(x=concentration, y=pert),
+              method="nls",
+              col="black",
+              # formula=y~Vmax*(1-exp(-x*tau)),
+              formula=y~0-x*tau,
+              # method.args = list(start=c(Vmax=4, tau=0.05)),
+              method.args = list(start=c(tau=0.0001)),
+              se=FALSE, fullrange=T)+
+  scale_fill_manual(labels=labvec,
+                    values=colvec)+
+  scale_color_manual(labels=labvec,
+                     values=colvec)+
+  theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
+        axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
+        legend.text = element_text(size=16), legend.title = element_text(size=16),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.background=element_rect("grey", fill="white", size=1),
+        plot.margin = unit(c(0,3.5,0.5,0.5), "cm"),
+        legend.position="none"
+  )
+# Fpertsini
+
+
+# jpeg(paste(dir, "/Figures/sini for v.jpg", sep=""), res=600, width=16, height=10, units="cm")
+# Fpertsini
+# dev.off()
 
 
 

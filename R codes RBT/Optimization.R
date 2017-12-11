@@ -48,8 +48,8 @@ param_spring_damper = c(ks = 150, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 3,
 tmin=0
 tmax=0
 
-# Mode of action "p.M", "E.G" or "p_Am"
-MoA = "v"
+# Mode of action "p.M", "E.G", "p_Am", "v", "kap_low" or "kap_high"
+MoA = "kap_low"
 
 # Shall the recovery time be identical (works only )
 identical_recovery_time = "TRUE"
