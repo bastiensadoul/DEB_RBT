@@ -38,6 +38,8 @@ param_spring_damper = c(ks = 130, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 0.2,
                         Fpert_BPA30 = 20 , Fpert_BPA300 = 70, Fpert_BPA100 = 30)  # good start values for pAm
 param_spring_damper = c(ks = 150, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 3,
                         Fpert_BPA30 = 7 , Fpert_BPA300 = 30, Fpert_BPA100 = 8)  # good start values for v
+param_spring_damper = c(ks = 80, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 0.1,
+                        Fpert_BPA30 = 0.2 , Fpert_BPA300 = 0.5, Fpert_BPA100 = 0.2) # good start values for kap_high
 # 
 # 
 # param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_2017-11-21.txt", sep=""), sep = "\t", header=T)
@@ -49,7 +51,7 @@ tmin=0
 tmax=0
 
 # Mode of action "p.M", "E.G", "p_Am", "v", "kap_low" or "kap_high"
-MoA = "kap_low"
+MoA = "kap_high"
 
 # Shall the recovery time be identical (works only )
 identical_recovery_time = "TRUE"

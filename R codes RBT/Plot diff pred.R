@@ -36,18 +36,20 @@ dpf=seq(0,1069, by=dt)
 # param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_05-déc.-2017 16.51.txt", sep=""), sep = "\t", header=T)
 # param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_22-nov.-2017 19.47.txt", sep=""), sep = "\t", header=T)
 # param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_p.M_07-déc.-2017 14.57.txt", sep=""), sep = "\t", header=T)
- param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_07-déc.-2017 11.51.txt", sep=""), sep = "\t", header=T)
+# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_07-déc.-2017 11.51.txt", sep=""), sep = "\t", header=T)
 # param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_p_Am_08-déc.-2017 15.02.txt", sep=""), sep = "\t", header=T)
 # param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_v_08-déc.-2017 17.28.txt", sep=""), sep = "\t", header=T)
+param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_kap_low_11-déc.-2017 21.08.txt", sep=""), sep = "\t", header=T)
+param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_kap_high_12-déc.-2017 13.12.txt", sep=""), sep = "\t", header=T)
 
 
 row.names(param_spring_damper)=substring(row.names(param_spring_damper),5)
 param_spring_damper = as.data.frame(t(param_spring_damper))[,c(1:length(t(param_spring_damper)))]
 param_spring_damper = unlist(param_spring_damper)
 
-# param_spring_damper = c(ks = 120, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 3,
-#                         Fpert_BPA30 = 7 , Fpert_BPA300 = 30, Fpert_BPA100 = 8
-# )
+param_spring_damper = c(ks = 80, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 0.1,
+                        Fpert_BPA30 = 0.2 , Fpert_BPA300 = 0.5, Fpert_BPA100 = 0.2)
+
 
 # param_spring_damper["Fpert_BPA300"] = 9
 
@@ -55,7 +57,7 @@ tmin=0
 tmax=0
 
 # Mode of action "p.M", "E.G", "p_Am", "v", "kap_low", "kap_high"
-MoA = "E.G"
+MoA = "kap_high"
 
 # Shall the recovery time be identical (works only )
 identical_recovery_time = "TRUE"
@@ -737,10 +739,11 @@ p_gw150 = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
 p_gw150_2 = ggplot(data=tempparam, aes(x=time, y=var, col=condition))+
   geom_line(size=1.5)+
   # labs(x="BPA treatment (ng/L)", y=bquote(.(MoA)*' (KJ.'*~cm^-3*')')) +
-  labs(x="BPA treatment (ng/L)", y=bquote('['*E[G]*'] (KJ.'*~cm^-3*')')) +
-  # labs(x="BPA treatment (ng/L)", y=bquote(dot(v) *' (cm.'*d^-1*')')) +
+  #labs(x="BPA treatment (ng/L)", y=bquote('['*E[G]*'] (KJ.'*~cm^-3*')')) +
+  #labs(x="BPA treatment (ng/L)", y=bquote(dot(v) *' (cm.'*d^-1*')')) +
   #labs(x="BPA treatment (ng/L)", y=bquote('['*dot(p)[M]*'] (KJ.'*cm^-3*'.'*d^-1*')')) +
   #labs(x="BPA treatment (ng/L)", y=bquote('{'*dot(p)[Am]*'} (J.'*cm^-2*'.'*d^-1*')')) +
+  labs(x="BPA treatment (ng/L)", y=bquote(kappa)) +
   
   expand_limits(x=c(0, 1100),y=c(0,max(estim_param_var$E.G)))+
   scale_fill_manual(labels=labvec[-1],
@@ -831,10 +834,11 @@ p_gw124 = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
 p_gw124_2 = ggplot(data=tempparam, aes(x=time, y=var, col=condition))+
   geom_line(size=1.5)+
   # labs(x="BPA treatment (ng/L)", y=bquote(.(MoA)*' (KJ.'*~cm^-3*')')) +
-  labs(x="BPA treatment (ng/L)", y=bquote('['*E[G]*'] (KJ.'*~cm^-3*')')) +
+  #labs(x="BPA treatment (ng/L)", y=bquote('['*E[G]*'] (KJ.'*~cm^-3*')')) +
   #labs(x="BPA treatment (ng/L)", y=bquote(dot(v) *' (cm.'*d^-1*')')) +
   #labs(x="BPA treatment (ng/L)", y=bquote('['*dot(p)[M]*'] (KJ.'*cm^-3*'.'*d^-1*')')) +
   #labs(x="BPA treatment (ng/L)", y=bquote('{'*dot(p)[Am]*'} (J.'*cm^-2*'.'*d^-1*')')) +
+  labs(x="BPA treatment (ng/L)", y=bquote(kappa)) +
   expand_limits(x=c(0, 1100),y=c(0,max(estim_param_var$E.G)))+
   scale_fill_manual(labels=labvec[-1],
                     values=colvec[-1])+
