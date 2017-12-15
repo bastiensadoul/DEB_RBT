@@ -61,6 +61,7 @@ newAuxData.pMoA = 'control'; % choose physiological mode of action
         
         if estim
         [newPar, info, nsteps] = petregr_f('predict_tW', par, newData, newAuxData, newWeights, filterNm); % WLS estimate parameters using overwrite
+        [merr, rerr, prdInfo] = mre_st('predict_tW', newPar, newData, newAuxData, newWeights);
         else
         newPar = par;
         end
@@ -74,6 +75,7 @@ newAuxData.pMoA = 'control'; % choose physiological mode of action
         prdData.(nm{j})(:,3) = newData.tW(:,2);
 
         fprintf(['f for ',nm{j},' is: %2.3f \n'],newPar.f);
+        fprintf(['RE for ',nm{j},' is: %2.3f \n'],rerr);
 
         figure()
         plot(newData.tW(:,1), prdData.(nm{j})(:,2), 'r', 'linewidth',2); hold on;
@@ -83,12 +85,13 @@ newAuxData.pMoA = 'control'; % choose physiological mode of action
         set(gca,'Fontsize',12); 
         
         f.(nm{j})=newPar.f;
+        RE.(nm{j})= rerr;
 
     end
 
         save('prdData_funique_all', 'prdData');       
         save('f_prdData_funique_all', 'f');
-
+        save('RE_prdData_funique_all', 'RE');
         
  % Relative difference between data and model as function of time
  % red: 150, cyan 124, dashed lines are exposed individuals
