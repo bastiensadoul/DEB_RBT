@@ -47,6 +47,19 @@ debODE_ABJ <- function(t, LEH, parms){
     
     
     
+    ##--------------Options for birth after a given Lb value
+    if (acc_after_Lbcont[1] == TRUE & L<acc_after_Lbcont[2]){
+      Lb=acc_after_Lbcont[2]
+      Lb=as.numeric(Lb)
+    }
+    if (acc_after_Lbcont[1] == TRUE & L<acc_after_Lbcont[3]){
+      Lj=acc_after_Lbcont[3]
+      Lj=as.numeric(Lj)
+    }
+    ##--------------
+    
+    
+    
     ##-----------------------------------------  
     # ---- calculation of the shape coefficient
     ##-----------------------------------------
@@ -65,6 +78,22 @@ debODE_ABJ <- function(t, LEH, parms){
     if ("sM" == FALSE){
       s_M=1
     }
+    
+    
+    
+    ##--------------Options for birth after 64dpf or after a given Lb value
+    if (acc_after_64dpf == TRUE & t<64){
+      s_M=1
+    }
+    if (acc_after_Lbcont[1] == TRUE & L<acc_after_Lbcont[2]){
+      s_M=1
+    }
+    if (acc_after_Lbcont[1] == TRUE & L>=acc_after_Lbcont[2] & L<acc_after_Lbcont[3]){
+      s_M=L/Lb
+    }
+    ##--------------
+    
+    
     
     ##-----------------------------------------  
     # ---- If p.M varies over time
@@ -90,12 +119,29 @@ debODE_ABJ <- function(t, LEH, parms){
                   c(p_Am[p_Am$time==floor(t), 2], p_Am[p_Am$time==(floor(t)+1), 2]), xout=t)$y
     } else {pAm = p_Am}
     
+    ##-----------------------------------------  
+    # ---- If v varies over time
+    ##-----------------------------------------
+    if (length(v)>1) {
+      new_v = approx(c(floor(t),floor(t)+1), 
+                   c(v[v$time==floor(t), 2], v[v$time==(floor(t)+1), 2]), xout=t)$y
+    } else {new_v = v}
+    
+    ##-----------------------------------------  
+    # ---- If kap varies over time
+    ##-----------------------------------------
+    if (length(kap)>1) {
+      new_kap = approx(c(floor(t),floor(t)+1), 
+                     c(kap[kap$time==floor(t), 2], kap[kap$time==(floor(t)+1), 2]), xout=t)$y
+    } else {new_kap = kap}
+    
+    
     
     ##-----------------------------------------  
     # ---- Correction of p_Am and v by s_M
     ##-----------------------------------------
     
-    v = v*s_M
+    new_v = new_v*s_M
     pAm = pAm*s_M
     
     
@@ -105,7 +151,7 @@ debODE_ABJ <- function(t, LEH, parms){
     
     TC = exp(((T.A)/(T.ref))-((T.A)/(TempC+273.15)))    # Arrhenius correction coeff
     
-    v = v*TC               
+    new_v = new_v*TC               
     pAm = pAm*TC
     
     pM = pM*TC               
@@ -120,16 +166,27 @@ debODE_ABJ <- function(t, LEH, parms){
       pA=fdt*pAm*L^2
     } else {
       pA=0
-      }
+    }
+    
+    
+    ##--------------Options for birth after 64dpf or after a given Lb value
+    if (acc_after_64dpf == TRUE & t<64){
+      pA=0
+    }
+    if (acc_after_Lbcont[1] == TRUE & L<acc_after_Lbcont[2]){
+      pA=0
+    }
+    ##--------------
+    
     
     # Mobilization rate (Out of reserves),  J/cm^3
-    pC = E/(L^3) * (EG * v / L + pM) / (kap * E / (L^3) + EG)      # eq 2.12 book
+    pC = E/(L^3) * (EG * new_v / L + pM) / (new_kap * E / (L^3) + EG)      # eq 2.12 book
     
     # Growth rate
-    if (kap * pC < pM){ # if p.M higher than energy available
-      r = (E * v / (L^4) - pM / kap)    /    (E / (L^3) + EG * kap_G / kap)     # negativ term because negative numerator
+    if (new_kap * pC < pM){ # if p.M higher than energy available
+      r = (E * new_v / (L^4) - pM / new_kap)    /    (E / (L^3) + EG * kap_G / new_kap)     # negativ term because negative numerator
     } else { 
-      r = (E * v / (L^4) - pM / kap)    /    (E / (L^3) + EG / kap)
+      r = (E * new_v / (L^4) - pM / new_kap)    /    (E / (L^3) + EG / new_kap)
     }
     
     ##-----------------------------------------  
@@ -138,14 +195,14 @@ debODE_ABJ <- function(t, LEH, parms){
     
     # Before puberty
     if (H < E.Hp) { 
-      dH = (1-kap) * pC * L^3 - k.J * H
+      dH = (1-new_kap) * pC * L^3 - k.J * H
     } else { 
       dH = 0
     }
     
     # After puberty
     if (H >= E.Hp) { 
-      dE.R = kap.R * ((1-kap) * pC * L^3 - k.J * E.Hp)
+      dE.R = kap.R * ((1-new_kap) * pC * L^3 - k.J * E.Hp)
     } else { 
       dE.R = 0
     }
@@ -156,14 +213,41 @@ debODE_ABJ <- function(t, LEH, parms){
     # Change in structural length
     dL = L * r / 3 #
     
-    # Extract Lj and Lb dynamically
+    # Extract Lb dynamically
     if (H <= E.Hb) {
       dLb = max(0, dL)
     } else dLb=0
     
+    
+    ##--------------Options for birth after 64dpf or after a given Lb value
+    if (acc_after_64dpf == TRUE & t<64){
+      dLb=max(0, dL)
+    }
+    if (acc_after_Lbcont[1] == TRUE & L<acc_after_Lbcont[2]){
+      dLb=max(0, dL)
+    }
+    ##--------------
+    
+    
+
+    # Extract Lj dynamically
     if (H <= E.Hj) {
       dLj = max(0, dL)
     } else dLj=0
+    
+    
+    
+    
+    ##--------------Options for birth after 64dpf or after a given Lb value
+    if (acc_after_64dpf == TRUE & t<64){
+      dLj=max(0, dL)
+    }
+    if (acc_after_Lbcont[1] == TRUE & L<acc_after_Lbcont[3]){
+      dLj=max(0, dL)
+    }
+    ##--------------
+    
+    
     
     
     ##-----------------------------------------  

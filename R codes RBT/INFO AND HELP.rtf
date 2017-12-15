@@ -1,10 +1,30 @@
 {\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf470
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\froman\fcharset0 Times-Roman;}
 {\colortbl;\red255\green255\blue255;}
 \paperw11900\paperh16840\margl1440\margr1440\vieww14620\viewh8400\viewkind0
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
 
 \f0\fs24 \cf0 #\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+PROTOCOL\
+#\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+\
+1. DEB parameters for control trout estimated using the DEBtool on Matlab\
+	\'97> available in \'ab\'a0results_Oncorhynchus_mykiss.mat\'a0\'bb\
+2. f for each of the control tanks in both BPA studies calculated using Matlab\
+	\'97> available in \'ab\'a0f_prdData_funiqueall.mat\'a0\'bb\
+3. Optimization of affected parameters: in R script \'ab\'a0Optimization\'a0\'bb\
+	\'97> results in folder \'abresults_optim\'a0\'bb\
+4. Graphs and tables for specific affected parameters: in R script \'ab\'a0Plot diff pred\'a0\'bb\
+	\'97> graphs in folder \'ab\'a0Figures\'a0\'bb\
+	\'97> Lb and ab \
+5. Simulations for specific affected parameters: in R script \'abSimulations varying f E0 and T\'a0\'bb\
+	\'97> graphs in folder \'ab\'a0Figures\'a0\'bb\
+\
+\
+\
+\
+\
+#\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
 Units of the parameters in .mat file coming from Add My Pet\
 and used in debODE_ABJ\
 #\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
@@ -49,6 +69,23 @@ param$p_Am =  param$z * param$p.M / param$kap  		      # J/d.cm^2, max ass. rate
 \
 \
 #\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+Explanation of E_G\
+#\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+\
+From Alvarez et al., 2006 (Env. Tox and Chem.),\
+Exposing nematodes to cadmium continuously:\
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs18 \cf0 The growth pattern clearly reflects the mode of action \'91\'91costs of growth,\'92\'92 presenting slower growth at increasing concentrations but \
+reaching a final body size similar to that of the controls. The rationale behind this mode of action is that the compound increases the \
+energetic costs of making new tissue. This slows down the rate of growth, but not the ultimate size, which is reached when all the \
+assimilated resources are used for maintenance (neither assimilation nor maintenance costs per unit of body size are related to the \
+costs of growth). The apparent recovery of the body size in Figure 3 therefore is simply a consequence of this mode of action and \
+is not related to a reversal of toxicity.
+\f0\fs24 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf0 \
+#\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
 Results\
 #\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
 \
@@ -56,8 +93,9 @@ result_optim_2017-11-05 23/02/34\
 \
 Obtained with:\
 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
 
-\i\fs6 ##################################################################################\
+\i\fs6 \cf0 ##################################################################################\
 ##################         Created November 2017          ########################\
 #####################         by Bastien Sadoul       ############################\
 ##################################################################################\

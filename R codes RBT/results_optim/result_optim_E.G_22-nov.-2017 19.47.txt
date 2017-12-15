@@ -1,0 +1,11 @@
+"x"
+"par.ks"	194.782992963152
+"par.Fpert_BPA03"	0.50323519795161
+"par.Fpert_BPA3"	-0.155765369591734
+"par.Fpert_BPA30"	4.11932605032049
+"par.Fpert_BPA300"	8.39156450452186
+"par.Fpert_BPA100"	4.48799097950999
+"value"	24607.5150419602
+"counts.function"	601
+"counts.gradient"	NA
+"convergence"	0
