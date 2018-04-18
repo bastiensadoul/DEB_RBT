@@ -376,7 +376,7 @@ tempestim = estim_res_cont[estim_res_cont$study2 == studytoplot,]
 
 p = ggplot(temp, aes(x=dpf, y=gw)) +
   stat_summary(fun.y = mean, geom = "point", size=2, alpha=0.6) + 
-  stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
+  # stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
   stat_summary(fun.data = mean_cl_normal, fun.args=list(mult=1), alpha=0.6)+
   geom_line(data=tempestim ,
             aes(x=dpf, y=estim_W_cont), size=1, alpha=1, col="red")+
@@ -412,7 +412,7 @@ tempestim = tempestim[tempestim$dpf<=max(temp$dpf),]
 
 p2 = ggplot(temp, aes(x=dpf, y=gw)) +
   stat_summary(fun.y = mean, geom = "point", size=2, alpha=0.6) + 
-  stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
+  # stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
   stat_summary(fun.data = mean_cl_normal, fun.args=list(mult=1), alpha=0.6)+
   geom_line(data=tempestim ,
             aes(x=dpf, y=estim_W_cont), size=1, alpha=1, col="red")+
@@ -468,9 +468,10 @@ tempestim = estim_res_cont[estim_res_cont$study2 == substr(studytoplot, 1,5),]
 tempestim = tempestim[tempestim$dpf<=max(temp$dpf),]
 
 p = ggplot(temp, aes(x=dpf, y=gw)) +
-  stat_summary(fun.y = mean, geom = "point", size=2, alpha=0.6) + 
-  stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
-  stat_summary(fun.data = mean_cl_normal, fun.args=list(mult=1), alpha=0.6)+
+  # stat_summary(fun.y = mean, geom = "point", size=2, alpha=0.6) + 
+  # stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
+  # stat_summary(fun.data = mean_cl_normal, fun.args=list(mult=1), alpha=0.6)+
+  geom_point(alpha=0.6)+
   geom_line(data=tempestim ,
             aes(x=dpf, y=estim_W_cont), size=1, alpha=1, col="red")+
   # scale_fill_manual(labels=c("control", "BPA300"), 
@@ -503,9 +504,10 @@ tempestim = estim_res_cont[estim_res_cont$study2 == substr(studytoplot, 1,5),]
 tempestim = tempestim[tempestim$dpf>=min(temp$dpf),]
 
 p2 = ggplot(temp, aes(x=dpf, y=gw)) +
-  stat_summary(fun.y = mean, geom = "point", size=2, alpha=0.6) + 
-  stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
-  stat_summary(fun.data = mean_cl_normal, fun.args=list(mult=1), alpha=0.6)+
+  # stat_summary(fun.y = mean, geom = "point", size=2, alpha=0.6) + 
+  # stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
+  # stat_summary(fun.data = mean_cl_normal, fun.args=list(mult=1), alpha=0.6)+
+  geom_point(alpha=0.6)+
   geom_line(data=tempestim ,
             aes(x=dpf, y=estim_W_cont), size=1, alpha=1, col="red")+
   # scale_fill_manual(labels=c("control", "BPA300"), 
@@ -538,9 +540,10 @@ tempestim = estim_res_cont[estim_res_cont$study2 == studytoplot,]
 tempestim = tempestim[tempestim$dpf<=max(temp$dpf),]
 
 p3 = ggplot(temp, aes(x=dpf, y=gw)) +
-  stat_summary(fun.y = mean, geom = "point", size=2, alpha=0.6) + 
-  stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
-  stat_summary(fun.data = mean_cl_normal, fun.args=list(mult=1), alpha=0.6)+
+  # stat_summary(fun.y = mean, geom = "point", size=2, alpha=0.6) + 
+  # stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
+  # stat_summary(fun.data = mean_cl_normal, fun.args=list(mult=1), alpha=0.6)+
+  geom_point(alpha=0.6)+
   geom_line(data=tempestim ,
             aes(x=dpf, y=estim_W_cont), size=1, alpha=1, col="red")+
   # scale_fill_manual(labels=c("control", "BPA300"), 
@@ -574,9 +577,9 @@ p3 <- arrangeGrob(p3, top = textGrob("c", x = unit(0.1, "npc")
                                      gp=gpar(col="black", fontsize=30, fontfamily="Times Roman")))
 
 
-jpeg(paste(dir, "/Figures/growth_control.jpg", sep=""), res=600, width=30, height=10, units="cm")
+# jpeg(paste(dir, "/Figures/growth_control_rev.jpg", sep=""), res=600, width=30, height=10, units="cm")
 plot_grid(p, p2, p3, ncol=3)
-dev.off()
+# dev.off()
 
 
 

@@ -33,22 +33,22 @@ dpf=seq(0,1069, by=dt)
 # Spring and damper parameters
 
 #param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_p.M_23-nov.-2017 17.27.txt", sep=""), sep = "\t", header=T)
-# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_05-déc.-2017 16.51.txt", sep=""), sep = "\t", header=T)
+# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_05-dÃ©c.-2017 16.51.txt", sep=""), sep = "\t", header=T)
 # param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_22-nov.-2017 19.47.txt", sep=""), sep = "\t", header=T)
-# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_p.M_07-déc.-2017 14.57.txt", sep=""), sep = "\t", header=T)
-# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_07-déc.-2017 11.51.txt", sep=""), sep = "\t", header=T)
-# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_p_Am_08-déc.-2017 15.02.txt", sep=""), sep = "\t", header=T)
-# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_v_08-déc.-2017 17.28.txt", sep=""), sep = "\t", header=T)
-param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_kap_low_11-déc.-2017 21.08.txt", sep=""), sep = "\t", header=T)
-param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_kap_high_12-déc.-2017 13.12.txt", sep=""), sep = "\t", header=T)
+# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_p.M_07-dÃ©c.-2017 14.57.txt", sep=""), sep = "\t", header=T)
+# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_E.G_07-dÃ©c.-2017 11.51.txt", sep=""), sep = "\t", header=T)
+# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_p_Am_08-dÃ©c.-2017 15.02.txt", sep=""), sep = "\t", header=T)
+# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_v_08-dÃ©c.-2017 17.28.txt", sep=""), sep = "\t", header=T)
+# param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_kap_low_11-dÃ©c.-2017 21.08.txt", sep=""), sep = "\t", header=T)
+param_spring_damper = read.table(paste(dir, "/results_optim/result_optim_kap_high_12-dÃ©c.-2017 13.12.txt", sep=""), sep = "\t", header=T)
 
 
 row.names(param_spring_damper)=substring(row.names(param_spring_damper),5)
 param_spring_damper = as.data.frame(t(param_spring_damper))[,c(1:length(t(param_spring_damper)))]
 param_spring_damper = unlist(param_spring_damper)
 
-param_spring_damper = c(ks = 80, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 0.1,
-                        Fpert_BPA30 = 0.2 , Fpert_BPA300 = 0.5, Fpert_BPA100 = 0.2)
+# param_spring_damper = c(ks = 80, cs =  8, Fpert_BPA03 = 0, Fpert_BPA3 = 0.1,
+#                         Fpert_BPA30 = 0.2 , Fpert_BPA300 = 0.5, Fpert_BPA100 = 0.2)
 
 
 # param_spring_damper["Fpert_BPA300"] = 9
@@ -711,13 +711,14 @@ if (studytoplot == "gw150"){
 #tempestim = tempestim[which(tempestim$dpf>160),]
 p_gw150 = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
   stat_summary(fun.y = mean, geom = "point", size=5, alpha=0.6) + 
-  stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
+  # stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
   stat_summary(fun.data = mean_cl_normal, fun.args=list(mult=1), alpha=0.6)+
   geom_line(data=tempestim ,
             aes(x=dpf, y=diff_estimates, colour=condition), size=1.5, alpha=1)+
   scale_fill_manual(labels=labvec,
                     values=colvec)+
-  scale_color_manual(labels=labvec,
+  scale_color_manual(name="Treatment", 
+                     labels=labvec,
                      values=colvec)+
   # geom_point(alpha=0.6,size=5)+
   # geom_line(alpha=0.6,size=1)+
@@ -739,10 +740,10 @@ p_gw150 = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
 p_gw150_2 = ggplot(data=tempparam, aes(x=time, y=var, col=condition))+
   geom_line(size=1.5)+
   # labs(x="BPA treatment (ng/L)", y=bquote(.(MoA)*' (KJ.'*~cm^-3*')')) +
-  #labs(x="BPA treatment (ng/L)", y=bquote('['*E[G]*'] (KJ.'*~cm^-3*')')) +
-  #labs(x="BPA treatment (ng/L)", y=bquote(dot(v) *' (cm.'*d^-1*')')) +
-  #labs(x="BPA treatment (ng/L)", y=bquote('['*dot(p)[M]*'] (KJ.'*cm^-3*'.'*d^-1*')')) +
-  #labs(x="BPA treatment (ng/L)", y=bquote('{'*dot(p)[Am]*'} (J.'*cm^-2*'.'*d^-1*')')) +
+  # labs(x="BPA treatment (ng/L)", y=bquote('['*E[G]*'] (KJ.'*~cm^-3*')')) +
+  # labs(x="BPA treatment (ng/L)", y=bquote(dot(v) *' (cm.'*d^-1*')')) +
+  # labs(x="BPA treatment (ng/L)", y=bquote('['*dot(p)[M]*'] (KJ.'*cm^-3*'.'*d^-1*')')) +
+  # labs(x="BPA treatment (ng/L)", y=bquote('{'*dot(p)[Am]*'} (J.'*cm^-2*'.'*d^-1*')')) +
   labs(x="BPA treatment (ng/L)", y=bquote(kappa)) +
   
   expand_limits(x=c(0, 1100),y=c(0,max(estim_param_var$E.G)))+
@@ -793,13 +794,14 @@ if (studytoplot == "gw150"){
 #tempestim = tempestim[which(tempestim$dpf>160),]
 p_gw124 = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
   stat_summary(fun.y = mean, geom = "point", size=5, alpha=0.6) + 
-  stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
+  # stat_summary(fun.y = mean, geom = "line", size=1, alpha=0.6) + 
   stat_summary(fun.data = mean_cl_normal, fun.args=list(mult=1), alpha=0.6)+
   geom_line(data=tempestim ,
             aes(x=dpf, y=diff_estimates, colour=condition), size=1.5, alpha=1)+
   scale_fill_manual(labels=labvec,
                     values=colvec)+
-  scale_color_manual(labels=labvec,
+  scale_color_manual(name="Treatment", 
+                     labels=labvec,
                      values=colvec)+
   # geom_point(alpha=0.6,size=5)+
   # geom_line(alpha=0.6,size=1)+
@@ -834,10 +836,10 @@ p_gw124 = ggplot(temp, aes(x=dpf, y=real_diffW, color=condition)) +
 p_gw124_2 = ggplot(data=tempparam, aes(x=time, y=var, col=condition))+
   geom_line(size=1.5)+
   # labs(x="BPA treatment (ng/L)", y=bquote(.(MoA)*' (KJ.'*~cm^-3*')')) +
-  #labs(x="BPA treatment (ng/L)", y=bquote('['*E[G]*'] (KJ.'*~cm^-3*')')) +
-  #labs(x="BPA treatment (ng/L)", y=bquote(dot(v) *' (cm.'*d^-1*')')) +
-  #labs(x="BPA treatment (ng/L)", y=bquote('['*dot(p)[M]*'] (KJ.'*cm^-3*'.'*d^-1*')')) +
-  #labs(x="BPA treatment (ng/L)", y=bquote('{'*dot(p)[Am]*'} (J.'*cm^-2*'.'*d^-1*')')) +
+  # labs(x="BPA treatment (ng/L)", y=bquote('['*E[G]*'] (KJ.'*~cm^-3*')')) +
+   # labs(x="BPA treatment (ng/L)", y=bquote(dot(v) *' (cm.'*d^-1*')')) +
+  # labs(x="BPA treatment (ng/L)", y=bquote('['*dot(p)[M]*'] (KJ.'*cm^-3*'.'*d^-1*')')) +
+  # labs(x="BPA treatment (ng/L)", y=bquote('{'*dot(p)[Am]*'} (J.'*cm^-2*'.'*d^-1*')')) +
   labs(x="BPA treatment (ng/L)", y=bquote(kappa)) +
   expand_limits(x=c(0, 1100),y=c(0,max(estim_param_var$E.G)))+
   scale_fill_manual(labels=labvec[-1],
@@ -901,7 +903,8 @@ Fpert = ggplot(data=maxMoA, aes(x=concentration, y=MoA))+
               se=FALSE, fullrange=T)+
   scale_fill_manual(labels=labvec,
                     values=colvec)+
-  scale_color_manual(labels=labvec,
+  scale_color_manual(name="Treatment", 
+                     labels=labvec,
                      values=colvec)+
   theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
         axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
@@ -939,7 +942,8 @@ Fpertsini = ggplot(data=para_pert, aes(x=concentration, y=logpert))+
               se=FALSE, fullrange=T)+
   scale_fill_manual(labels=labvec,
                     values=colvec)+
-  scale_color_manual(labels=labvec,
+  scale_color_manual(name="Treatment", 
+                     labels=labvec,
                      values=colvec)+
   theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
         axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
@@ -974,7 +978,8 @@ Fpertsini = ggplot(data=para_pert, aes(x=concentration, y=pert))+
               se=FALSE, fullrange=T)+
   scale_fill_manual(labels=labvec,
                     values=colvec)+
-  scale_color_manual(labels=labvec,
+  scale_color_manual(name="Treatment", 
+                     labels=labvec,
                      values=colvec)+
   theme(axis.text.x = element_text(size=16, colour = "black"), axis.text.y = element_text(size=16, colour = "black"),
         axis.title.x = element_text(size=16, margin=margin(t=10)), axis.title.y = element_text(size=16, margin=margin(r=10)),
@@ -1050,7 +1055,7 @@ pL = ggplot(data=temp,
         plot.margin = unit(c(0.5,0.5,0.5,1), "cm")
   )
 
-plot_grid(pW, pL, pE, nrow=3)
+# plot_grid(pW, pL, pE, nrow=3)
 
 
 
